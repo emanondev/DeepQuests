@@ -18,11 +18,12 @@ public class PlayerManager implements Listener {
 	public PlayerManager() {
 		Quests.getInstance().registerListener(this);
 		Bukkit.getOnlinePlayers().forEach((p)->{
+			players.clear();
 			players.put(p, new QuestPlayer(p));
 		});
 	}
 	
-	private final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
+	private static final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
 
 	public QuestPlayer getQuestPlayer(Player p) {
 		if (players.containsKey(p))
@@ -36,12 +37,12 @@ public class PlayerManager implements Listener {
 	}
 	
 	@EventHandler (priority=EventPriority.MONITOR,ignoreCancelled=true)
-	private void onJoin(PlayerLoginEvent e) {
+	private static void onJoin(PlayerLoginEvent e) {
 		if (e.getResult()==PlayerLoginEvent.Result.ALLOWED)
 			players.put(e.getPlayer(), new QuestPlayer(e.getPlayer()));
 	}
 	@EventHandler (priority=EventPriority.MONITOR)
-	private void onQuit(PlayerQuitEvent e) {
+	private static void onQuit(PlayerQuitEvent e) {
 		QuestPlayer p = players.remove(e.getPlayer());
 		if (p.shouldSave())
 			p.save();

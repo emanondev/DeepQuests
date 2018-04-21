@@ -340,9 +340,9 @@ public class OfflineQuestPlayer {
 				shouldSave = true;
 			}
 			
-			
-			
-			
+			public Collection<TaskData> getTasksData(){
+				return Collections.unmodifiableCollection(tasksData.values());
+			}
 			
 			public class TaskData {
 				private static final String PATH_TASKS = "tasks";

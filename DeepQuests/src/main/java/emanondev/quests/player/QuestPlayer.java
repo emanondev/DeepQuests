@@ -5,14 +5,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.events.PlayerCompleteMissionEvent;
+import emanondev.quests.events.PlayerCompleteTaskEvent;
 import emanondev.quests.events.PlayerFailMissionEvent;
+import emanondev.quests.events.PlayerProgressTaskEvent;
 import emanondev.quests.events.PlayerStartMissionEvent;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData;
+import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData.TaskData;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.reward.MissionReward;
+import emanondev.quests.reward.Reward;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
 
@@ -133,11 +137,35 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		MissionData mData = this.getMissionData(m);
 		mData.start();
 	}
-	public void progressTask(Task t) {
-		
+	public void progressTask(Task t,int amount) {
+		TaskData tData = getTaskData(t);
+		amount = Math.min(amount,t.getMaxProgress()-tData.getProgress());
+		if (amount <=0)
+			return;
+		PlayerProgressTaskEvent event = new PlayerProgressTaskEvent(this,t,amount);
+		Bukkit.getPluginManager().callEvent(event);
+		if (event.getProgressAmount() <=0)
+			return;
+		tData.setProgress(tData.getProgress()+event.getProgressAmount());
+		for (Reward rew : event.getRewards())
+			for (int i = 0 ; i < event.getProgressAmount() ; i++)
+				rew.applyReward(this);
+		if (t.getMaxProgress()<=tData.getProgress())
+			completeTask(t);
 	}
 	public void completeTask(Task t) {
-		
+		PlayerCompleteTaskEvent event = new PlayerCompleteTaskEvent(this,t);
+		Bukkit.getPluginManager().callEvent(event);
+		boolean completed = true;
+		for (TaskData tData : getMissionData(t.getParent()).getTasksData()) {
+			if (!tData.isCompleted()) {
+				completed = false;
+				break;
+			}
+		}
+		if (completed==true) {
+			completeMission(t.getParent());
+		}
 	}
 	
 }
