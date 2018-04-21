@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.bukkit.OfflinePlayer;
 
@@ -135,12 +134,18 @@ public class OfflineQuestPlayer {
 			unregisterActiveTask(data.task);
 		});
 	}
-	public Collection<Task> getActiveTasks(TaskType type) {
-		Collection<Task> c;
+	/**
+	 * do never ever loop this with iterator or forEach<br>
+	 * use instead a for (int i = 0; i < list.size(); i++)
+	 * @param type
+	 * @return
+	 */
+	public List<Task> getActiveTasks(TaskType type) {
+		List<Task> c;
 		c = activeTasks.get(type);
 		if (c== null)
-			c = new TreeSet<Task>();
-		return Collections.unmodifiableCollection(c);
+			c = new ArrayList<Task>();
+		return Collections.unmodifiableList(c);
 	}
 	
 	public OfflinePlayer getPlayer() {
@@ -250,6 +255,8 @@ public class OfflineQuestPlayer {
 				this.active = data.getBoolean(baseMissionPath+"."+PATH_IS_ACTIVE, false);
 				this.completedTimes = data.getInt(baseMissionPath+"."+PATH_COMPLETED_TIMES, 0);
 				this.isFailed = data.getBoolean(baseMissionPath+"."+PATH_IS_FAILED, false);
+				registerActiveTask(tasksData.values());
+					
 			}
 			public boolean isFailed() {
 				return isFailed;
@@ -333,10 +340,10 @@ public class OfflineQuestPlayer {
 				this.lastCompleted = new Date().getTime();
 				data.set(baseMissionPath+"."+PATH_LAST_COMPLETED, lastCompleted);
 				
-				this.tasksData.values().forEach((taskData)->{
+				for (TaskData taskData : this.tasksData.values()){
 					taskData.setProgress(0);
 					unregisterActiveTask(taskData.task);
-				});
+				}
 				shouldSave = true;
 			}
 			

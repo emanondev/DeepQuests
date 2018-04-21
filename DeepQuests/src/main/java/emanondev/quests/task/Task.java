@@ -133,7 +133,7 @@ public abstract class Task extends YmlLoadable{
 	 */
 	@Override
 	public boolean isWorldAllowed(World w) {
-		return this.isWorldAllowed(w)
+		return super.isWorldAllowed(w)
 				&& getParent().isWorldAllowed(w)
 				&& getParent().getParent().isWorldAllowed(w);
 	}
