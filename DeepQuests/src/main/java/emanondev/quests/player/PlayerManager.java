@@ -17,8 +17,8 @@ public class PlayerManager implements Listener {
 	
 	public PlayerManager() {
 		Quests.getInstance().registerListener(this);
+		players.clear();
 		Bukkit.getOnlinePlayers().forEach((p)->{
-			players.clear();
 			players.put(p, new QuestPlayer(p));
 		});
 	}
