@@ -13,8 +13,18 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import emanondev.quests.Quests;
 
+/**
+ * This class is responsible to keep load players files when they login or when required<br>
+ * also this class is responsible of saving players files when they log out or when saveAll() is called<br>
+ * 
+ * this class also provide access to Player Infos
+ * 
+ * @author emanon
+ *
+ */
 public class PlayerManager implements Listener {
-	
+	private static final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
+
 	public PlayerManager() {
 		Quests.getInstance().registerListener(this);
 		players.clear();
@@ -23,14 +33,25 @@ public class PlayerManager implements Listener {
 		});
 	}
 	
-	private static final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
 
+	/**
+	 * 
+	 * @param p - player
+	 * @return the QuestPlayer associated to player p 
+	 */
 	public QuestPlayer getQuestPlayer(Player p) {
 		if (players.containsKey(p))
 			return players.get(p);
 		throw new RuntimeException("error player has no questplayer object");
 	}
+	/**
+	 * 
+	 * @param p - offlineplayer
+	 * @return if p is online this will return getQuestPlayer(p)<br>else the file associated to p is loaded from the Disk
+	 */
 	public OfflineQuestPlayer getOfflineQuestPlayer(OfflinePlayer p) {
+		if (p.isOnline())
+			p = p.getPlayer();
 		if (players.containsKey(p))
 			return players.get(p);
 		return new OfflineQuestPlayer(p);
@@ -47,6 +68,9 @@ public class PlayerManager implements Listener {
 		if (p.shouldSave())
 			p.save();
 	}
+	/**
+	 * Save all QuestPlayer progress when called
+	 */
 	public void saveAll() {
 		players.values().forEach((qPlayer)->{
 			if (qPlayer.shouldSave())
