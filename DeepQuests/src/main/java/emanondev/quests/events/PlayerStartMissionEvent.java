@@ -46,5 +46,4 @@ public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancell
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
     }
-
 }

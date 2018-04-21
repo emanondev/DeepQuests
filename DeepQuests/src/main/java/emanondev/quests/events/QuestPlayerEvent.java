@@ -18,5 +18,4 @@ public abstract class QuestPlayerEvent extends Event {
 	public QuestPlayer getQuestPlayer() {
 		return questPlayer;
 	}
-	
 }

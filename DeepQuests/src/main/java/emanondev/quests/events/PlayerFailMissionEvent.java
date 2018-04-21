@@ -21,4 +21,5 @@ public class PlayerFailMissionEvent extends QuestPlayerEvent {
 	public Mission getMission() {
 		return mission;
 	}
+	
 }

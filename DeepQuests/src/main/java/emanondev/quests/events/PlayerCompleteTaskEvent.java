@@ -22,5 +22,4 @@ public class PlayerCompleteTaskEvent extends QuestPlayerEvent {
 	public Task getTask() {
 		return task;
 	}
-
 }

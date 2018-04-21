@@ -37,5 +37,4 @@ public class PlayerCompleteMissionEvent extends QuestPlayerEvent{
 		if (rewardsList!=null)
 			rewards.addAll(rewardsList);
 	}
-
 }

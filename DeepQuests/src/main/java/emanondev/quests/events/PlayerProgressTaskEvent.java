@@ -23,7 +23,6 @@ public class PlayerProgressTaskEvent extends QuestPlayerEvent implements Cancell
 	private final List<Reward> rewards = new ArrayList<Reward>();
 	private int progressAmount;
 	
-	
 	public PlayerProgressTaskEvent(QuestPlayer questPlayer, Task t, int amount) {
 		super(questPlayer);
 		this.task = t;
@@ -52,5 +51,4 @@ public class PlayerProgressTaskEvent extends QuestPlayerEvent implements Cancell
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
     }
-
 }
