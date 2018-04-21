@@ -6,11 +6,11 @@ import java.util.List;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.reward.MissionReward;
+import emanondev.quests.reward.Reward;
+import emanondev.quests.task.Task;
 
-public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancellable{
+public class PlayerProgressTaskEvent extends QuestPlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	public HandlerList getHandlers() {
 	    return handlers;
@@ -19,23 +19,29 @@ public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancell
 	    return handlers;
 	}
 	private boolean cancelled = false;
-
-	private final Mission mission;
-	private final List<MissionReward> rewards = new ArrayList<MissionReward>();
-
-	public PlayerStartMissionEvent(QuestPlayer questPlayer, Mission m) {
-		super(questPlayer);
-		this.mission = m;
-		rewards.addAll(m.getStartRewards());
-	}
+	private final Task task;
+	private final List<Reward> rewards = new ArrayList<Reward>();
+	private int progressAmount;
 	
-	public Mission getMission() {
-		return mission;
+	
+	public PlayerProgressTaskEvent(QuestPlayer questPlayer, Task t, int amount) {
+		super(questPlayer);
+		this.task = t;
+		this.progressAmount = amount;//TODO rewards
 	}
-	public List<MissionReward> getRewards() {
+	public int getProgressAmount() {
+		return progressAmount;
+	}
+	public void setProgressAmount(int amount) {
+		progressAmount = Math.max(0,amount);
+	}
+	public Task getTask() {
+		return task;
+	}
+	public List<Reward> getRewards() {
 		return rewards;
 	}
-	public void setRewards(List<MissionReward> rewardsList) {
+	public void setRewards(List<Reward> rewardsList) {
 		rewards.clear();
 		if (rewardsList!=null)
 			rewards.addAll(rewardsList);
