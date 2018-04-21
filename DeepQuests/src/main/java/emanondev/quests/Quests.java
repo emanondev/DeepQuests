@@ -8,6 +8,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import emanondev.quests.LoggerManager.Logger;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
 import emanondev.quests.inventory.GuiManager;
@@ -44,7 +45,9 @@ public class Quests extends JavaPlugin {
 	public LoggerManager getLoggerManager() {
 		return loggerManager;
 	}
-	
+	public static Logger getLogger(String name) {
+		return getInstance().loggerManager.getLogger(name);
+	}
 	/**
 	 * logs msg on the console
 	 * @param msg - console will display "[pluginname] msg"
