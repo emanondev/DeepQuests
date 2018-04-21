@@ -1,0 +1,290 @@
+#
+#   this file stores information for default values when creating quests missions....
+#   when quests.yml do not define a value for something the plugin attemps to read the value from this file
+#
+#   when autogenerate flags is set to true allows to force automatically generate configuration on quest when flagged item is not specified
+#
+
+
+#should gui items be unbreakable when not specified?
+#this is usefull for custom texturepack using damage
+gui:
+    unbreakable-items: 
+        default-value: true
+#default quests configurations
+quest:
+    #prefix for quest display name
+    display-name-prefix:
+        #prefix value
+        default-value: ""
+    #allows to prevent quest progress on a specified world list
+    disabled-world:
+        #automatically generate disabled-world values for each quest on quest.yml ?
+        autogenerate: false
+        #use this list as a blacklist? (empty list will be always flagged as blacklist)
+        use-as-blacklist: true
+        #worlds of the list
+        worlds: []
+    #quest may be repeated once completed with a cooldown
+    cooldown:
+        #automatically generate cooldown values for each quest on quest.yml ?
+        autogenerate: false
+        #default: minutes to wait to repeat a quest (never set below 0)
+        default-minutes-duration: 1440
+        #default: quest may be repated?
+        default-cooldown-use: false
+    #quests gui itesm may be hided from gui on some state of the quest
+    hide:
+        #when player do not satisfy requires for the quest
+        locked:
+            #automatically generate hide.locked values for each quest on quest.yml ?
+            autogenerate: false
+            #default value
+            value: false
+        #when player meets requires to start a quest
+        unstarted:
+            autogenerate: false
+            #this specific value should never be set to true
+            value: false
+        #when player has started the quest
+        onprogress:
+            autogenerate: false
+            value: false
+        #when player has completed the quest but it"s still waiting to unlock it again
+        cooldown:
+            autogenerate: false
+            value: false
+        #when player has completed and cannot do it again (cooldown = false)
+        completed:
+            autogenerate: false
+            value: false
+        #when player has failed and cannot do it again (cooldown = false)
+        failed:
+            autogenerate: false
+            value: false
+    #display gui items type
+    item:
+        locked:
+            autogenerate: false
+            #format is Material:data:damage:unbreakable (on 1.13+ format will be Material:damage:unbreakable)
+            #ex: DIAMOND_SWORD:0:100:true (DIAMOND_SWORD:100:true)
+            #data and damage default values when not specified are both 0
+            value: "STAINED_GLASS_PANE:14"
+        unstarted:
+            autogenerate: true
+            value: "BOOK"
+        onprogress:
+            autogenerate: true
+            value: "BOOK"
+        cooldown:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:1"
+        completed:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:13"
+        failed:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:15"
+    #display gui items lore
+    lore:
+        locked:
+            autogenerate: false
+            value: 
+            - ""
+            - "&7➤ Quest Locked"
+            - ""
+            - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+        unstarted:
+            autogenerate: true
+            value: 
+            - ""
+            - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
+            - ""
+            - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+        onprogress:
+            autogenerate: true
+            value: 
+            - ""
+            - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
+            - ""
+            - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+        cooldown:
+            autogenerate: false
+            value: 
+            - ""
+            - "&7➤ Quest On Cooldown"
+            - ""
+            - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+        completed:
+            autogenerate: false
+            value: 
+            - ""
+            - "&2➤ Quest Completed"
+            - ""
+            - "&2&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&2&l&m---"
+        failed:
+            autogenerate: false
+            value:
+            - ""
+            - "&7➤ Quest Failed!"
+            - ""
+            - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+        
+    #display gui items title
+    title:
+        locked:
+            autogenerate: false
+            value: "&4&l&m---&r&8&l&m[--&r     &8* &4{quest-name}&r &8*&r     &8&l&m--]&4&l&m---"
+        unstarted:
+            autogenerate: true
+            value: "&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---"
+        onprogress:
+            autogenerate: true
+            value: "&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---"
+        cooldown:
+            autogenerate: false
+            value: "&6&l&m---&r&8&l&m[--&r     &8* &6{quest-name}&r &8*&r     &8&l&m--]&6&l&m---"
+        completed:
+            autogenerate: false
+            value: "&2&l&m---&r&8&l&m[--&r     &8* &2{quest-name}&r &8*&r     &8&l&m--]&2&l&m---"
+        failed:
+            autogenerate: false
+            value: "&4&l&m---&r&8&l&m[--&r     &8* &4{quest-name}&r &8*&r     &8&l&m--]&4&l&m---"
+    display-name:
+        autogenerate: true
+#default missions configurations
+mission:
+    #prefix for mission display name
+    display-name-prefix:
+        #prefix value
+        default-value: ""
+    #allows to prevent mission progress on a specified world list
+    disabled-world:
+        #automatically generate this value for each quest on quest.yml ?
+        autogenerate: false
+        #use this list as a blacklist? (empty list will be always flagged as blacklist)
+        use-as-blacklist: true
+        #worlds of the list
+        worlds: []
+    cooldown:
+        autogenerate: false
+        default-minutes-duration: 1440
+        default-cooldown-use: false
+    hide:
+        locked:
+            autogenerate: false
+            value: false
+        unstarted:
+            autogenerate: false
+            #this specific value should never be set to true
+            value: false
+        onprogress:
+            autogenerate: false
+            value: false
+        cooldown:
+            autogenerate: false
+            value: false
+        completed:
+            autogenerate: false
+            value: false
+        failed:
+            autogenerate: false
+            value: false
+    item:
+        locked:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:14"
+        unstarted:
+            autogenerate: true
+            value: "PAPER"
+        onprogress:
+            autogenerate: true
+            value: "MAP"
+        cooldown:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:1"
+        completed:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:13"
+        failed:
+            autogenerate: false
+            value: "STAINED_GLASS_PANE:15"
+    lore:
+        locked:
+            autogenerate: false
+            value: 
+            - ""
+            - "&7➤ Mission Locked"
+            - ""
+            - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+        unstarted:
+            autogenerate: true
+            value: 
+            - ""
+            - "{foreach-task}&7➤ {<task>-name}: {<task>-type} {<task>-maxprogress}"
+            - ""
+            - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+        onprogress:
+            autogenerate: true
+            value: 
+            - ""
+            - "{foreach-task}&7➤ {<task>-name}: {<task>-type} &e{<task>-progress}&9/{<task>-maxprogress}"
+            - ""
+            - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+        cooldown:
+            autogenerate: false
+            value: 
+            - ""
+            - "&7➤ Mission On Cooldown"
+            - ""
+            - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+        completed:
+            autogenerate: false
+            value: 
+            - ""
+            - "&2➤ Mission Completed"
+            - ""
+            - "&2&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&2&l&m---"
+        failed:
+            autogenerate: false
+            value:
+            - ""
+            - "&7➤ Mission Failed!"
+            - ""
+            - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+    title:
+        locked:
+            autogenerate: false
+            value: "&4&l&m---&r&8&l&m[--&r     &8* &4{mission-name}&r &8*&r     &8&l&m--]&4&l&m---"
+        unstarted:
+            autogenerate: true
+            value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
+        onprogress:
+            autogenerate: true
+            value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
+        cooldown:
+            autogenerate: false
+            value: "&6&l&m---&r&8&l&m[--&r     &8* &6{mission-name}&r &8*&r     &8&l&m--]&6&l&m---"
+        completed:
+            autogenerate: false
+            value: "&2&l&m---&r&8&l&m[--&r     &8* &2{mission-name}&r &8*&r     &8&l&m--]&2&l&m---"
+        failed:
+            autogenerate: false
+            value: "&4&l&m---&r&8&l&m[--&r     &8* &4{mission-name}&r &8*&r     &8&l&m--]&4&l&m---"
+    display-name:
+        autogenerate: true
+task:
+    #prefix for task display name
+    display-name-prefix:
+        #prefix value
+        default-value: ""
+    #allows to prevent mission progress on a specified world list
+    disabled-world:
+        #automatically generate this value for each task on quest.yml ?
+        autogenerate: false
+        #use this list as a blacklist? (empty list will be always flagged as blacklist)
+        use-as-blacklist: true
+        #worlds of the list
+        worlds: []
+    display-name:
+        autogenerate: true

@@ -1,0 +1,45 @@
+gui:
+    quests-menu:
+        title: "&9Quests menu"
+        page:
+            item: "NAME_TAG"
+            title: "&9&lPage <&5&l{page}&9&l>"
+            lore: []
+        previus-page:
+            item: "TRIPWIRE_HOOK"
+            title: "&9&l<<<<<<<"
+            lore: []
+        next-page: 
+            item: "TRIPWIRE_HOOK"
+            title: "&9&l>>>>>>>"
+            lore: []
+        back:
+            item: "WOOD_DOOR"
+            title: "&c&lGo Back"
+            lore: []
+        close:
+            item: "IRON_DOOR"
+            title: "&c&lClose Gui"
+            lore: []
+    missions-menu:
+        title: "&9Quest: {quest-name}"
+        page:
+            item: "NAME_TAG"
+            title: "&9&lPage <&5&l{page}&9&l>"
+            lore: []
+        previus-page:
+            item: "TRIPWIRE_HOOK"
+            title: "&9&l<<<<<<<"
+            lore: []
+        next-page: 
+            item: "TRIPWIRE_HOOK"
+            title: "&9&l>>>>>>>"
+            lore: []
+        back:
+            item: "WOOD_DOOR"
+            title: "&c&lGo Back"
+            lore: []
+        close:
+            item: "IRON_DOOR"
+            title: "&c&lClose Gui"
+            lore: []
