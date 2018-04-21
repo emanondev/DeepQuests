@@ -3,6 +3,7 @@ package emanondev.quests.task;
 import java.util.HashMap;
 
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.event.HandlerList;
 
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
@@ -38,6 +39,7 @@ public class TaskManager {
 			throw new IllegalArgumentException("The TaskType "+type.toString()
 						+" is already registered");
 		types.put(type.getKey(), type);
+		Quests.getInstance().registerListener(type);
 		Quests.getInstance().getLoggerManager().getLogger("log")
 			.log("Registered Task Type "+type.getKey());
 	}
@@ -50,12 +52,16 @@ public class TaskManager {
 		if (!types.containsKey(type.getKey()))
 			throw new IllegalArgumentException("The TaskType "+type.toString()+" is not registered");
 		types.remove(type.getKey());
+		HandlerList.unregisterAll(type);
 	}
 	/**
 	 * uregister all taskType registered
 	 */
 	public void unregisterAll() {
-		types.clear();
+		for (TaskType type : types.values()) {
+			types.remove(type.getKey());
+			HandlerList.unregisterAll(type);
+		}
 	}
 	/**
 	 * 
