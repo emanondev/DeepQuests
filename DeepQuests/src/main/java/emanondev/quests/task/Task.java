@@ -2,11 +2,13 @@ package emanondev.quests.task;
 
 import java.util.List;
 
+import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.YmlLoadable;
 
 /**
@@ -30,9 +32,8 @@ public abstract class Task extends YmlLoadable{
 	/**
 	 * Config variables can be stored and read from MemorySection m<br>
 	 * also additional info may be taken from Mission parent<br>
+	 * 
 	 * N.B. parent mission is not fully loaded when Task is generating<br>
-	 * some metods might not work as expected:<br>
-	 * - info from parent.getDisplayInfo() might be uncompleted/uncorrect<br>
 	 * - parent.getTask() will be empty
 	 * @param m must be != null
 	 * @param parent must be != null
@@ -125,6 +126,23 @@ public abstract class Task extends YmlLoadable{
 	@Override
 	protected boolean shouldAutogenDisplayName() {
 		return Defaults.TaskDef.shouldAutogenDisplayName();
+	}
+	
+	/**
+	 * checks if the task, his mission and associated quest are all allowed in this world
+	 */
+	@Override
+	public boolean isWorldAllowed(World w) {
+		return this.isWorldAllowed(w)
+				&& getParent().isWorldAllowed(w)
+				&& getParent().getParent().isWorldAllowed(w);
+	}
+	
+	public void onProgress(QuestPlayer p) {
+		onProgress(p,1);
+	}
+	public void onProgress(QuestPlayer p,int amount) {
+		p.progressTask(this, amount);
 	}
 	
 	/*

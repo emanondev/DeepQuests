@@ -1,11 +1,17 @@
 package emanondev.quests.task;
 
-public class TaskType {
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.event.Listener;
+
+import emanondev.quests.mission.Mission;
+
+public abstract class TaskType implements Listener {
 	
 	private final String key;
 	private final String displayName;
-	public TaskType(String value,String displayName) {
-		if (value == null)
+	private final Class<? extends Task> clazz;
+	public TaskType(String value,String displayName,Class<? extends Task> clazz) {
+		if (value == null || clazz == null)
 			throw new NullPointerException();
 		if (value.isEmpty() || value.contains(" "))
 			throw new IllegalArgumentException("invalid task name");
@@ -15,9 +21,26 @@ public class TaskType {
 			this.displayName = this.key.toLowerCase().replace("_", " ");
 		else
 			this.displayName = displayName;
+		boolean ok = true;
+		
+		try {
+			clazz.getConstructor(MemorySection.class,Mission.class)
+							.newInstance(null,null);
+		} catch (InstantiationException|IllegalAccessException
+				|NoSuchMethodException|SecurityException e) {
+			e.printStackTrace();
+			ok = false;
+		} catch (Exception e) {
+		}
+		if (!ok)
+			throw new IllegalArgumentException(clazz.getName()+" must implement "
+				+ "a public constructor with (MemorySection m, Mission mission) ");
+		this.clazz = clazz;
 	}
 	
-	
+	public final Class<? extends Task> getTaskClass(){
+		return clazz;
+	}
 	/**
 	 * 
 	 * @return the string value of the TaskType unique key

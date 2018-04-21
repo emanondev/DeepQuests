@@ -1,15 +1,13 @@
 package emanondev.quests.task;
 
 import org.bukkit.configuration.MemorySection;
-
 import emanondev.quests.mission.Mission;
 
-public class BreakBlocksTask extends Task {
+public class BreakBlockTask extends Task {
 
 	
-	public BreakBlocksTask(MemorySection m, Mission parent) {
+	public BreakBlockTask(MemorySection m, Mission parent) {
 		super(m, parent);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -17,4 +15,5 @@ public class BreakBlocksTask extends Task {
 		return "mine blocks";
 	}
 
+	
 }
