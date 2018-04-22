@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
+import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.reward.MissionReward;
@@ -27,6 +28,8 @@ public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancell
 		super(questPlayer);
 		this.mission = m;
 		rewards.addAll(m.getStartRewards());
+		Quests.getLogger("debug").log("PlayerStartMissionEvent "+questPlayer.getPlayer().getName()
+				+" "+m.getDisplayName());
 	}
 	
 	public Mission getMission() {

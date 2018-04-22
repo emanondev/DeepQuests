@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.event.HandlerList;
 
+import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.reward.MissionReward;
@@ -25,6 +26,8 @@ public class PlayerCompleteMissionEvent extends QuestPlayerEvent{
 		super(questPlayer);
 		this.mission = m;
 		rewards.addAll(m.getCompleteRewards());
+		Quests.getLogger("debug").log("PlayerCompleteMissionEvent "+questPlayer.getPlayer().getName()
+				+" "+mission.getDisplayName());
 	}
 	public Mission getMission() {
 		return mission;

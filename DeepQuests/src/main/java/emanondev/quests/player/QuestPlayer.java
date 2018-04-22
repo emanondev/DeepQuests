@@ -135,7 +135,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		for (MissionReward reward : event.getRewards())
 			reward.applyReward(this,m);
 		MissionData mData = this.getMissionData(m);
-		mData.start();
+		mData.complete();
 	}
 	public void progressTask(Task t,int amount) {
 		TaskData tData = getTaskData(t);

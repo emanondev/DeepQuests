@@ -341,7 +341,7 @@ public class OfflineQuestPlayer {
 				data.set(baseMissionPath+"."+PATH_LAST_COMPLETED, lastCompleted);
 				
 				for (TaskData taskData : this.tasksData.values()){
-					taskData.setProgress(0);
+					//taskData.setProgress(0);
 					unregisterActiveTask(taskData.task);
 				}
 				shouldSave = true;

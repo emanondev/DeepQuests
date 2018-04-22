@@ -2,6 +2,7 @@ package emanondev.quests.events;
 
 import org.bukkit.event.HandlerList;
 
+import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 
@@ -17,6 +18,8 @@ public class PlayerFailMissionEvent extends QuestPlayerEvent {
 	public PlayerFailMissionEvent(QuestPlayer questPlayer, Mission m) {
 		super(questPlayer);
 		this.mission = m;
+		Quests.getLogger("debug").log("PlayerFailMissionEvent "+questPlayer.getPlayer().getName()
+				+" "+m.getDisplayName());
 	}
 	public Mission getMission() {
 		return mission;
