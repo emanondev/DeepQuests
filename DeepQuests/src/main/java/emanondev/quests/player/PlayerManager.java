@@ -24,9 +24,13 @@ import emanondev.quests.Quests;
  */
 public class PlayerManager implements Listener {
 	private static final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
+	private static boolean registered = false;
 
 	public PlayerManager() {
-		Quests.getInstance().registerListener(this);
+		if (!registered) {
+			Quests.getInstance().registerListener(this);
+			registered = true;
+		}
 		players.clear();
 		Bukkit.getOnlinePlayers().forEach((p)->{
 			players.put(p, new QuestPlayer(p));

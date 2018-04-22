@@ -369,11 +369,11 @@ public class OfflineQuestPlayer {
 					return this.progress>=task.getMaxProgress();
 				}
 				protected void setProgress(int progress) {//TODO
-					this.progress = Math.max(progress,task.getMaxProgress());
+					this.progress = Math.min(progress,task.getMaxProgress());
 					if (isCompleted()) {
 						unregisterActiveTask(this.task);
 					}
-					data.set(baseTaskPath+"."+PATH_PROGRESS, progress);
+					data.set(baseTaskPath+"."+PATH_PROGRESS, this.progress);
 					shouldSave = true;
 				}
 				
