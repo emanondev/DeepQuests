@@ -4,7 +4,7 @@ import org.bukkit.configuration.MemorySection;
 
 public abstract class YmlLoadableWithDisplay extends YmlLoadable{
 	protected final static String PATH_DISPLAY = "display";
-	protected final static String PATH_COOLDOWN_IS_ENABLED = "cooldown.enabled";
+	protected final static String PATH_COOLDOWN_IS_ENABLED = "cooldown.enable";
 	protected final static String PATH_COOLDOWN_AMOUNT = "cooldown.minutes";
 	//private final DisplayStateInfo displayInfo;
 	private final int minutes;

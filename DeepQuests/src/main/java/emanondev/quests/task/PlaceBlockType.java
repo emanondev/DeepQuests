@@ -4,21 +4,21 @@ import java.util.List;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.player.QuestPlayer;
 
-public class BlockBreakType extends TaskType {
+public class PlaceBlockType extends TaskType {
 
 	private static String key;
-	public BlockBreakType() {
-		super("blockbreak", "break blocks",BreakBlockTask.class);
+	public PlaceBlockType() {
+		super("placeblock", "place blocks",PlaceBlockTask.class);
 		key = getKey();
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onBlockBreak(BlockBreakEvent event) {
+	private static void onBlockPlace(BlockPlaceEvent event) {
 		if (event.getPlayer()==null)
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -28,8 +28,10 @@ public class BlockBreakType extends TaskType {
 		if (tasks ==null||tasks.isEmpty())
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
-			if (tasks.get(i).isWorldAllowed(event.getPlayer().getWorld()))
-				tasks.get(i).onProgress(qPlayer);
-		}//TODO
+			PlaceBlockTask task = (PlaceBlockTask) tasks.get(i);
+			if (task.isWorldAllowed(event.getPlayer().getWorld())
+					&& task.isValidBlock(event.getBlock()))
+				task.onProgress(qPlayer);
+		}
 	}
 }

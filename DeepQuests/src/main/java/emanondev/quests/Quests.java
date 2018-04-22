@@ -17,7 +17,8 @@ import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
 import emanondev.quests.reward.RewardManager;
-import emanondev.quests.task.BlockBreakType;
+import emanondev.quests.task.BreakBlockType;
+import emanondev.quests.task.PlaceBlockType;
 import emanondev.quests.task.TaskManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -139,8 +140,9 @@ public class Quests extends JavaPlugin {
 		taskManager = new TaskManager();
 		
 		missionManager = new MissionManager();
-		
-		taskManager.registerType(new BlockBreakType());
+
+		taskManager.registerType(new BreakBlockType());
+		taskManager.registerType(new PlaceBlockType());
 		//TODO
 		questManager = new QuestManager();
 		
@@ -162,7 +164,8 @@ public class Quests extends JavaPlugin {
 		
 		missionManager = new MissionManager();
 
-		taskManager.registerType(new BlockBreakType());
+		taskManager.registerType(new BreakBlockType());
+		taskManager.registerType(new PlaceBlockType());
 		//TODO
 		questManager = new QuestManager();
 		
