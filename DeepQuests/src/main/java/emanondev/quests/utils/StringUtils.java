@@ -9,7 +9,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class StringUtils {
-	public static final String HOLDER_COOLDOWN = "{cooldown}";
 
 	public static String applyHolder(String target, String holder,String replacer){
 		if (target==null)

@@ -26,7 +26,9 @@ public class Quest extends YmlLoadableWithDisplay{
 	
 	private final LinkedHashMap<String,Mission> missions = new LinkedHashMap<String,Mission>();
 	private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
-	
+	public Mission getMissionByNameID(String key) {
+		return missions.get(key.toLowerCase());
+	}
 	public Collection<Mission> getMissions(){
 		return Collections.unmodifiableCollection(missions.values());
 	}

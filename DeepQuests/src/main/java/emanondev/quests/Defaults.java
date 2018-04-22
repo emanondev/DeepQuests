@@ -29,12 +29,13 @@ public class Defaults {
 
 	public static class QuestDef {
 		private static final String BASE_PATH = "quest.";
+		
 		public static String getDisplayNameDefaultPrefix() {
-			return data.getString(BASE_PATH+"display-name-prefix.default-value", "&l");
+			return data.getString(BASE_PATH+"display-name-prefix.value", "");
 		}
 	
 		public static int getDefaultCooldownMinutes() {
-			return data.getInt(BASE_PATH+"cooldown.default-minutes-duration", 1440);
+			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);
 		}
 	
 		public static boolean shouldCooldownAutogen() {
@@ -42,7 +43,7 @@ public class Defaults {
 		}
 	
 		public static boolean getDefaultCooldownUse() {
-			return data.getBoolean(BASE_PATH+"cooldown.default-cooldown-use", false);
+			return data.getBoolean(BASE_PATH+"cooldown.enable", false);
 		}
 
 		public static boolean shouldHideAutogen(DisplayState state) {
@@ -90,8 +91,8 @@ public class Defaults {
 		}
 
 		public static String getDefaultTitle(DisplayState state) {
-			return data.getString(BASE_PATH+"title."+state.toString()
-			.toLowerCase()+".value","&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---");
+			return data.getString(BASE_PATH+"title."+state.toString().toLowerCase()+".value",
+					"&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---");
 		}
 
 		public static ItemStack getDefaultItem(DisplayState state) {
@@ -112,21 +113,21 @@ public class Defaults {
 				if (MemoryUtils.isPre113) {
 					try {
 						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:13"));
+							.toLowerCase()+".value","STAINED_GLASS_PANE:5"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
-						item = MemoryUtils.getGuiItem("STAINED_GLASS_PANE:13");
+						item = MemoryUtils.getGuiItem("STAINED_GLASS_PANE:5");
 					}
 				}
 				else {
 					try {
 						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","GREEN_STAINED_GLASS_PANE"));
+							.toLowerCase()+".value","LIME_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
-						item = MemoryUtils.getGuiItem("GREEN_STAINED_GLASS_PANE");
+						item = MemoryUtils.getGuiItem("LIME_STAINED_GLASS_PANE");
 					}
 				}
 				return item;
@@ -243,11 +244,11 @@ public class Defaults {
 	public static class MissionDef {
 		private static final String BASE_PATH = "mission.";
 		public static String getDisplayNameDefaultPrefix() {
-			return data.getString(BASE_PATH+"display-name-prefix.default-value", "&l");
+			return data.getString(BASE_PATH+"display-name-prefix.default-value", "");
 		}
 	
 		public static int getDefaultCooldownMinutes() {
-			return data.getInt(BASE_PATH+"cooldown.default-minutes-duration", 1440);
+			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);
 		}
 	
 		public static boolean shouldCooldownAutogen() {
@@ -255,7 +256,7 @@ public class Defaults {
 		}
 	
 		public static boolean getDefaultCooldownUse() {
-			return data.getBoolean(BASE_PATH+"cooldown.default-cooldown-use", false);
+			return data.getBoolean(BASE_PATH+"cooldown.enable", false);
 		}
 
 		public static boolean shouldHideAutogen(DisplayState state) {
@@ -324,21 +325,21 @@ public class Defaults {
 				if (MemoryUtils.isPre113) {
 					try {
 						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:13"));
+							.toLowerCase()+".value","STAINED_GLASS_PANE:5"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
-						item = MemoryUtils.getGuiItem("STAINED_GLASS_PANE:13");
+						item = MemoryUtils.getGuiItem("STAINED_GLASS_PANE:5");
 					}
 				}
 				else {
 					try {
 						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","GREEN_STAINED_GLASS_PANE"));
+							.toLowerCase()+".value","LIME_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
-						item = MemoryUtils.getGuiItem("GREEN_STAINED_GLASS_PANE");
+						item = MemoryUtils.getGuiItem("LIME_STAINED_GLASS_PANE");
 					}
 				}
 				return item;

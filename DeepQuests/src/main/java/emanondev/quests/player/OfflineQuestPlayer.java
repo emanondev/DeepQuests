@@ -279,16 +279,13 @@ public class OfflineQuestPlayer {
 			public boolean hasCompleted() {
 				return completedBefore;
 			}
-			public long cooldownTimeLeft() {
+			public long getCooldownTimeLeft() {
 				if (this.mission.getCooldownTime()<0)
 					return -1L;
-				long l =  new Date().getTime()-(lastCompleted+mission.getCooldownTime());
+				long l =  lastCompleted+mission.getCooldownTime()-new Date().getTime();
 				if (l<0)
 					return 0L;
 				return l;
-			}
-			public boolean isOnCooldown() {
-				return cooldownTimeLeft()>0;
 			}
 			
 			protected void start() {//TODO

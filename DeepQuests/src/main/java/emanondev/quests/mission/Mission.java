@@ -55,12 +55,21 @@ public class Mission extends YmlLoadableWithDisplay{
 		if (displayInfo.shouldSave())
 			shouldSave = true;
 	}
-	public String[] getHolders(Player p) {
-		String[] s = new String[holders.size()*2];
+	public String[] getHolders(Player p,DisplayState state) {
+		String[] s;
+		if (state!=DisplayState.COOLDOWN)
+			s = new String[holders.size()*2];
+		else {
+			s = new String[holders.size()*2+2];
+			s[s.length-2] = H.MISSION_COOLDOWN_LEFT;
+			s[s.length-1] = StringUtils.getStringCooldown(Quests.getInstance().getPlayerManager()
+					.getQuestPlayer(p).getCooldown(this));
+		}
 		for (int i =0; i < holders.size();i++) {
 			s[i*2] = holders.get(i).getHolder();
 			s[i*2+1] = holders.get(i).getReplacer(p);
 		}
+		
 		return s;
 	}
 	

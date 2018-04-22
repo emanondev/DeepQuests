@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.DisplayStateInfo;
@@ -80,11 +81,11 @@ public class QuestDisplayInfo extends DisplayStateInfo{
 		if (state == DisplayState.COOLDOWN) {
 			meta.setLore(StringUtils.convertList(p, getLore(state), 
 				Quest.HOLDER_COMPLETED_MISSION_NUMBER,replacer,
-				StringUtils.HOLDER_COOLDOWN,StringUtils.getStringCooldown(Quests.getInstance()
+				H.QUEST_COOLDOWN_LEFT,StringUtils.getStringCooldown(Quests.getInstance()
 					.getPlayerManager().getQuestPlayer(p).getCooldown(getParent()))));
 			meta.setDisplayName(StringUtils.convertText(p, getTitle(state), 
 				Quest.HOLDER_COMPLETED_MISSION_NUMBER,replacer,
-				StringUtils.HOLDER_COOLDOWN,StringUtils.getStringCooldown(Quests.getInstance()
+				H.QUEST_COOLDOWN_LEFT,StringUtils.getStringCooldown(Quests.getInstance()
 					.getPlayerManager().getQuestPlayer(p).getCooldown(getParent()))));
 		}
 		else {

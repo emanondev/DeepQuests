@@ -40,10 +40,11 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			return DisplayState.FAILED;
 		if (data.isStarted())
 			return DisplayState.ONPROGRESS;
-		if (data.isOnCooldown())
-			return DisplayState.COOLDOWN;
-		if (data.hasCompleted()&&mission.getCooldownTime()<0)
+		if (data.hasCompleted()&&!mission.isRepetable())
 			return DisplayState.COMPLETED;
+		if (data.getCooldownTimeLeft()>0L)
+			return DisplayState.COOLDOWN;
+		
 		if (hasRequires(mission))
 			return DisplayState.UNSTARTED;
 		return DisplayState.LOCKED;
@@ -76,6 +77,9 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	}
 	public long getCooldown(Quest quest) {
 		return getQuestData(quest).cooldownTimeLeft();
+	}
+	public long getCooldown(Mission mission) {
+		return getMissionData(mission).getCooldownTimeLeft();
 	}
 	public void startMission(Mission m) {
 		startMission(m,false);

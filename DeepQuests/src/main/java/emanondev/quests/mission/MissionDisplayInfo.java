@@ -70,9 +70,9 @@ public class MissionDisplayInfo extends DisplayStateInfo{
 		ItemMeta meta = item.getItemMeta();
 		
 		meta.setLore(StringUtils.convertList(p, getLore(state), 
-				getParent().getHolders(p) ));
+				getParent().getHolders(p,state) ));
 		meta.setDisplayName(StringUtils.convertText(p, getTitle(state), 
-				getParent().getHolders(p) ));
+				getParent().getHolders(p,state) ));
 		if (!Quests.getInstance().getPlayerManager().getQuestPlayer(p).getMissionData(getParent()).isPaused())
 			meta.addEnchant(Enchantment.DURABILITY, 1, true);
 		item.setItemMeta(meta);

@@ -28,11 +28,11 @@ quest:
     #quest may be repeated once completed with a cooldown
     cooldown:
         #automatically generate cooldown values for each quest on quest.yml ?
-        autogenerate: false
+        autogenerate: true
         #default: minutes to wait to repeat a quest (never set below 0)
-        default-minutes-duration: 1440
+        minutes: 1440
         #default: quest may be repated?
-        default-cooldown-use: false
+        enable: false
     #quests gui itesm may be hided from gui on some state of the quest
     hide:
         #when player do not satisfy requires for the quest
@@ -71,17 +71,17 @@ quest:
             #data and damage default values when not specified are both 0
             value: "STAINED_GLASS_PANE:14"
         unstarted:
-            autogenerate: true
+            autogenerate: false
             value: "BOOK"
         onprogress:
-            autogenerate: true
+            autogenerate: false
             value: "BOOK"
         cooldown:
             autogenerate: false
             value: "STAINED_GLASS_PANE:1"
         completed:
             autogenerate: false
-            value: "STAINED_GLASS_PANE:13"
+            value: "STAINED_GLASS_PANE:5"
         failed:
             autogenerate: false
             value: "STAINED_GLASS_PANE:15"
@@ -95,14 +95,14 @@ quest:
             - ""
             - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
         unstarted:
-            autogenerate: true
+            autogenerate: false
             value: 
             - ""
             - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
             - ""
             - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
         onprogress:
-            autogenerate: true
+            autogenerate: false
             value: 
             - ""
             - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
@@ -112,7 +112,7 @@ quest:
             autogenerate: false
             value: 
             - ""
-            - "&7➤ Quest On Cooldown"
+            - "&7➤ Quest On Cooldown for {quest-cooldownleft}"
             - ""
             - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
         completed:
@@ -167,9 +167,9 @@ mission:
         #worlds of the list
         worlds: []
     cooldown:
-        autogenerate: false
-        default-minutes-duration: 1440
-        default-cooldown-use: false
+        autogenerate: true
+        minutes: 1440
+        enable: false
     hide:
         locked:
             autogenerate: false
@@ -195,17 +195,17 @@ mission:
             autogenerate: false
             value: "STAINED_GLASS_PANE:14"
         unstarted:
-            autogenerate: true
+            autogenerate: false
             value: "PAPER"
         onprogress:
-            autogenerate: true
+            autogenerate: false
             value: "MAP"
         cooldown:
             autogenerate: false
             value: "STAINED_GLASS_PANE:1"
         completed:
             autogenerate: false
-            value: "STAINED_GLASS_PANE:13"
+            value: "STAINED_GLASS_PANE:5"
         failed:
             autogenerate: false
             value: "STAINED_GLASS_PANE:15"
@@ -218,14 +218,14 @@ mission:
             - ""
             - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
         unstarted:
-            autogenerate: true
+            autogenerate: false
             value: 
             - ""
             - "{foreach-task}&7➤ {<task>-name}: {<task>-type} {<task>-maxprogress}"
             - ""
             - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
         onprogress:
-            autogenerate: true
+            autogenerate: false
             value: 
             - ""
             - "{foreach-task}&7➤ {<task>-name}: {<task>-type} &e{<task>-progress}&9/{<task>-maxprogress}"
@@ -235,7 +235,7 @@ mission:
             autogenerate: false
             value: 
             - ""
-            - "&7➤ Mission On Cooldown"
+            - "&7➤ Mission On Cooldown for {mission-cooldownleft}"
             - ""
             - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
         completed:
@@ -257,10 +257,10 @@ mission:
             autogenerate: false
             value: "&4&l&m---&r&8&l&m[--&r     &8* &4{mission-name}&r &8*&r     &8&l&m--]&4&l&m---"
         unstarted:
-            autogenerate: true
+            autogenerate: false
             value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
         onprogress:
-            autogenerate: true
+            autogenerate: false
             value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
         cooldown:
             autogenerate: false

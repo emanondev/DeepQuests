@@ -33,7 +33,7 @@ public abstract class YmlLoadable {
 	public YmlLoadable(MemorySection m) {
 		if (m==null)
 			throw new NullPointerException();
-		this.name = loadName(m);
+		this.name = loadName(m).toLowerCase();
 		this.displayName = loadDisplayName(m);
 		this.worlds = loadWorlds(m);
 		this.useWorldsAsBlackList = loadUseWorldsAsBlackList(m);

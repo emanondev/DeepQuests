@@ -52,6 +52,9 @@ public abstract class YmlLoadableWithDisplay extends YmlLoadable{
 		else
 			return (long) (minutes*60*1000);
 	}
+	public boolean isRepetable() {
+		return cooldown;
+	}
 	public abstract DisplayStateInfo getDisplayInfo();
 	
 }

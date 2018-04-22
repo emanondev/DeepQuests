@@ -12,4 +12,6 @@ public class H {
 	public static final String MISSION_GENERIC_TASK_MAX_PROGRESS = "{<task>-maxprogress}";
 	public static final String MISSION_GENERIC_TASK_PROGRESS = "{<task>-progress}";
 	public static final String MISSION_NAME = "{mission-name}";
+	public static final String MISSION_COOLDOWN_LEFT = "{mission-cooldownleft}";
+	public static final String QUEST_COOLDOWN_LEFT = "{quest-cooldownleft}";
 }
