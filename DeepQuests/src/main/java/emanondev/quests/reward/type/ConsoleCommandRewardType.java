@@ -1,8 +1,10 @@
-package emanondev.quests.reward;
+package emanondev.quests.reward.type;
 
 import org.bukkit.Bukkit;
 
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.reward.Reward;
+import emanondev.quests.reward.RewardType;
 
 public class ConsoleCommandRewardType extends RewardType {
 	

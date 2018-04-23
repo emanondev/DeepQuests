@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 
 public class RequireManager {
@@ -111,6 +112,33 @@ public class RequireManager {
 			}
 		}
 		return rews;
+	}
+	public boolean isAllowed(QuestPlayer p,List<Require> list) {
+		if (list == null || list.isEmpty())
+			return true;
+		for (Require req : list) {
+			if (!req.isAllowed(p))
+				return false;
+		}
+		return true;
+	}
+	public boolean isAllowed(QuestPlayer p,List<MissionRequire> list,Mission m) {
+		if (list == null || list.isEmpty())
+			return true;
+		for (MissionRequire req : list) {
+			if (!req.isAllowed(p,m))
+				return false;
+		}
+		return true;
+	}
+	public boolean isAllowed(QuestPlayer p,List<QuestRequire> list,Quest q) {
+		if (list == null || list.isEmpty())
+			return true;
+		for (QuestRequire req : list) {
+			if (!req.isAllowed(p,q))
+				return false;
+		}
+		return true;
 	}
 
 }

@@ -16,10 +16,13 @@ import emanondev.quests.mission.MissionManager;
 import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
+import emanondev.quests.require.type.NeedMissionType;
+import emanondev.quests.require.type.NeedPermissionType;
 import emanondev.quests.reward.RewardManager;
-import emanondev.quests.task.BreakBlockTaskType;
-import emanondev.quests.task.PlaceBlockTaskType;
+import emanondev.quests.reward.type.ConsoleCommandRewardType;
 import emanondev.quests.task.TaskManager;
+import emanondev.quests.task.type.BreakBlockTaskType;
+import emanondev.quests.task.type.PlaceBlockTaskType;
 import net.md_5.bungee.api.ChatColor;
 
 public class Quests extends JavaPlugin {
@@ -146,6 +149,9 @@ public class Quests extends JavaPlugin {
 		
 		missionManager = new MissionManager();
 
+		requireManager.registerRequireType(new NeedPermissionType());
+		requireManager.registerMissionRequireType(new NeedMissionType());
+		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		taskManager.registerType(new BreakBlockTaskType());
 		taskManager.registerType(new PlaceBlockTaskType());
 		//TODO
