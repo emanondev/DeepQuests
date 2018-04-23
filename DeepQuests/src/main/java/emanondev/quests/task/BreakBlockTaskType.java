@@ -2,17 +2,21 @@ package emanondev.quests.task;
 
 import java.util.List;
 
+import org.bukkit.block.Block;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.hooks.Hooks;
+import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 
-public class BreakBlockType extends TaskType {
+public class BreakBlockTaskType extends TaskType {
 
 	private static String key;
-	public BreakBlockType() {
+	public BreakBlockTaskType() {
 		super("breakblock", "break blocks",BreakBlockTask.class);
 		key = getKey();
 	}
@@ -33,5 +37,18 @@ public class BreakBlockType extends TaskType {
 					&& task.isValidBlock(event.getBlock()))
 				task.onProgress(qPlayer);
 		}//TODO
+	}
+	
+	public class BreakBlockTask extends AbstractBlockTask {
+
+		public BreakBlockTask(MemorySection m, Mission parent) {
+			super(m, parent);
+		}
+		@Override
+		public boolean isValidBlock(Block block) {
+			return super.isValidBlock(block)&&Hooks.isBlockVirgin(block);
+		}
+		
+		
 	}
 }

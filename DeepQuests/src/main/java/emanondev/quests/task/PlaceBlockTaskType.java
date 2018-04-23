@@ -2,17 +2,19 @@ package emanondev.quests.task;
 
 import java.util.List;
 
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 
-public class PlaceBlockType extends TaskType {
+public class PlaceBlockTaskType extends TaskType {
 
 	private static String key;
-	public PlaceBlockType() {
+	public PlaceBlockTaskType() {
 		super("placeblock", "place blocks",PlaceBlockTask.class);
 		key = getKey();
 	}
@@ -33,5 +35,13 @@ public class PlaceBlockType extends TaskType {
 					&& task.isValidBlock(event.getBlock()))
 				task.onProgress(qPlayer);
 		}
+	}
+	
+	public class PlaceBlockTask extends AbstractBlockTask {
+
+		public PlaceBlockTask(MemorySection m, Mission parent) {
+			super(m, parent);
+		}
+
 	}
 }

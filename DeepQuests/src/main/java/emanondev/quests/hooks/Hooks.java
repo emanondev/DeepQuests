@@ -1,13 +1,14 @@
 package emanondev.quests.hooks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
-import it.hotmail.hflipon.virginblock.VirginBlockAPI;
+import emanondev.virginblock.VirginBlockAPI;
 
 public class Hooks {
 	
-	private static boolean papi = false;
-	private static boolean virginBlock = false;
+	private static boolean papi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+	private static boolean virginBlock = Bukkit.getPluginManager().isPluginEnabled("VirginBlock");;
 	public static boolean isPAPIEnabled() {
 		return papi;
 	}
