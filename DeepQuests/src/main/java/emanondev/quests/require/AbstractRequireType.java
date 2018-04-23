@@ -1,16 +1,17 @@
-package emanondev.quests.reward;
+package emanondev.quests.require;
 
-abstract class AbstractRewardType {
+public abstract class AbstractRequireType {
 	private final String key;
-	public AbstractRewardType(String key) {
+	public AbstractRequireType(String key) {
 		if (key == null)
 			throw new NullPointerException();
 		if (key.isEmpty() || key.contains(" ")|| key.contains(":"))
-			throw new IllegalArgumentException("invalid reward name '"+key+"'");
+			throw new IllegalArgumentException("invalid require name '"+key+"'");
 		this.key = key.toUpperCase();
 	}
 	
 	public final String getNameID() {
 		return key;
 	}
+
 }

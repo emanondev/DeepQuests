@@ -8,6 +8,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 
 public class RewardManager {
@@ -31,7 +32,7 @@ public class RewardManager {
 		questRewards.put(type.getNameID(),type.getRewardClass());
 	}
 
-	public List<Reward> convertReward(List<String> list) {
+	public List<Reward> convertRewards(List<String> list) {
 		ArrayList<Reward> rews = new ArrayList<Reward>();
 		if (list==null||list.isEmpty())
 			return rews;
@@ -59,7 +60,7 @@ public class RewardManager {
 		return rews;
 	}
 
-	public List<MissionReward> convertReward(List<String> list, Mission mission) {
+	public List<MissionReward> convertMissionRewards(List<String> list) {
 		ArrayList<MissionReward> rews = new ArrayList<MissionReward>();
 		if (list==null||list.isEmpty())
 			return rews;
@@ -76,7 +77,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(rewards.get(key.toUpperCase()).getConstructor(String.class)
+				rews.add(missionRewards.get(key.toUpperCase()).getConstructor(String.class)
 						.newInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
@@ -87,7 +88,7 @@ public class RewardManager {
 		return rews;
 	}
 
-	public List<QuestReward> convertReward(List<String> list, Quest quest) {
+	public List<QuestReward> convertQuestReward(List<String> list) {
 		ArrayList<QuestReward> rews = new ArrayList<QuestReward>();
 		if (list==null||list.isEmpty())
 			return rews;
@@ -104,7 +105,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(rewards.get(key.toUpperCase()).getConstructor(String.class)
+				rews.add(questRewards.get(key.toUpperCase()).getConstructor(String.class)
 						.newInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
@@ -112,6 +113,25 @@ public class RewardManager {
 			}
 		}
 		return rews;
+	}
+
+	public void giveRewards(QuestPlayer p, List<Reward> list) {
+		if (list==null || list.isEmpty())
+			return;
+		for (Reward reward : list)
+			reward.applyReward(p);
+	}
+	public void giveRewards(QuestPlayer p, List<MissionReward> list,Mission m) {
+		if (list==null || list.isEmpty())
+			return;
+		for (MissionReward reward : list)
+			reward.applyReward(p,m);
+	}
+	public void giveRewards(QuestPlayer p, List<QuestReward> list,Quest q) {
+		if (list==null || list.isEmpty())
+			return;
+		for (QuestReward reward : list)
+			reward.applyReward(p,q);
 	}
 
 }

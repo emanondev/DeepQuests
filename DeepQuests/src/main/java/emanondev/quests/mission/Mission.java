@@ -208,11 +208,11 @@ public class Mission extends YmlLoadableWithDisplay{
 	}
 	private List<MissionReward> loadStartRewards(MemorySection m) {
 		List<String> l = MemoryUtils.getStringList(m, PATH_START_REWARDS);
-		return Quests.getInstance().getRewardManager().convertReward(l,this);
+		return Quests.getInstance().getRewardManager().convertMissionRewards(l);
 	}
 	private List<MissionReward> loadCompleteRewards(MemorySection m) {
 		List<String> l = MemoryUtils.getStringList(m, PATH_COMPLETE_REWARDS);
-		return Quests.getInstance().getRewardManager().convertReward(l,this);
+		return Quests.getInstance().getRewardManager().convertMissionRewards(l);
 	}
 	@Override
 	protected List<String> getWorldsListDefault() {

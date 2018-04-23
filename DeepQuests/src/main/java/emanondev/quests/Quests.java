@@ -17,8 +17,8 @@ import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
 import emanondev.quests.reward.RewardManager;
-import emanondev.quests.task.BreakBlockType;
-import emanondev.quests.task.PlaceBlockType;
+import emanondev.quests.task.BreakBlockTaskType;
+import emanondev.quests.task.PlaceBlockTaskType;
 import emanondev.quests.task.TaskManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -65,6 +65,11 @@ public class Quests extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(listener, this);
 	}
 
+	/**
+	 * utility: register a command for this plugin
+	 * @param name - command name used for /commandname
+	 * @param tabExe - the class responsible for the command and the completer
+	 */
 	public void registerCommand(String name,TabExecutor tabExe){
 		registerCommand(name,tabExe,(String[]) null);
 	}
@@ -141,8 +146,8 @@ public class Quests extends JavaPlugin {
 		
 		missionManager = new MissionManager();
 
-		taskManager.registerType(new BreakBlockType());
-		taskManager.registerType(new PlaceBlockType());
+		taskManager.registerType(new BreakBlockTaskType());
+		taskManager.registerType(new PlaceBlockTaskType());
 		//TODO
 		questManager = new QuestManager();
 		
@@ -154,18 +159,6 @@ public class Quests extends JavaPlugin {
 		loggerManager = new LoggerManager();
 		config.reload();
 		Defaults.reload();
-		guiManager = new GuiManager();
-		
-		requireManager = new RequireManager();
-		
-		rewardManager = new RewardManager();
-		
-		taskManager = new TaskManager();
-		
-		missionManager = new MissionManager();
-
-		taskManager.registerType(new BreakBlockType());
-		taskManager.registerType(new PlaceBlockType());
 		//TODO
 		questManager = new QuestManager();
 		

@@ -20,7 +20,7 @@ import emanondev.quests.mission.Mission;
  */
 public class TaskManager {
 	public TaskManager() {
-		unregisterAll();
+		//unregisterAll();
 	}
 
 	private static HashMap<String,TaskType> types = new HashMap<String,TaskType>();
