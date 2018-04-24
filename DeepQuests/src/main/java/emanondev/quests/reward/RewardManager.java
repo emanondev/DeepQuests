@@ -12,24 +12,24 @@ import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 
 public class RewardManager {
-	private final static HashMap<String,Class<? extends Reward>> rewards = 
-			new HashMap<String,Class<? extends Reward>>();
-	private final static HashMap<String,Class<? extends MissionReward>> missionRewards =
-			new HashMap<String,Class<? extends MissionReward>>();
-	private final static HashMap<String,Class<? extends QuestReward>> questRewards =
-			new HashMap<String,Class<? extends QuestReward>>();
+	private final static HashMap<String,RewardType> rewards = 
+			new HashMap<String,RewardType>();
+	private final static HashMap<String,MissionRewardType> missionRewards =
+			new HashMap<String,MissionRewardType>();
+	private final static HashMap<String,QuestRewardType> questRewards =
+			new HashMap<String,QuestRewardType>();
 			
 
 	public void registerRewardType(RewardType type) {
-		rewards.put(type.getNameID(),type.getRewardClass());
-		missionRewards.put(type.getNameID(),type.getRewardClass());
-		questRewards.put(type.getNameID(),type.getRewardClass());
+		rewards.put(type.getNameID(),type);
+		missionRewards.put(type.getNameID(),type);
+		questRewards.put(type.getNameID(),type);
 	}
 	public void registerRewardType(MissionRewardType type) {
-		missionRewards.put(type.getNameID(),type.getRewardClass());
+		missionRewards.put(type.getNameID(),type);
 	}
 	public void registerRewardType(QuestRewardType type) {
-		questRewards.put(type.getNameID(),type.getRewardClass());
+		questRewards.put(type.getNameID(),type);
 	}
 
 	public List<Reward> convertRewards(List<String> list) {
@@ -49,8 +49,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(rewards.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueReward));
+				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -77,8 +76,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(missionRewards.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueReward));
+				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -105,8 +103,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(questRewards.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueReward));
+				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));

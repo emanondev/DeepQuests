@@ -18,8 +18,8 @@ public abstract class AbstractBlockTask extends Task{
 
 	private final ArrayList<BlockType> blocks = new ArrayList<BlockType>();
 	private final boolean isWhitelist;
-	public AbstractBlockTask(MemorySection m, Mission parent) {
-		super(m, parent);
+	public AbstractBlockTask(MemorySection m, Mission parent,TaskType type) {
+		super(m, parent,type);
 		List<String> list = MemoryUtils.getStringList(m, PATH_BLOCK);
 		for (String value : list) {
 			try {

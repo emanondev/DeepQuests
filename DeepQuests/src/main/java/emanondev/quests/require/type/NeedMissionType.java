@@ -3,15 +3,19 @@ package emanondev.quests.require.type;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.require.AbstractRequireType;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
 
-public class NeedMissionType extends MissionRequireType {
+public class NeedMissionType extends AbstractRequireType implements MissionRequireType {
 
 	public NeedMissionType() {
-		super("MISSION", NeedMission.class);
+		super("MISSION");
 	}
-	
+	@Override
+	public MissionRequire getRequireInstance(String info) {
+		return new NeedMission(info);
+	}
 	public class NeedMission implements MissionRequire {
 		private final String targetMission;
 		

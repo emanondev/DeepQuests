@@ -18,7 +18,7 @@ public class PlaceBlockTaskType extends TaskType {
 
 	private static String key;
 	public PlaceBlockTaskType() {
-		super("placeblock", "place blocks",PlaceBlockTask.class);
+		super("placeblock", "place blocks");
 		key = getKey();
 	}
 	
@@ -43,8 +43,13 @@ public class PlaceBlockTaskType extends TaskType {
 	public class PlaceBlockTask extends AbstractBlockTask {
 
 		public PlaceBlockTask(MemorySection m, Mission parent) {
-			super(m, parent);
+			super(m, parent,PlaceBlockTaskType.this);
 		}
 
+	}
+
+	@Override
+	public Task getTaskInstance(MemorySection m, Mission parent) {
+		return new PlaceBlockTask(m,parent);
 	}
 }

@@ -207,6 +207,8 @@ public class GuiManager implements Listener {
 				switch(state) {
 				case LOCKED:
 					event.setCancelled(true);
+				default:
+					break;
 				}
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled())
@@ -222,11 +224,15 @@ public class GuiManager implements Listener {
 						case ONPROGRESS:
 							qPlayer.togglePauseMission(m);
 							update();
+						default:
+							break;
 						}
 						return;
 					case RIGHT:
 						//TODO tasks gui
 						return;
+					default:
+						break;
 					}
 				}
 			}

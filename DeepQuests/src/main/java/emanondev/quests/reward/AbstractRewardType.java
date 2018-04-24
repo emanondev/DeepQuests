@@ -1,6 +1,6 @@
 package emanondev.quests.reward;
 
-abstract class AbstractRewardType {
+public abstract class AbstractRewardType {
 	private final String key;
 	public AbstractRewardType(String key) {
 		if (key == null)

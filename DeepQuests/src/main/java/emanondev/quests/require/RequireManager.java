@@ -11,24 +11,24 @@ import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 
 public class RequireManager {
-	private final static HashMap<String,Class<? extends Require>> requires = 
-			new HashMap<String,Class<? extends Require>>();
-	private final static HashMap<String,Class<? extends MissionRequire>> missionRequires =
-			new HashMap<String,Class<? extends MissionRequire>>();
-	private final static HashMap<String,Class<? extends QuestRequire>> questRequires =
-			new HashMap<String,Class<? extends QuestRequire>>();
+	private final static HashMap<String,RequireType> requires = 
+			new HashMap<String,RequireType>();
+	private final static HashMap<String,MissionRequireType> missionRequires =
+			new HashMap<String,MissionRequireType>();
+	private final static HashMap<String,QuestRequireType> questRequires =
+			new HashMap<String,QuestRequireType>();
 			
 
 	public void registerRequireType(RequireType type) {
-		requires.put(type.getNameID(),type.getRequireClass());
-		missionRequires.put(type.getNameID(),type.getRequireClass());
-		questRequires.put(type.getNameID(),type.getRequireClass());
+		requires.put(type.getNameID(),type);
+		missionRequires.put(type.getNameID(),type);
+		questRequires.put(type.getNameID(),type);
 	}
 	public void registerMissionRequireType(MissionRequireType type) {
-		missionRequires.put(type.getNameID(),type.getRequireClass());
+		missionRequires.put(type.getNameID(),type);
 	}
 	public void registerQuestRequireType(QuestRequireType type) {
-		questRequires.put(type.getNameID(),type.getRequireClass());
+		questRequires.put(type.getNameID(),type);
 	}
 
 	public List<Require> convertRequires(List<String> list) {
@@ -48,8 +48,7 @@ public class RequireManager {
 					key = rawRequire.substring(0,index);
 					trueRequire = rawRequire.substring(index+1);
 				}
-				rews.add(requires.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueRequire));
+				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -76,8 +75,7 @@ public class RequireManager {
 					key = rawRequire.substring(0,index);
 					trueRequire = rawRequire.substring(index+1);
 				}
-				rews.add(missionRequires.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueRequire));
+				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -104,8 +102,7 @@ public class RequireManager {
 					key = rawRequire.substring(0,index);
 					trueRequire = rawRequire.substring(index+1);
 				}
-				rews.add(questRequires.get(key.toUpperCase()).getConstructor(String.class)
-						.newInstance(trueRequire));
+				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));

@@ -80,14 +80,7 @@ public class TaskManager {
 		TaskType info = types.get(type.toUpperCase());
 		if (info == null)
 			throw new IllegalArgumentException("tasktype "+type+" do not exist");
-		try {
-			return info.getTaskClass().getConstructor(MemorySection.class,Mission.class)
-					.newInstance(m,mission);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException("Error while creating an instance of "
-										+info.getTaskClass().getName());
-		}
+		return info.getTaskInstance(m,mission);
 	}
 	
 

@@ -9,38 +9,20 @@ public abstract class TaskType implements Listener {
 	
 	private final String key;
 	private final String displayName;
-	private final Class<? extends Task> clazz;
-	public TaskType(String value,String displayName,Class<? extends Task> clazz) {
-		if (value == null || clazz == null)
+	public TaskType(String key,String displayName) {
+		if (key == null)
 			throw new NullPointerException();
-		if (value.isEmpty() || value.contains(" "))
+		if (key.isEmpty() || key.contains(" "))
 			throw new IllegalArgumentException("invalid task name");
-		this.key = value.toUpperCase();
+		this.key = key.toUpperCase();
 
 		if (displayName==null)
 			this.displayName = this.key.toLowerCase().replace("_", " ");
 		else
 			this.displayName = displayName;
-		boolean ok = true;
-		
-		try {
-			clazz.getConstructor(MemorySection.class,Mission.class)
-							.newInstance(null,null);
-		} catch (InstantiationException|IllegalAccessException
-				|NoSuchMethodException|SecurityException e) {
-			e.printStackTrace();
-			ok = false;
-		} catch (Exception e) {
-		}
-		if (!ok)
-			throw new IllegalArgumentException(clazz.getName()+" must implement "
-				+ "a public constructor with (MemorySection m, Mission mission) ");
-		this.clazz = clazz;
 	}
-	
-	public final Class<? extends Task> getTaskClass(){
-		return clazz;
-	}
+
+	public abstract Task getTaskInstance(MemorySection m,Mission parent);
 	/**
 	 * 
 	 * @return the string value of the TaskType unique key

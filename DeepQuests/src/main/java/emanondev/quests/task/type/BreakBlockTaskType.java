@@ -20,7 +20,7 @@ public class BreakBlockTaskType extends TaskType {
 
 	private static String key;
 	public BreakBlockTaskType() {
-		super("breakblock", "break blocks",BreakBlockTask.class);
+		super("breakblock", "break blocks");
 		key = getKey();
 	}
 	
@@ -37,7 +37,7 @@ public class BreakBlockTaskType extends TaskType {
 		for (int i = 0; i < tasks.size(); i++) {
 			BreakBlockTask task = (BreakBlockTask) tasks.get(i);
 			if (task.isWorldAllowed(event.getPlayer().getWorld())
-					&& task.isValidBlock(event.getBlock()))
+					&& task.isValidBlock(event.getBlock()))//TODO fix facoltative hook
 				task.onProgress(qPlayer);
 		}//TODO
 	}
@@ -45,13 +45,16 @@ public class BreakBlockTaskType extends TaskType {
 	public class BreakBlockTask extends AbstractBlockTask {
 
 		public BreakBlockTask(MemorySection m, Mission parent) {
-			super(m, parent);
+			super(m, parent,BreakBlockTaskType.this);
 		}
 		@Override
 		public boolean isValidBlock(Block block) {
 			return super.isValidBlock(block)&&Hooks.isBlockVirgin(block);
 		}
-		
-		
+	}
+
+	@Override
+	public Task getTaskInstance(MemorySection m, Mission parent) {
+		return new BreakBlockTask(m,parent);
 	}
 }

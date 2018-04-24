@@ -6,7 +6,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
 
 import emanondev.quests.Defaults;
-import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.YmlLoadable;
@@ -38,12 +37,12 @@ public abstract class Task extends YmlLoadable{
 	 * @param m must be != null
 	 * @param parent must be != null
 	 */
-	public Task(MemorySection m,Mission parent) {
+	public Task(MemorySection m,Mission parent,TaskType type) {
 		super(m);
-		if (parent == null)
+		if (parent == null||type ==null)
 			throw new NullPointerException();
 		this.parent = parent;
-		this.type = loadType(m);
+		this.type = type;
 		this.maxProgress = loadMaxProgress(m);
 		if (this.maxProgress <= 0)
 			throw new IllegalArgumentException("task max progress must be always > 0");
@@ -82,14 +81,6 @@ public abstract class Task extends YmlLoadable{
 	@Override
 	protected String getDisplayNameDefaultPrefix() {
 		return "";
-	}
-	private TaskType loadType(MemorySection m) {
-		if (m == null)
-			throw new NullPointerException();
-		String typeTxt = m.getString(PATH_TASK_TYPE);
-		if (typeTxt == null || typeTxt.isEmpty())
-			throw new NullPointerException();
-		return Quests.getInstance().getTaskManager().getTaskType(typeTxt);
 	}
 	/**
 	 * returned value must be > 0

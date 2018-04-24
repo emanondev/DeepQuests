@@ -5,13 +5,17 @@ import org.bukkit.Bukkit;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
+import emanondev.quests.reward.AbstractRewardType;
 
-public class ConsoleCommandRewardType extends RewardType {
-	
-	
+public class ConsoleCommandRewardType extends AbstractRewardType implements RewardType {
 	
 	public ConsoleCommandRewardType() {
-		super("COMMAND", ConsoleCommandReward.class);
+		super("COMMAND");
+	}
+
+	@Override
+	public Reward getRewardInstance(String info) {
+		return new ConsoleCommandReward(info);
 	}
 
 	public class ConsoleCommandReward implements Reward {
