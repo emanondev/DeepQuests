@@ -132,6 +132,7 @@ public class Quests extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		new YMLConfig(this,"quests-example");
 		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config = new YMLConfig(this,"config");
@@ -161,10 +162,12 @@ public class Quests extends JavaPlugin {
 	}
 	
 	public void reload(){
+		
 		playerManager.saveAll();
+		Language.reload();
+		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config.reload();
-		Defaults.reload();
 		//TODO
 		questManager = new QuestManager();
 		

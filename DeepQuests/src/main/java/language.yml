@@ -1,0 +1,32 @@
+blocks:
+    "STONE": stone
+    "STONE:1": granite
+entity:
+    CREEPER: creeper
+    ZOMBIE: zombie
+    
+time:
+    WEEK:
+        single: week
+        multi: weeks
+    DAY:
+        single: day
+        multi: days
+    HOUR:
+        single: hour
+        multi: hours
+    MINUTE:
+        single: minute
+        multi: minutes
+    SECOND:
+        single: second
+        multi: seconds
+conjunctions:
+    AND: and
+    OR: or
+    NOT: not
+    
+action:
+    BREAKBLOCKTASK: mine
+    PLACEBLOCKTASK: place
+    

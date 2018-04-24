@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
+import emanondev.quests.YMLConfig;
+import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.reward.MissionReward;
@@ -22,6 +24,7 @@ import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadableWithDisplay;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Mission extends YmlLoadableWithDisplay{
 	private final Quest parent;
@@ -29,6 +32,11 @@ public class Mission extends YmlLoadableWithDisplay{
 	public static final String PATH_REQUIRES = "requires";
 	private static final String PATH_START_REWARDS = "start-rewards";
 	private static final String PATH_COMPLETE_REWARDS = "complete-rewards";
+	private static final String PATH_START_TEXT = "start-text";
+	private static final String PATH_COMPLETE_TEXT = "complete-text";
+	private static final String PATH_PAUSE_TEXT = "pause-text";
+	private static final String PATH_UNPAUSE_TEXT = "unpause-text";
+	private static final String PATH_FAIL_TEXT = "fail-text";
 
 	
 	public Mission(MemorySection m,Quest parent) {
@@ -48,12 +56,19 @@ public class Mission extends YmlLoadableWithDisplay{
 		rew = loadCompleteRewards(m);
 		if (rew!=null)
 			this.completeRewards.addAll(rew);
+
+		onStartText = loadStartText(m);
+		onCompleteText = loadCompleteText(m);
+		onPauseText = loadPauseText(m);
+		onUnpauseText = loadUnpauseText(m);
+		onFailText = loadFailText(m);
 		
 		this.displayInfo = loadDisplayInfo(m);
 		fixDisplays();
 		holders = setupHolders();
 		if (displayInfo.shouldSave())
 			shouldSave = true;
+		
 	}
 	public String[] getHolders(Player p,DisplayState state) {
 		String[] s;
@@ -100,15 +115,19 @@ public class Mission extends YmlLoadableWithDisplay{
 		}
 	}
 	private void fixDisplays() {
-		String[] holders = new String[tasks.size()*3*2+2];
+		String[] holders = new String[tasks.size()*5*2+2];
 		ArrayList<Task> list = new ArrayList<Task>(tasks.values());
 		for (int i = 0; i < list.size(); i++) {
-			holders[i*6] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", list.get(i).getNameID());
-			holders[i*6+1] = list.get(i).getDisplayName();
-			holders[i*6+2] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", list.get(i).getNameID());
-			holders[i*6+3] = list.get(i).getTaskType().getDisplayName();
-			holders[i*6+4] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", list.get(i).getNameID());
-			holders[i*6+5] = list.get(i).getMaxProgress()+"";
+			holders[i*10] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", list.get(i).getNameID());
+			holders[i*10+1] = list.get(i).getDisplayName();
+			holders[i*10+2] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", list.get(i).getNameID());
+			holders[i*10+3] = list.get(i).getTaskType().getDisplayName();
+			holders[i*10+4] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", list.get(i).getNameID());
+			holders[i*10+5] = list.get(i).getMaxProgress()+"";
+			holders[i*10+6] = H.MISSION_GENERIC_TASK_DESCRIPTION.replace("<task>", list.get(i).getNameID());
+			holders[i*10+7] = list.get(i).getDescription();
+			holders[i*10+8] = H.MISSION_GENERIC_TASK_ACTION.replace("<task>", list.get(i).getNameID());
+			holders[i*10+9] = list.get(i).getAction();
 		}
 		holders[holders.length-2] = H.MISSION_NAME;
 		holders[holders.length-1] = getDisplayName();
@@ -162,12 +181,65 @@ public class Mission extends YmlLoadableWithDisplay{
 		return parent;
 	}
 	private final List<MissionReward> completeRewards = new ArrayList<MissionReward>();
-	private final  List<MissionReward> startRewards = new ArrayList<MissionReward>();
+	private final List<MissionReward> startRewards = new ArrayList<MissionReward>();
 	private final List<MissionRequire> requires = new ArrayList<MissionRequire>();
 	private final LinkedHashMap<String,Task> tasks = new LinkedHashMap<String,Task>();
-	private List<String> onStartText;//TODO
-	private List<String> onCompleteText;//TODO
+	private final List<String> onStartText;
+	private final List<String> onCompleteText;
+	private final List<String> onPauseText;
+	private final List<String> onUnpauseText;
+	private final List<String> onFailText;
 	
+	public BaseComponent[] getStartMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onStartText));
+	}
+	public BaseComponent[] getCompleteMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onCompleteText));
+	}
+	public BaseComponent[] getUnpauseMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onUnpauseText));
+	}
+	public BaseComponent[] getPauseMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onPauseText));
+	}
+	public BaseComponent[] getFailMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onFailText));
+	}
+	private List<String> loadStartText(MemorySection m){
+		List<String> list = m.getStringList(PATH_START_TEXT);
+		if (list==null||list.isEmpty())
+			list = Defaults.MissionDef.getDefaultStartText();
+		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
+	}
+	private List<String> loadCompleteText(MemorySection m){
+		List<String> list = m.getStringList(PATH_COMPLETE_TEXT);
+		if (list==null||list.isEmpty())
+			list = Defaults.MissionDef.getDefaultCompleteText();
+		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
+	}
+	private List<String> loadPauseText(MemorySection m){
+		List<String> list = m.getStringList(PATH_PAUSE_TEXT);
+		if (list==null||list.isEmpty())
+			list = Defaults.MissionDef.getDefaultPauseText();
+		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
+	}
+	private List<String> loadUnpauseText(MemorySection m){
+		List<String> list = m.getStringList(PATH_UNPAUSE_TEXT);
+		if (list==null||list.isEmpty())
+			list = Defaults.MissionDef.getDefaultUnpauseText();
+		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
+	}
+	private List<String> loadFailText(MemorySection m){
+		List<String> list = m.getStringList(PATH_FAIL_TEXT);
+		if (list==null||list.isEmpty())
+			list = Defaults.MissionDef.getDefaultFailText();
+		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
+	}
 	public List<MissionReward> getStartRewards(){
 		return Collections.unmodifiableList(startRewards);
 	}
@@ -204,6 +276,7 @@ public class Mission extends YmlLoadableWithDisplay{
 	}
 	private List<MissionRequire> loadRequires(MemorySection m) {
 		List<String> l = MemoryUtils.getStringList(m, PATH_REQUIRES);
+		
 		return Quests.getInstance().getRequireManager().convertMissionRequires(l);
 	}
 	private List<MissionReward> loadStartRewards(MemorySection m) {

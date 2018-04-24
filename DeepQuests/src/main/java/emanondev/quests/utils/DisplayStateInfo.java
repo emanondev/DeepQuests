@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class DisplayStateInfo {
 	
 	private final static String PATH_LORE = ".lore";
-	private final static String PATH_ITEM = ".item";
+	private final static String PATH_ITEM = ".item";//state.title
 	private final static String PATH_TITLE = ".title";
 	private final static String PATH_HIDE = ".hide";
 	
@@ -42,7 +42,7 @@ public abstract class DisplayStateInfo {
 	
 	private class Info {
 		public Info(MemorySection m,DisplayState state) {
-			String basePath = state.toString().toLowerCase();
+			String basePath = state.toString();
 			craftDisplayItem(m,basePath+PATH_ITEM,getDefaultItem(state),shouldItemAutogen(state));
 			craftDisplayTitle(m,basePath+PATH_TITLE,getDefaultTitle(state),shouldTitleAutogen(state));
 			craftDisplayLore(m,basePath+PATH_LORE,getDefaultLore(state),shouldLoreAutogen(state));

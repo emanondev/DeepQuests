@@ -36,21 +36,46 @@ public class BreakBlockTaskType extends TaskType {
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
 			BreakBlockTask task = (BreakBlockTask) tasks.get(i);
-			if (task.isWorldAllowed(event.getPlayer().getWorld())
-					&& task.isValidBlock(event.getBlock()))//TODO fix facoltative hook
-				task.onProgress(qPlayer);
-		}//TODO
+			if (task.isWorldAllowed(event.getPlayer().getWorld()) 
+					 && task.isValidBlock(event.getBlock())) {
+				if (task.onProgress(qPlayer)) {
+					if (task.removeDrops())
+						event.setDropItems(false);
+					if (task.removeExp())
+						event.setExpToDrop(0);
+				}
+			}
+		}
 	}
 	
 	public class BreakBlockTask extends AbstractBlockTask {
-
+		private final static String PATH_CHECK_VIRGIN = "check-virgin-block";
+		private final static String PATH_REMOVE_DROP = "remove-drops";
+		private final static String PATH_REMOVE_EXP = "remove-exp";
+		private final boolean checkVirgin;
+		private final boolean removeDrops;
+		private final boolean removeExp;
+		//TODO option CHECKTOOL
 		public BreakBlockTask(MemorySection m, Mission parent) {
 			super(m, parent,BreakBlockTaskType.this);
+			checkVirgin = m.getBoolean(PATH_CHECK_VIRGIN,true);
+			removeDrops = m.getBoolean(PATH_REMOVE_DROP,false);
+			removeExp = m.getBoolean(PATH_REMOVE_EXP,false);
 		}
 		@Override
 		public boolean isValidBlock(Block block) {
-			return super.isValidBlock(block)&&Hooks.isBlockVirgin(block);
+			if (checkVirgin)
+				return super.isValidBlock(block)&&Hooks.isBlockVirgin(block);
+			else
+				return super.isValidBlock(block);
 		}
+		public boolean removeDrops() {
+			return removeDrops;
+		}
+		public boolean removeExp() {
+			return removeExp;
+		}
+		
 	}
 
 	@Override

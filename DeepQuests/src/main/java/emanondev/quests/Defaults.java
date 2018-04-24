@@ -47,22 +47,22 @@ public class Defaults {
 		}
 
 		public static boolean shouldHideAutogen(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"hide."+state.toString()
-				.toLowerCase()+".autogenerate",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".hide"
+				+".autogenerate",false);
 		}
 
 		public static boolean shouldItemAutogen(DisplayState state) {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"item."+state.toString()
-					.toLowerCase()+".autogenerate",true);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".item"
+					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"item."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".item"
+					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
@@ -72,26 +72,26 @@ public class Defaults {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"lore."+state.toString()
-					.toLowerCase()+".autogenerate",true);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"lore."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
 		}
 
 		public static boolean shouldTitleAutogen(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"title."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".title"
+					+".autogenerate",false);
 		}
 
 		public static String getDefaultTitle(DisplayState state) {
-			return data.getString(BASE_PATH+"title."+state.toString().toLowerCase()+".value",
+			return data.getString(BASE_PATH+"display."+state.toString()+".title"+".value",
 					"&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---");
 		}
 
@@ -101,8 +101,8 @@ public class Defaults {
 			case ONPROGRESS:
 			case UNSTARTED:
 				try {
-					item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-						.toLowerCase()+".value","BOOK"));
+					item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+						+".value","BOOK"));
 					if (item==null||item.getType()==Material.AIR)
 						throw new Exception();
 				}catch (Exception e) {
@@ -112,8 +112,8 @@ public class Defaults {
 			case COMPLETED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:5"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:5"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -122,8 +122,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","LIME_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","LIME_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -134,8 +134,8 @@ public class Defaults {
 			case COOLDOWN:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:1"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:1"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -144,8 +144,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","ORANGE_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","ORANGE_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -156,8 +156,8 @@ public class Defaults {
 			case LOCKED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:14"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:14"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -166,8 +166,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","RED_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","RED_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -178,8 +178,8 @@ public class Defaults {
 			case FAILED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:15"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:15"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -188,8 +188,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","BLACK_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","BLACK_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -202,8 +202,8 @@ public class Defaults {
 		}
 
 		public static List<String> getDefaultLore(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"lore."+state.toString()
-				.toLowerCase()+".value");
+			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".lore"
+				+".value");
 			if (list!=null)
 				return list;
 			switch (state) {
@@ -233,8 +233,8 @@ public class Defaults {
 			return data.getBoolean(BASE_PATH+"disabled-world.autogenerate",true);
 		}
 		public static boolean getDefaultHide(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"hide."+state.toString()
-								.toLowerCase()+".value",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".hide"
+								+".value",false);
 		}
 		public static boolean shouldAutogenDisplayName() {
 			return data.getBoolean(BASE_PATH+"display-name.autogenerate",true);
@@ -260,22 +260,22 @@ public class Defaults {
 		}
 
 		public static boolean shouldHideAutogen(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"hide."+state.toString()
-				.toLowerCase()+".autogenerate",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".hide"
+				+".autogenerate",false);
 		}
 
 		public static boolean shouldItemAutogen(DisplayState state) {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"item."+state.toString()
-					.toLowerCase()+".autogenerate",true);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".item"
+					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"item."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".item"
+					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
@@ -285,26 +285,26 @@ public class Defaults {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"lore."+state.toString()
-					.toLowerCase()+".autogenerate",true);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"lore."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
 		}
 
 		public static boolean shouldTitleAutogen(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"title."+state.toString()
-					.toLowerCase()+".autogenerate",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".title"
+					+".autogenerate",false);
 		}
 		public static String getDefaultTitle(DisplayState state) {
-			return data.getString(BASE_PATH+"title."+state.toString()
-			.toLowerCase()+".value","&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---");
+			return data.getString(BASE_PATH+"display."+state.toString()+".title"
+			+".value","&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---");
 		}//TODO
 
 		public static ItemStack getDefaultItem(DisplayState state) {
@@ -313,8 +313,8 @@ public class Defaults {
 			case ONPROGRESS:
 			case UNSTARTED:
 				try {
-					item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-						.toLowerCase()+".value","PAPER"));
+					item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+						+".value","PAPER"));
 					if (item==null||item.getType()==Material.AIR)
 						throw new Exception();
 				}catch (Exception e) {
@@ -324,8 +324,8 @@ public class Defaults {
 			case COMPLETED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:5"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:5"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -334,8 +334,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","LIME_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","LIME_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -346,8 +346,8 @@ public class Defaults {
 			case COOLDOWN:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:1"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:1"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -356,8 +356,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","ORANGE_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","ORANGE_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -368,8 +368,8 @@ public class Defaults {
 			case FAILED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:15"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:15"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -378,8 +378,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","BLACK_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","BLACK_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -390,8 +390,8 @@ public class Defaults {
 			case LOCKED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","STAINED_GLASS_PANE:14"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","STAINED_GLASS_PANE:14"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -400,8 +400,8 @@ public class Defaults {
 				}
 				else {
 					try {
-						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"item."+state.toString()
-							.toLowerCase()+".value","RED_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(BASE_PATH+"display."+state.toString()+".item"
+							+".value","RED_STAINED_GLASS_PANE"));
 						if (item==null||item.getType()==Material.AIR)
 							throw new Exception();
 					}catch (Exception e) {
@@ -414,8 +414,8 @@ public class Defaults {
 		}
 
 		public static List<String> getDefaultLore(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"lore."+state.toString()
-				.toLowerCase()+".value");
+			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".lore"
+				+".value");
 			if (list!=null)
 				return list;
 			switch (state) {
@@ -445,11 +445,36 @@ public class Defaults {
 			return data.getBoolean(BASE_PATH+"disabled-world.use-as-blacklist",true);
 		}
 		public static boolean getDefaultHide(DisplayState state) {
-			return data.getBoolean(BASE_PATH+"hide."+state.toString()
-							.toLowerCase()+".value",false);
+			return data.getBoolean(BASE_PATH+"display."+state.toString()+".hide"
+							+".value",false);
 		}
 		public static boolean shouldAutogenDisplayName() {
 			return data.getBoolean(BASE_PATH+"display-name.autogenerate",true);
+		}
+
+		public static List<String> getDefaultStartText() {
+			List<String> list = data.getStringList(BASE_PATH+"start-text");
+			return list;
+		}
+
+		public static List<String> getDefaultCompleteText() {
+			List<String> list = data.getStringList(BASE_PATH+"complete-text");
+			return list;
+		}
+
+		public static List<String> getDefaultPauseText() {
+			List<String> list = data.getStringList(BASE_PATH+"pause-text");
+			return list;
+		}
+
+		public static List<String> getDefaultUnpauseText() {
+			List<String> list = data.getStringList(BASE_PATH+"unpause-text");
+			return list;
+		}
+
+		public static List<String> getDefaultFailText() {
+			List<String> list = data.getStringList(BASE_PATH+"fail-text");
+			return list;
 		}
 
 	}

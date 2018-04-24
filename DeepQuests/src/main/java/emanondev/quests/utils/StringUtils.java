@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
+import emanondev.quests.Language;
 import emanondev.quests.hooks.Hooks;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
@@ -88,10 +89,10 @@ public class StringUtils {
 				result.append(val+" "+CooldownFormat.WEEK.single);
 			val =  (int) (cooldown%CooldownFormat.WEEK.seconds/CooldownFormat.DAY.seconds);
 			if (val>1)
-				result.append(", "+ val+" "+CooldownFormat.DAY.multi);
+				result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.DAY.multi);
 			else
 				if (val==1)
-					result.append(", "+ val+" "+CooldownFormat.DAY.single);
+					result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.DAY.single);
 			return result.toString();
 		}
 		if (cooldown>=CooldownFormat.DAY.seconds) {//day
@@ -102,10 +103,10 @@ public class StringUtils {
 				result.append(val+" "+CooldownFormat.DAY.single);
 			val =  (int) (cooldown%CooldownFormat.DAY.seconds/CooldownFormat.HOUR.seconds);
 			if (val>1)
-				result.append(", "+ val+" "+CooldownFormat.HOUR.multi);
+				result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.HOUR.multi);
 			else
 				if (val==1)
-					result.append(", "+ val+" "+CooldownFormat.HOUR.single);
+					result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.HOUR.single);
 			return result.toString();
 		}
 		if (cooldown>=CooldownFormat.HOUR.seconds) {//hour
@@ -116,10 +117,10 @@ public class StringUtils {
 				result.append(val+" "+CooldownFormat.HOUR.single);
 			val =  (int) (cooldown%CooldownFormat.HOUR.seconds/CooldownFormat.MINUTE.seconds);
 			if (val>1)
-				result.append(", "+ val+" "+CooldownFormat.MINUTE.multi);
+				result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.MINUTE.multi);
 			else
 				if (val==1)
-					result.append(", "+ val+" "+CooldownFormat.MINUTE.single);
+					result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.MINUTE.single);
 			return result.toString();
 		}
 		if (cooldown>=CooldownFormat.MINUTE.seconds) {//minute
@@ -130,10 +131,10 @@ public class StringUtils {
 				result.append(val+" "+CooldownFormat.MINUTE.single);
 			val =  (int) (cooldown%CooldownFormat.MINUTE.seconds/CooldownFormat.SECOND.seconds);
 			if (val>1)
-				result.append(", "+ val+" "+CooldownFormat.SECOND.multi);
+				result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.SECOND.multi);
 			else
 				if (val==1)
-					result.append(", "+ val+" "+CooldownFormat.SECOND.single);
+					result.append(" "+Language.getConjAnd()+" "+ val+" "+CooldownFormat.SECOND.single);
 			return result.toString();
 		}
 		int val = (int) (cooldown/CooldownFormat.SECOND.seconds);
@@ -144,18 +145,18 @@ public class StringUtils {
 		return result.toString();
 	}
 	public enum CooldownFormat{
-		WEEK(604800,"weeks","week"),
-		DAY(86400,"days","day"),
-		HOUR(3600,"hours","hour"),
-		MINUTE(60,"minutes","minute"),
-		SECOND(1,"seconds","second");
+		WEEK(604800),
+		DAY(86400),
+		HOUR(3600),
+		MINUTE(60),
+		SECOND(1);
 		public final String multi;
 		public final String single;
 		public final long seconds;
-		private CooldownFormat(long seconds,String multi,String single) {
+		private CooldownFormat(long seconds) {
 			this.seconds = seconds;
-			this.multi = multi;
-			this.single = single;
+			this.multi = Language.getMultiTime(this.toString());
+			this.single = Language.getSingleTime(this.toString());
 		}
 		
 	}

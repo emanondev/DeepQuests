@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.Language;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.YmlLoadable;
@@ -103,7 +104,7 @@ public abstract class Task extends YmlLoadable{
 	 * task.getDefaultDescription() = "&eMine "+task.getMaxProgress()+" "+task.getBlockType()+" blocks"
 	 * @return
 	 */
-	protected abstract String getDefaultDescription();
+	//protected abstract String getDefaultDescription();
 
 	protected  List<String> getWorldsListDefault(){
 		return Defaults.TaskDef.getWorldsListDefault();
@@ -129,12 +130,16 @@ public abstract class Task extends YmlLoadable{
 				&& getParent().getParent().isWorldAllowed(w);
 	}
 	
-	public void onProgress(QuestPlayer p) {
-		onProgress(p,1);
+	public boolean onProgress(QuestPlayer p) {
+		return onProgress(p,1);
 	}
-	public void onProgress(QuestPlayer p,int amount) {
-		p.progressTask(this, amount);
+	public boolean onProgress(QuestPlayer p,int amount) {
+		return p.progressTask(this, amount);
 	}
+	public String getAction() {
+		return Language.getTaskActionName(this.getClass().getSimpleName().toUpperCase());
+	}
+	public abstract String getDescription();
 	
 	/*
 	 * displayname:

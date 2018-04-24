@@ -76,7 +76,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
+				rews.add(missionRewards.get(key.toUpperCase()).getRewardInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -103,7 +103,7 @@ public class RewardManager {
 					key = rawReward.substring(0,index);
 					trueReward = rawReward.substring(index+1);
 				}
-				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
+				rews.add(questRewards.get(key.toUpperCase()).getRewardInstance(trueReward));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));

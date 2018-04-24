@@ -75,7 +75,7 @@ public class RequireManager {
 					key = rawRequire.substring(0,index);
 					trueRequire = rawRequire.substring(index+1);
 				}
-				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
+				rews.add(missionRequires.get(key.toUpperCase()).getRequireInstance(trueRequire));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
@@ -102,7 +102,7 @@ public class RequireManager {
 					key = rawRequire.substring(0,index);
 					trueRequire = rawRequire.substring(index+1);
 				}
-				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
+				rews.add(questRequires.get(key.toUpperCase()).getRequireInstance(trueRequire));
 			} catch (Exception e) {
 				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
 				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));

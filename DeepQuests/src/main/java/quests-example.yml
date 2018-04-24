@@ -1,0 +1,227 @@
+
+#quest id, should be lowercase
+quest1:
+    #OPTIONAL: quest name, for display uses, if not specified default value is the quest id
+    name: My Quest
+    
+    #OPTIONAL: cooldown info, if not specified is read from defaultConfig.yml
+    cooldown:
+        #should the quest be repeatable? if not specified is read from defaultConfig.yml
+        enable: true
+        #how many minutes should be the cooldown for this quest? if not specified is read from defaultConfig.yml
+        minutes: 1440
+        
+    #OPTIONAL: world restrictions for this quest, when a world is blacklisted quest won't progress on that world
+    #if not specified is read from defaultConfig.yml
+    worlds:
+        #list of worlds, if not specified is read from defaultConfig.yml
+        list:
+        - nether
+        - essos
+        #use the previus list as a blacklist for worlds? if not specified is read from defaultConfig.yml
+        is-blacklist: true
+        
+    #OPTIONAL: this the main configuration for gui display abouth quests,
+    #all his values when not specified are read from defaultConfig.yml
+    #if you wish to pregenerate this values and customize them later specify autogenerate flag true on defaultConfig.yml
+    display:
+        #display has 6 possible states:
+        # LOCKED  -> when a player do not meet requires to start a quest
+        # UNSTARTED -> when a player has all the requires to start a quest, but he as not started it
+        # ONPROGRESS -> when a player has started a quest but it's still not completed
+        # COOLDOWN -> when a player has completed or failed a quest but, the quest is repeatable, and player has to wait some time to start it again
+        # COMPLETED -> when a player has completed a quest and the quest is not repeatable
+        # FAILED -> when a player has failed a quest and the quest is not repeatable
+        
+        LOCKED:
+            #this is the value of the item which is Material:data:damage:unbreakable 
+            #if unbreakable is not specified gui.unbreakable-items.default-value: on defaultConfig will be used
+            item: "STAINED_GLASS_PANE:14"
+            #title of the gui item, 
+            #{quest-name} is a holder for this quest name
+            title: "&4&l&m---&r&8&l&m[--&r     &8* &4{quest-name}&r &8*&r     &8&l&m--]&4&l&m---"
+            #lore of the gui item
+            lore:
+            - ""
+            - "&7➤ Quest Locked"
+            - ""
+            - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+            #this item should be hidden in the gui?
+            #that config is usefull to not show something until a player has the requires to start it
+            hide: false
+        UNSTARTED:
+            #{completed-mission-number} is a holder of the number of missions ever completed by the player of this quest
+            #{mission-number} is a holder of the number of missions inside this quest
+            lore: 
+            - ""
+            - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
+            - ""
+            - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+        COOLDOWN:
+            #{quest-cooldownleft} is a holder of the time left to start this quest again
+            lore:
+            - ""
+            - "&7➤ Quest On Cooldown for {quest-cooldownleft}"
+            - ""
+            - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+        #other states abouth display are not showed in this example but them are pretty much the same of above examples
+            
+    #OPTIONAL: here you can put some requires to start the quest
+    #if a player hasn't those requires he shouldn't be able to start any missions and the display state seen by the player is LOCKED
+    requires:
+    #the first part before ":" tells the require type, the part after is the info for the require
+    #
+    #   PERMISSION require check if the player has the the specified permission
+    #    the format is "PERMISSION:<permission to check>"
+    #    that require can be used for both mission and quests
+    - PERMISSION:my.example.permission
+    
+    
+    #quests are made of missions, 
+    #missions are similar to quests but quests contains missions, missions contains tasks
+    #also mission and quests share some require types but some are different
+    missions:
+        #mission id, should be lowercase
+        mission1:
+            name: My Mission 1
+            
+            #OPTIONAL: cooldown info, if not specified is read from defaultConfig.yml
+            cooldown:
+                #should the mission be repeatable? if not specified is read from defaultConfig.yml
+                enable: true
+                #how many minutes should be the cooldown for this mission if not specified is read from defaultConfig.yml
+                minutes: 1440
+                
+            #OPTIONAL: world restrictions for this mission, when a world is blacklisted mission's tasks won't progress on that world
+            #if not specified is read from defaultConfig.yml, blacklisting a world already blacklisted in the quest is pretty much useless
+            worlds:
+                #list of worlds, if not specified is read from defaultConfig.yml
+                list:
+                #use the previus list as a blacklist for worlds? if not specified is read from defaultConfig.yml
+                is-blacklist: true
+            
+            #OPTIONAL: mission display works the same of quests display but holders are different
+            display:
+            #{mission-name} <- replace with the mission name
+            #{mission-cooldownleft} <- replace with the cooldown left
+            #{foreach-task} <- placed at the start of a row, will craft as many rows as the task with the remaining messages 
+            #{foreach-require} <- placed at the start of a row, will craft as many rows as the require with the remaining messages 
+            #{<task>-name} <- replace with task name, <task> must be a taskid
+            #{<task>-type} <- replace with task type, <task> must be a taskid
+            #{<task>-maxprogress} <- replace with max progress of task, <task> must be a taskid
+            #{<task>-progress} <- replace with current progress of task, <task> must be a taskid
+                ONPROGRESS:
+                    lore: 
+                    - ""
+                    - "{foreach-task}&7➤ {<task>-name}: {<task>-type} &e{<task>-progress}&9/{<task>-maxprogress}"
+                    - ""
+                    - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+                COOLDOWN:
+                    lore:
+                    - ""
+                    - "&7➤ Mission On Cooldown for {mission-cooldownleft}"
+                    - ""
+                    - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+                
+            #Tasks are required to complete a mission, mission is completed when all his tasks are completed
+            #tasks has no display infos
+            tasks:
+                #taskid
+                task1:
+                    #OPTIONAL: display name for gui util
+                    name: Task A
+                    # the target progress to complete the task
+                    max-progress: 10 
+                    # the type of the task
+                    # BreakBlock is a task that require the player to break/mine blocks
+                    type: breakblock
+                    #OPTIONAL: exacly the same of mission and quest worlds restrictions
+                    worlds:
+                        #list of worlds, if not specified is read from defaultConfig.yml
+                        list:
+                        #use the previus list as a blacklist for worlds? if not specified is read from defaultConfig.yml
+                        is-blacklist: true
+                        
+                    #following infos are related to this specific type of Task, different type usually has different infos
+                    
+                    #OPTIONAL: list of valid blocks to complete the task
+                    #format is "Material:data" or "Material"
+                    block:
+                    #STONE = any kind of STONE even diorite, granite and andesite
+                    #  if you want to specify just raw stone use STONE:0, or STONE:1 for granite etc
+                    - STONE
+                    #LOG:0 = oak logs with vertical direction, for any kind of Oak add more LOG:... 
+                    - LOG:0
+                    #LOG:4 = oak log facinf nord-south direction
+                    - LOG:4
+                    
+                    #OPTIONAL: use previus list as whitelist of valid blocks, by default true
+                    #if you wish to make a task where you have to break any kind of block mark this as false and leave blocks list empty
+                    blocks-is-whitelist: true
+                    
+                    #OPTIONAL: remove listed blocks drops while this task is active?
+                    remove-drops: false
+                    #OPTIONAL: remove exp drops from listed blockswhile this task is active?
+                    #some blocks drop experience when broken, like diamonds an almost every other ore when mined withouth silk touch
+                    remove-exp: false
+                    
+                    #OPTIONAL: REQUIRE VirginBlock plugin <link>
+                    #prevent placed blocks from being counted multiple times
+                    #this is to avoid players from mining and place the same block instead of mining multiple blocks
+                    check-virgin-block: true
+                    
+                task2:
+                    name: Task B
+                    max-progress: 10 
+                    type: placeblock
+            
+                    #following infos are related to this specific type of Task, different type usually has different infos
+                    
+                    #OPTIONAL: list of valid blocks to complete the task
+                    #format is "Material:data" or "Material"
+                    block:
+                    #STONE = any kind of STONE even diorite, granite and andesite
+                    #  if you want to specify just raw stone use STONE:0, or STONE:1 for granite etc
+                    - STONE
+                    #LOG:0 = oak logs with vertical direction, for any kind of Oak add more LOG:... 
+                    - LOG:0
+                    #LOG:4 = oak log facing nord-south direction
+                    - LOG:4
+                    
+                    #OPTIONAL: use previus list as whitelist of valid blocks, by default true
+                    #if you wish to make a task where you have to place any kind of block mark this as false and leave blocks list empty
+                    blocks-is-whitelist: true
+        mission2:
+            name: My Mission 2
+            
+            #OPTIONAL: here you can put some requires to start the mission
+            #if a player hasn't those requires he shouldn't be able to start any missions and the display state seen by the player is LOCKED
+            requires:
+            #the first part before ":" tells the require type, the part after is the info for the require
+            #
+            #   PERMISSION require check if the player has the specified permission
+            #    the format is "PERMISSION:<permission to check>"
+            #    that require can be used for both mission and quests
+            - PERMISSION:my.second.example.permission
+            #   MISSION require check if the player has completed the specified permission 
+            #                   (basically it checks if the target mission state is COMPLETED or COOLDOWN)
+            #    the format is "MISSION:<target mission id>"
+            #    that require can be used only to target mission of this quest
+            - MISSION:mission1
+            
+            #OPTIONAL: message sendes when starting mission, if not specified is read from defaultConfig.yml
+            start-text:
+            - "&aMission &l{mission-name} &a➤ Started!"
+            #OPTIONAL: message sendes when competing mission, if not specified is read from defaultConfig.yml
+            complete-text:
+            - "&aMission &l{mission-name} &a➤ Completed!"
+            #OPTIONAL: message sendes when failing mission, if not specified is read from defaultConfig.yml
+            fail-text:
+            - "&cMission &l{mission-name} &c➤ Failed!"
+            #OPTIONAL: message sendes when unpausing mission, if not specified is read from defaultConfig.yml
+            unpaused-text:
+            - "&eMission &l{mission-name} &e➤ Reactivated!"
+            #OPTIONAL: message sendes when pausing mission, if not specified is read from defaultConfig.yml
+            paused-text:
+            - "&eMission &l{mission-name} &e➤ Paused!"
+    

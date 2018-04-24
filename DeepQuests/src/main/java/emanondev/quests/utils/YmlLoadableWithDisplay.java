@@ -17,8 +17,6 @@ public abstract class YmlLoadableWithDisplay extends YmlLoadable{
 			minutes = loadCooldownMinutes(m);
 		else
 			minutes = -1;
-		
-		
 	}
 	protected boolean loadCooldownAllowed(MemorySection m) {
 		if (m==null)

@@ -27,7 +27,7 @@ public class Quest extends YmlLoadableWithDisplay{
 	private final LinkedHashMap<String,Mission> missions = new LinkedHashMap<String,Mission>();
 	private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
 	public Mission getMissionByNameID(String key) {
-		return missions.get(key.toLowerCase());
+		return missions.get(key);
 	}
 	public Collection<Mission> getMissions(){
 		return Collections.unmodifiableCollection(missions.values());
@@ -56,7 +56,7 @@ public class Quest extends YmlLoadableWithDisplay{
 		LinkedHashMap<String,Mission> map = new LinkedHashMap<String,Mission>();
 		s.forEach((key)->{
 			try {
-				Mission mission = new Mission((MemorySection) m.get(key),this); 
+				Mission mission = new Mission((MemorySection) m.get(key),this);
 				map.put(mission.getNameID(), mission);
 				shouldSave = shouldSave || mission.shouldSave();
 			} catch (Exception e) {

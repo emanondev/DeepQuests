@@ -19,6 +19,7 @@ import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public class QuestPlayer extends OfflineQuestPlayer{
 	
@@ -86,7 +87,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	}
 	private boolean hasRequires(Mission m) {
 		for (MissionRequire req: m.getRequires())
-			if (req.isAllowed(this, m))
+			if (!req.isAllowed(this, m))
 				return false;
 		return true;
 	}
@@ -111,6 +112,9 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			reward.applyReward(this,m);
 		MissionData mData = this.getMissionData(m);
 		mData.start();
+		BaseComponent[] mex = m.getStartMessage(this);
+		if (mex!=null)
+			getPlayer().spigot().sendMessage(mex);
 		
 	}
 	public void failMission(Mission m) {
@@ -124,11 +128,25 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		PlayerFailMissionEvent event = new PlayerFailMissionEvent(this,m);
 		Bukkit.getPluginManager().callEvent(event);
 		getMissionData(m).fail();
+		BaseComponent[] mex = m.getFailMessage(this);
+		if (mex!=null)
+			getPlayer().spigot().sendMessage(mex);
 	}
-	public void togglePauseMission(Mission m) {
+	public void togglePauseMission(Mission m) {//TODO check permission
 		if (getDisplayState(m)!=DisplayState.ONPROGRESS)
 			return;
 		MissionData missionData = getMissionData(m);
+		
+		if (missionData.isPaused()) {
+			BaseComponent[] mex = m.getUnpauseMessage(this);
+			if (mex!=null)
+				getPlayer().spigot().sendMessage(mex);
+		}
+		else {
+			BaseComponent[] mex = m.getPauseMessage(this);
+			if (mex!=null)
+				getPlayer().spigot().sendMessage(mex);
+		}
 		missionData.setPaused(!missionData.isPaused());
 	}
 	public void completeMission(Mission m) {
@@ -140,22 +158,26 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			reward.applyReward(this,m);
 		MissionData mData = this.getMissionData(m);
 		mData.complete();
+		BaseComponent[] mex = m.getCompleteMessage(this);
+		if (mex!=null)
+			getPlayer().spigot().sendMessage(mex);
 	}
-	public void progressTask(Task t,int amount) {
+	public boolean progressTask(Task t,int amount) {
 		TaskData tData = getTaskData(t);
 		amount = Math.min(amount,t.getMaxProgress()-tData.getProgress());
 		if (amount <=0)
-			return;
+			return false;
 		PlayerProgressTaskEvent event = new PlayerProgressTaskEvent(this,t,amount);
 		Bukkit.getPluginManager().callEvent(event);
-		if (event.getProgressAmount() <=0)
-			return;
+		if (event.isCancelled() || event.getProgressAmount() <=0)
+			return false;
 		tData.setProgress(tData.getProgress()+event.getProgressAmount());
 		for (Reward rew : event.getRewards())
 			for (int i = 0 ; i < event.getProgressAmount() ; i++)
 				rew.applyReward(this);
 		if (t.getMaxProgress()<=tData.getProgress())
 			completeTask(t);
+		return true;
 	}
 	public void completeTask(Task t) {
 		PlayerCompleteTaskEvent event = new PlayerCompleteTaskEvent(this,t);

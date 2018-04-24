@@ -4,8 +4,8 @@ public class H {
 
 
 	public static final String MISSION_FOREACH_TASK = "{foreach-task}";
-	public static final String MISSION_FOREACH_STARTREWARD = "{foreach-startreward}";
-	public static final String MISSION_FOREACH_COMPLETEREWARD = "{foreach-completereward}";
+	//public static final String MISSION_FOREACH_STARTREWARD = "{foreach-startreward}";
+	//public static final String MISSION_FOREACH_COMPLETEREWARD = "{foreach-completereward}";
 	public static final String MISSION_FOREACH_REQUIRE = "{foreach-require}";
 	public static final String MISSION_GENERIC_TASK_NAME = "{<task>-name}";
 	public static final String MISSION_GENERIC_TASK_TYPE = "{<task>-type}";
@@ -14,4 +14,6 @@ public class H {
 	public static final String MISSION_NAME = "{mission-name}";
 	public static final String MISSION_COOLDOWN_LEFT = "{mission-cooldownleft}";
 	public static final String QUEST_COOLDOWN_LEFT = "{quest-cooldownleft}";
+	public static final String MISSION_GENERIC_TASK_DESCRIPTION = "{<task>-description}";
+	public static final String MISSION_GENERIC_TASK_ACTION = "{<task>-action}";
 }
