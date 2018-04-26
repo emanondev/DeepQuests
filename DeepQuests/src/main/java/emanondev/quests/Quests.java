@@ -132,6 +132,7 @@ public class Quests extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		new SpawnReasonTracker();
 		new YMLConfig(this,"quests-example");
 		Defaults.reload();
 		loggerManager = new LoggerManager();
@@ -176,5 +177,7 @@ public class Quests extends JavaPlugin {
 	public void onDisable() {
 		playerManager.saveAll();
 	}
+	
+	
 
 }

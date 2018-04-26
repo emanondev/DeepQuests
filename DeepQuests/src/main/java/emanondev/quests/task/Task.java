@@ -139,7 +139,9 @@ public abstract class Task extends YmlLoadable{
 	public String getAction() {
 		return Language.getTaskActionName(this.getClass().getSimpleName().toUpperCase());
 	}
-	public abstract String getDescription();
+	public String getDescription() {
+		return "todoDescription";
+	}
 	
 	/*
 	 * displayname:

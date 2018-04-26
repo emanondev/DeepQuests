@@ -12,7 +12,8 @@ import emanondev.quests.Quests;
 import emanondev.quests.hooks.Hooks;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.task.AbstractBlockTask;
+import emanondev.quests.task.BlocksTaskInfo;
+import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -39,41 +40,33 @@ public class BreakBlockTaskType extends TaskType {
 			if (task.isWorldAllowed(event.getPlayer().getWorld()) 
 					 && task.isValidBlock(event.getBlock())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.removeDrops())
+					if (task.drops.removeDrops())
 						event.setDropItems(false);
-					if (task.removeExp())
+					if (task.drops.removeExp())
 						event.setExpToDrop(0);
 				}
 			}
 		}
 	}
 	
-	public class BreakBlockTask extends AbstractBlockTask {
+	public class BreakBlockTask extends Task {
 		private final static String PATH_CHECK_VIRGIN = "check-virgin-block";
-		private final static String PATH_REMOVE_DROP = "remove-drops";
-		private final static String PATH_REMOVE_EXP = "remove-exp";
 		private final boolean checkVirgin;
-		private final boolean removeDrops;
-		private final boolean removeExp;
+		private final DropsTaskInfo drops;
+		private final BlocksTaskInfo blocks;
 		//TODO option CHECKTOOL
 		public BreakBlockTask(MemorySection m, Mission parent) {
 			super(m, parent,BreakBlockTaskType.this);
+			drops = new DropsTaskInfo(m);
+			blocks = new BlocksTaskInfo(m);
 			checkVirgin = m.getBoolean(PATH_CHECK_VIRGIN,true);
-			removeDrops = m.getBoolean(PATH_REMOVE_DROP,false);
-			removeExp = m.getBoolean(PATH_REMOVE_EXP,false);
 		}
-		@Override
+		
 		public boolean isValidBlock(Block block) {
 			if (checkVirgin)
-				return super.isValidBlock(block)&&Hooks.isBlockVirgin(block);
+				return blocks.isValidBlock(block)&&Hooks.isBlockVirgin(block);
 			else
-				return super.isValidBlock(block);
-		}
-		public boolean removeDrops() {
-			return removeDrops;
-		}
-		public boolean removeExp() {
-			return removeExp;
+				return blocks.isValidBlock(block);
 		}
 		
 	}

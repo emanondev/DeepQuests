@@ -8,19 +8,16 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.MemorySection;
 
-import emanondev.quests.Language;
 import emanondev.quests.Quests;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.utils.MemoryUtils;
 
-public abstract class AbstractBlockTask extends Task{
+public class BlocksTaskInfo {
 	private final static String PATH_BLOCK = "block";
 	private final static String PATH_BLOCK_AS_WHITELIST = "blocks-is-whitelist";
-	private final String description;
 	private final ArrayList<BlockType> blocks = new ArrayList<BlockType>();
-	private final boolean isWhitelist;
-	public AbstractBlockTask(MemorySection m, Mission parent,TaskType type) {
-		super(m, parent,type);
+	private final boolean blockWhitelist;
+	
+	public BlocksTaskInfo(MemorySection m) {
 		List<String> list = MemoryUtils.getStringList(m, PATH_BLOCK);
 		if (list!=null)
 			for (String value : list) {
@@ -32,38 +29,17 @@ public abstract class AbstractBlockTask extends Task{
 					Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
 				}
 			}
-		isWhitelist = m.getBoolean(PATH_BLOCK_AS_WHITELIST,true);
-		StringBuilder desc = new StringBuilder("");
-		if (!isWhitelist)
-			desc.append(Language.getConjNot()+" ");
-		for (int i = 0; i < blocks.size()-1;i++)
-			if (blocks.get(i).data==null)
-				desc.append(Language.getBlockName(blocks.get(i).material.toString())
-						+" "+Language.getConjOr()+" ");
-			else
-				desc.append(Language.getBlockName(blocks.get(i).material.toString()+":"+blocks.get(i).data)
-						+" "+Language.getConjOr()+" ");
-		if (!blocks.isEmpty())
-			if (blocks.get(blocks.size()-1).data==null)
-				desc.append(Language.getBlockName(blocks.get(blocks.size()-1).material.toString()));
-			else
-				desc.append(Language.getBlockName(blocks.get(blocks.size()-1).material.toString()
-						+":"+blocks.get(blocks.size()-1).data));
-		description = desc.toString();
+		blockWhitelist = m.getBoolean(PATH_BLOCK_AS_WHITELIST,true);
 	}
 	
 	public boolean isValidBlock(Block block) {
 		for (BlockType bType : blocks) {
 			if (bType.isBlock(block))
-				return isWhitelist;
+				return blockWhitelist;
 		}
-		return !isWhitelist;
+		return !blockWhitelist;
 	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
+	
 	private class BlockType{
 		private Material material;
 		private Byte data;
