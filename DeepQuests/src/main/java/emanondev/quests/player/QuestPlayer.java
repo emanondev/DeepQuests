@@ -108,10 +108,10 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		if (event.isCancelled())
 			return;
 		
-		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,m);
 		MissionData mData = this.getMissionData(m);
 		mData.start();
+		for (MissionReward reward : event.getRewards())
+			reward.applyReward(this,m);
 		BaseComponent[] mex = m.getStartMessage(this);
 		if (mex!=null)
 			getPlayer().spigot().sendMessage(mex);
@@ -154,10 +154,10 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		PlayerCompleteMissionEvent event = new PlayerCompleteMissionEvent(this,m);
 		Bukkit.getPluginManager().callEvent(event);
 		
-		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,m);
 		MissionData mData = this.getMissionData(m);
 		mData.complete();
+		for (MissionReward reward : event.getRewards())
+			reward.applyReward(this,m);
 		BaseComponent[] mex = m.getCompleteMessage(this);
 		if (mex!=null)
 			getPlayer().spigot().sendMessage(mex);

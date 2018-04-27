@@ -31,5 +31,6 @@
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG/spigot-1.12.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/PlaceholderAPI-2.8.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirginBlock"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/citizens-2.0.22-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

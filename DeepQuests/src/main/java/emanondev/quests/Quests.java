@@ -22,7 +22,14 @@ import emanondev.quests.reward.RewardManager;
 import emanondev.quests.reward.type.ConsoleCommandRewardType;
 import emanondev.quests.task.TaskManager;
 import emanondev.quests.task.type.BreakBlockTaskType;
+import emanondev.quests.task.type.BreedMobTaskType;
+import emanondev.quests.task.type.FishingTaskType;
+import emanondev.quests.task.type.KillMobTaskType;
+import emanondev.quests.task.type.NPCKillTaskType;
+import emanondev.quests.task.type.NPCTalkTaskType;
 import emanondev.quests.task.type.PlaceBlockTaskType;
+import emanondev.quests.task.type.ShearSheepTaskType;
+import emanondev.quests.task.type.TameMobTaskType;
 import net.md_5.bungee.api.ChatColor;
 
 public class Quests extends JavaPlugin {
@@ -156,7 +163,17 @@ public class Quests extends JavaPlugin {
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		taskManager.registerType(new BreakBlockTaskType());
 		taskManager.registerType(new PlaceBlockTaskType());
-		//TODO
+		taskManager.registerType(new BreedMobTaskType());
+		taskManager.registerType(new FishingTaskType());
+		taskManager.registerType(new KillMobTaskType());
+		taskManager.registerType(new ShearSheepTaskType());
+		taskManager.registerType(new TameMobTaskType());
+		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
+			taskManager.registerType(new NPCKillTaskType());
+			taskManager.registerType(new NPCTalkTaskType());
+		}
+		//TODO implement a way to activate listeners only if required
+		
 		questManager = new QuestManager();
 		
 		playerManager = new PlayerManager();
@@ -169,7 +186,6 @@ public class Quests extends JavaPlugin {
 		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config.reload();
-		//TODO
 		questManager = new QuestManager();
 		
 		playerManager = new PlayerManager();

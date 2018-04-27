@@ -1,6 +1,5 @@
 package emanondev.quests.task;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import emanondev.quests.Language;
 import emanondev.quests.Quests;
 import emanondev.quests.SpawnReasonTracker;
 import emanondev.quests.utils.MemoryUtils;
@@ -22,7 +20,6 @@ public class EntityTaskInfo {
 	public final static String PATH_IGNORE_NPC = "ignore-npc";
 	public final static String PATH_ENTITY_SPAWNREASON = "spawn-reason.list";
 	public final static String PATH_ENTITY_SPAWNREASON_AS_WHITELIST = "spawn-reason.is-whitelist";
-	private final String description;
 	private final EnumSet<EntityType> entity = EnumSet.noneOf(EntityType.class);
 	private final EnumSet<SpawnReason> spawnReasons = EnumSet.noneOf(SpawnReason.class);
 	private final boolean spawnReasonsWhitelist;
@@ -67,22 +64,6 @@ public class EntityTaskInfo {
 		
 		
 		ignoreNPC = m.getBoolean(PATH_IGNORE_NPC,false);
-		
-		
-		
-		StringBuilder desc = new StringBuilder("");
-		
-		if (!entityWhitelist && !entity.isEmpty())
-			desc.append(Language.getConjNot()+" ");
-		
-		List<EntityType> utilList = new ArrayList<EntityType>(entity);
-		for (int i = 0; i < utilList.size()-1;i++)
-			desc.append(Language.getEntityName(utilList.get(i))
-						+" "+Language.getConjOr()+" ");
-		if (!entity.isEmpty())
-			desc.append(Language.getEntityName(utilList.get(utilList.size()-1)));
-			
-		description = desc.toString();//TODO
 	}
 	
 	private boolean checkEntityType(Entity e) {
@@ -123,10 +104,6 @@ public class EntityTaskInfo {
 
 	public boolean isValidEntity(Entity e) {
 		return checkEntityType(e)&&checkSpawnReason(e)&&checkEntityName(e)&&checkNPC(e);
-	}
-	
-	public String getDescription() {
-		return description;
 	}
 	
 }
