@@ -216,7 +216,7 @@ mission:
                 autogenerate: false
                 value: 
                 - ""
-                - "{foreach-task}&7➤ {<task>-name}: {<task>-action} {<task>-maxprogress} {<task>-description}"
+                - "{foreach-task}&7➤ {<task>-unstarted-description}"
                 - ""
                 - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
         #when player has started the mission
@@ -234,7 +234,7 @@ mission:
                 autogenerate: false 
                 value: 
                 - ""
-                - "{foreach-task}&7➤ {<task>-name}: {<task>-action} &e{<task>-progress}&9/{<task>-maxprogress} {<task>-description}"
+                - "{foreach-task}&7➤ {<task>-progress-description}"
                 - ""
                 - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
         #when player has completed the mission but it"s still waiting to unlock it again

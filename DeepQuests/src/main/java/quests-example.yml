@@ -152,7 +152,7 @@ quest1:
                     - STONE
                     #LOG:0 = oak logs with vertical direction, for any kind of Oak add more LOG:... 
                     - LOG:0
-                    #LOG:4 = oak log facinf nord-south direction
+                    #LOG:4 = oak log facing nord-south direction
                     - LOG:4
                     
                     #OPTIONAL: use previus list as whitelist of valid blocks, by default true

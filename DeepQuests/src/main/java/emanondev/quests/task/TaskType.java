@@ -7,19 +7,17 @@ import emanondev.quests.mission.Mission;
 
 public abstract class TaskType implements Listener {
 	
-	private final String key;
-	private final String displayName;
-	public TaskType(String key,String displayName) {
+	protected final String key;
+	/**
+	 * 
+	 * @param key
+	 */
+	public TaskType(String key) {
 		if (key == null)
 			throw new NullPointerException();
 		if (key.isEmpty() || key.contains(" "))
 			throw new IllegalArgumentException("invalid task name");
 		this.key = key.toUpperCase();
-
-		if (displayName==null)
-			this.displayName = this.key.toLowerCase().replace("_", " ");
-		else
-			this.displayName = displayName;
 	}
 
 	public abstract Task getTaskInstance(MemorySection m,Mission parent);
@@ -39,7 +37,7 @@ public abstract class TaskType implements Listener {
 	
 	
 	public String toString() {
-		return "TaskType:[Key: "+key+", DisplayName: "+displayName+"]";
+		return "TaskType:[Key: "+key+"]";
 	}
 	
 	/**
@@ -72,12 +70,5 @@ public abstract class TaskType implements Listener {
 			return taskType;
 		}
 	}*/
-
-	/**
-	 * @return display name
-	 */
-	public String getDisplayName() {
-		return displayName;
-	}
 	
 }

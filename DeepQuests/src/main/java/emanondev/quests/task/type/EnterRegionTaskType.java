@@ -6,27 +6,24 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityBreedEvent;
+import com.mewin.WGRegionEvents.events.RegionEnterEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
-import emanondev.quests.task.EntityTaskInfo;
+import emanondev.quests.task.RegionTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
-public class BreedMobTaskType extends TaskType {
-	public BreedMobTaskType() {
-		super("BreedMob");
+public class EnterRegionTaskType extends TaskType {
+	public EnterRegionTaskType() {
+		super("EnterRegion");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private void onBlockBreak(EntityBreedEvent event) {
-		if (!(event.getBreeder() instanceof Player))
-			return;
-		Player p = (Player) event.getBreeder();
+	private void onRegionEnter(RegionEnterEvent event) {
+		Player p = event.getPlayer();
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
 				.getQuestPlayer(p);
 		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
@@ -34,30 +31,27 @@ public class BreedMobTaskType extends TaskType {
 		if (tasks ==null||tasks.isEmpty())
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
-			BreedMobTask task = (BreedMobTask) tasks.get(i);
+			EnterRegionTask task = (EnterRegionTask) tasks.get(i);
 			if (task.isWorldAllowed(p.getWorld()) 
-					 && task.entity.isValidEntity(event.getEntity())) {
-				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeExp())
-						event.setExperience(0);
-				}
+					 && task.regionInfo.isValidRegion(event.getRegion())) {
+				task.onProgress(qPlayer);
 			}
 		}
 	}
 	
-	public class BreedMobTask extends AbstractTask {
-		private final EntityTaskInfo entity;
-		private final DropsTaskInfo drops;
-		public BreedMobTask(MemorySection m, Mission parent) {
-			super(m, parent,BreedMobTaskType.this);
-			entity = new EntityTaskInfo(m);
-			drops = new DropsTaskInfo(m);
+	public class EnterRegionTask extends AbstractTask {
+		private final RegionTaskInfo regionInfo;
+		
+		public EnterRegionTask(MemorySection m, Mission parent) {
+			super(m, parent,EnterRegionTaskType.this);
+			regionInfo = new RegionTaskInfo(m);
 		}
 		
 	}
 
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
-		return new BreedMobTask(m,parent);
+		return new EnterRegionTask(m,parent);
 	}
+
 }

@@ -11,20 +11,19 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
 public class ShearSheepTaskType extends TaskType {
-	private static String key;
 	public ShearSheepTaskType() {
-		super("ShearSheep", "Shear sheep");
-		key = getKey();
+		super("ShearSheep");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onShear(PlayerShearEntityEvent event) {
+	private void onShear(PlayerShearEntityEvent event) {
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
 				.getQuestPlayer(event.getPlayer());
 		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
@@ -45,7 +44,7 @@ public class ShearSheepTaskType extends TaskType {
 		}
 	}
 	
-	public class ShearSheepTask extends Task {
+	public class ShearSheepTask extends AbstractTask {
 		private final EntityTaskInfo entity;
 		private final DropsTaskInfo drops;
 		public ShearSheepTask(MemorySection m, Mission parent) {

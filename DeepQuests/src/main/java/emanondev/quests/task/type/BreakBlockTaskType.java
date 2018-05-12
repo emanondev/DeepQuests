@@ -12,6 +12,7 @@ import emanondev.quests.Quests;
 import emanondev.quests.hooks.Hooks;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.BlocksTaskInfo;
 import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.Task;
@@ -19,14 +20,12 @@ import emanondev.quests.task.TaskType;
 
 public class BreakBlockTaskType extends TaskType {
 
-	private static String key;
 	public BreakBlockTaskType() {
-		super("breakblock", "break blocks");
-		key = getKey();
+		super("breakblock");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onBlockBreak(BlockBreakEvent event) {
+	private void onBlockBreak(BlockBreakEvent event) {
 		if (event.getPlayer()==null)
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -49,7 +48,7 @@ public class BreakBlockTaskType extends TaskType {
 		}
 	}
 	
-	public class BreakBlockTask extends Task {
+	public class BreakBlockTask extends AbstractTask {
 		private final static String PATH_CHECK_VIRGIN = "check-virgin-block";
 		private final boolean checkVirgin;
 		private final DropsTaskInfo drops;

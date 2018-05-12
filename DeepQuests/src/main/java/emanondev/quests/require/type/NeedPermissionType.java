@@ -6,9 +6,10 @@ import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
 
 public class NeedPermissionType extends AbstractRequireType implements RequireType {
-
+	private final static String ID = "PERMISSION";
+	
 	public NeedPermissionType() {
-		super("PERMISSION");
+		super(ID);
 	}
 	
 	@Override
@@ -28,6 +29,10 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		@Override
 		public boolean isAllowed(QuestPlayer p) {
 			return p.getPlayer().hasPermission(permission);
+		}
+		@Override
+		public String toText() {
+			return ID+":"+permission;
 		}
 		
 	}

@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.NPCTaskInfo;
 import emanondev.quests.task.Task;
@@ -19,7 +20,7 @@ import net.citizensnpcs.api.event.NPCDeathEvent;
 public class NPCKillTaskType extends TaskType {
 	private static String key;
 	public NPCKillTaskType() {
-		super("KillNPC", "Kill NPC");
+		super("KillNPC");
 		key = getKey();
 	}
 	
@@ -52,7 +53,7 @@ public class NPCKillTaskType extends TaskType {
 		}
 	}
 	
-	public class NPCKillTask extends Task {
+	public class NPCKillTask extends AbstractTask {
 		private final NPCTaskInfo npc;
 		private final DropsTaskInfo drops;
 		public NPCKillTask(MemorySection m, Mission parent) {

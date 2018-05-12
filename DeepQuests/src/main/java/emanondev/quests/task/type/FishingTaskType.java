@@ -9,19 +9,18 @@ import org.bukkit.event.player.PlayerFishEvent;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
 public class FishingTaskType extends TaskType {
-	private static String key;
 	public FishingTaskType() {
-		super("Fishing", "fish sheep");
-		key = getKey();
+		super("Fishing");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onFishing(PlayerFishEvent event) {
+	private void onFishing(PlayerFishEvent event) {
 		if (event.getState()!=PlayerFishEvent.State.CAUGHT_FISH)
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -33,19 +32,22 @@ public class FishingTaskType extends TaskType {
 		for (int i = 0; i < tasks.size(); i++) {
 			FishingTask task = (FishingTask) tasks.get(i);
 			if (task.isWorldAllowed(event.getPlayer().getWorld())) {
-				if (task.onProgress(qPlayer))
+				if (task.onProgress(qPlayer)) {
 					if(task.drops.removeExp())
 						event.setExpToDrop(0);
+					if(task.drops.removeDrops()&&event.getHook()!=null)
+						event.getHook().remove();
 				}
 			}
 		}
+	}
 
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new FishingTask(m,parent);
 	}
 	
-	public class FishingTask extends Task {
+	public class FishingTask extends AbstractTask {
 		private final DropsTaskInfo drops;
 		public FishingTask(MemorySection m, Mission parent) {
 			super(m, parent,FishingTaskType.this);

@@ -492,5 +492,12 @@ public class Defaults {
 		public static boolean shouldAutogenDisplayName() {
 			return data.getBoolean(BASE_PATH+"display-name.autogenerate",true);
 		}
+		public static String getUnstartedDescription() {
+			return H.MISSION_GENERIC_TASK_NAME+" "+H.MISSION_GENERIC_TASK_MAX_PROGRESS;
+		}
+		public static String getProgressDescription() {
+			return H.MISSION_GENERIC_TASK_NAME+" "+H.MISSION_GENERIC_TASK_PROGRESS
+					+"/"+H.MISSION_GENERIC_TASK_MAX_PROGRESS;
+		}
 	}
 }

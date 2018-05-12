@@ -10,20 +10,19 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.BlocksTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
 public class PlaceBlockTaskType extends TaskType {
 
-	private static String key;
 	public PlaceBlockTaskType() {
-		super("placeblock", "place blocks");
-		key = getKey();
+		super("placeblock");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onBlockPlace(BlockPlaceEvent event) {
+	private void onBlockPlace(BlockPlaceEvent event) {
 		if (event.getPlayer()==null)
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -40,7 +39,7 @@ public class PlaceBlockTaskType extends TaskType {
 		}
 	}
 	
-	public class PlaceBlockTask extends Task {
+	public class PlaceBlockTask extends AbstractTask {
 		private final BlocksTaskInfo blocks;
 
 		public PlaceBlockTask(MemorySection m, Mission parent) {

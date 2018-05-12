@@ -9,20 +9,19 @@ import org.bukkit.event.EventPriority;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.NPCTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public class NPCTalkTaskType extends TaskType {
-	private static String key;
 	public NPCTalkTaskType() {
-		super("TalkNpc", "Talk to NPC");
-		key = getKey();
+		super("TalkNpc");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onBlockBreak(NPCRightClickEvent event) {
+	private void onBlockBreak(NPCRightClickEvent event) {
 		
 		Player p = (Player) event.getClicker();
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -42,7 +41,7 @@ public class NPCTalkTaskType extends TaskType {
 		}
 	}
 	
-	public class NPCTalkTask extends Task {
+	public class NPCTalkTask extends AbstractTask {
 		private final NPCTaskInfo npc;
 		public NPCTalkTask(MemorySection m, Mission parent) {
 			super(m, parent,NPCTalkTaskType.this);

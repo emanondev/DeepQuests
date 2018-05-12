@@ -19,12 +19,17 @@ import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.reward.MissionReward;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadableWithDisplay;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Mission extends YmlLoadableWithDisplay{
 	private final Quest parent;
@@ -118,16 +123,16 @@ public class Mission extends YmlLoadableWithDisplay{
 		String[] holders = new String[tasks.size()*5*2+2];
 		ArrayList<Task> list = new ArrayList<Task>(tasks.values());
 		for (int i = 0; i < list.size(); i++) {
-			holders[i*10] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", list.get(i).getNameID());
-			holders[i*10+1] = list.get(i).getDisplayName();
-			holders[i*10+2] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", list.get(i).getNameID());
-			holders[i*10+3] = list.get(i).getTaskType().getDisplayName();
-			holders[i*10+4] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", list.get(i).getNameID());
-			holders[i*10+5] = list.get(i).getMaxProgress()+"";
-			holders[i*10+6] = H.MISSION_GENERIC_TASK_DESCRIPTION.replace("<task>", list.get(i).getNameID());
-			holders[i*10+7] = list.get(i).getDescription();
-			holders[i*10+8] = H.MISSION_GENERIC_TASK_ACTION.replace("<task>", list.get(i).getNameID());
-			holders[i*10+9] = list.get(i).getAction();
+			holders[i*10] = H.MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION.replace("<task>", list.get(i).getNameID());
+			holders[i*10+1] = list.get(i).getProgressDescription();
+			holders[i*10+2] = H.MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION.replace("<task>", list.get(i).getNameID());
+			holders[i*10+3] = list.get(i).getUnstartedDescription();
+			holders[i*10+4] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", list.get(i).getNameID());
+			holders[i*10+5] = list.get(i).getDisplayName();
+			holders[i*10+6] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", list.get(i).getNameID());
+			holders[i*10+7] = list.get(i).getTaskType().getKey();
+			holders[i*10+8] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", list.get(i).getNameID());
+			holders[i*10+9] = list.get(i).getMaxProgress()+"";
 		}
 		holders[holders.length-2] = H.MISSION_NAME;
 		holders[holders.length-1] = getDisplayName();
@@ -164,7 +169,7 @@ public class Mission extends YmlLoadableWithDisplay{
 		s.forEach((key)->{
 			try {
 				Task task = Quests.getInstance().getTaskManager()
-						.readTask(m.getString(key+"."+Task.PATH_TASK_TYPE),
+						.readTask(m.getString(key+"."+AbstractTask.PATH_TASK_TYPE),
 								(MemorySection) m.get(key), this);
 				map.put(task.getNameID(), task);
 				shouldSave = shouldSave || task.shouldSave();
@@ -305,4 +310,36 @@ public class Mission extends YmlLoadableWithDisplay{
 	}
 	private final MissionDisplayInfo displayInfo;
 
+	public BaseComponent[] toComponent() {
+		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
+				+ChatColor.AQUA+this.getNameID()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
+				+ChatColor.AQUA+this.getDisplayName()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
+		
+		if (!this.isRepetable())
+			comp.append(ChatColor.RED+"Disabled\n");
+		else
+			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
+		if (tasks.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Tasks:\n");
+			for (Task task : tasks.values()) {
+				comp.append(ChatColor.AQUA+" - "+task.getNameID()+"\n")
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+							"/qa quest "+this.parent.getNameID()+" mission "+this.getNameID()
+							+" task "+task.getNameID()+ " info"))
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							new ComponentBuilder(ChatColor.YELLOW+"Click for details")
+							.create()));
+			}
+		}
+		if (requires.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
+			for (MissionRequire require : requires) {
+				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
+			}
+		}
+		
+		return comp.create();
+	}
 }

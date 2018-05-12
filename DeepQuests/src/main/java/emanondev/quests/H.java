@@ -14,6 +14,6 @@ public class H {
 	public static final String MISSION_NAME = "{mission-name}";
 	public static final String MISSION_COOLDOWN_LEFT = "{mission-cooldownleft}";
 	public static final String QUEST_COOLDOWN_LEFT = "{quest-cooldownleft}";
-	public static final String MISSION_GENERIC_TASK_DESCRIPTION = "{<task>-description}";
-	public static final String MISSION_GENERIC_TASK_ACTION = "{<task>-action}";
+	public static final String MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION = "{<task>-progress-description}";
+	public static final String MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION = "{<task>-unstarted-description}";
 }

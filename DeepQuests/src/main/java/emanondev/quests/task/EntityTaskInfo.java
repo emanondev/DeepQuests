@@ -31,7 +31,7 @@ public class EntityTaskInfo {
 		if (list!=null)
 			for (String value : list) {
 				try {
-					entity.add(EntityType.valueOf(value));
+					entity.add(EntityType.valueOf(value.toUpperCase()));
 				} catch (Exception e) {
 					Quests.getLogger("errors").log("error on Path "+m.getCurrentPath()+"."+m.getName()
 						+" "+e.getMessage());
@@ -50,7 +50,7 @@ public class EntityTaskInfo {
 		if (list!=null)
 			for (String value : list) {
 				try {
-					spawnReasons.add(SpawnReason.valueOf(value));
+					spawnReasons.add(SpawnReason.valueOf(value.toUpperCase()));
 				} catch (Exception e) {
 					Quests.getLogger("errors").log("error on Path "+m.getCurrentPath()+"."+m.getName()
 						+" "+e.getMessage());

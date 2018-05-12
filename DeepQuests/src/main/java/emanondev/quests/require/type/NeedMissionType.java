@@ -8,9 +8,10 @@ import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
 
 public class NeedMissionType extends AbstractRequireType implements MissionRequireType {
-
+	private final static String ID = "MISSION";
+	
 	public NeedMissionType() {
-		super("MISSION");
+		super(ID);
 	}
 	@Override
 	public MissionRequire getRequireInstance(String info) {
@@ -40,6 +41,11 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 				break;
 			}
 			return false;
+		}
+
+		@Override
+		public String toText() {
+			return ID+":"+targetMission;
 		}
 		
 	}

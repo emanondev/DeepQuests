@@ -11,19 +11,18 @@ import org.bukkit.event.entity.EntityTameEvent;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
 public class TameMobTaskType extends TaskType {
-	private static String key;
 	public TameMobTaskType() {
-		super("TameMob", "Tame mob");
-		key = getKey();
+		super("TameMob");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onBlockBreak(EntityTameEvent event) {
+	private void onTaming(EntityTameEvent event) {
 		if (!(event.getOwner() instanceof Player))
 			return;
 		Player p = (Player) event.getOwner();
@@ -42,7 +41,7 @@ public class TameMobTaskType extends TaskType {
 		}
 	}
 	
-	public class TameMobTask extends Task {
+	public class TameMobTask extends AbstractTask {
 		private final EntityTaskInfo entity;
 		//TODO option CHECKTOOL
 		public TameMobTask(MemorySection m, Mission parent) {

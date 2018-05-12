@@ -16,6 +16,11 @@ import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.YmlLoadableWithDisplay;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Quest extends YmlLoadableWithDisplay{
 	public static final String HOLDER_MISSION_NUMBER = "{mission-number}";
@@ -119,5 +124,39 @@ public class Quest extends YmlLoadableWithDisplay{
 	}
 	private final QuestDisplayInfo displayInfo;
 
-
+	
+	public BaseComponent[] toComponent() {
+		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
+				+ChatColor.AQUA+this.getNameID()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
+				+ChatColor.AQUA+this.getDisplayName()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
+		
+		if (!this.isRepetable())
+			comp.append(ChatColor.RED+"Disabled\n");
+		else
+			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
+		if (missions.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Missions:\n");
+			for (Mission mission : missions.values()) {
+				comp.append(ChatColor.AQUA+" - "+mission.getNameID()+"\n")
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+							"/qa quest "+this.getNameID()+" mission "
+							+mission.getNameID()+ " info"))
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							new ComponentBuilder(ChatColor.YELLOW+"Click for details")
+							.create()));
+				
+			}
+		}
+		if (requires.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
+			for (QuestRequire require : requires) {
+				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
+				
+			}
+		}
+		
+		return comp.create();
+	}
 }

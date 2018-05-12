@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
@@ -17,14 +18,12 @@ import emanondev.quests.task.TaskType;
 
 public class KillMobTaskType extends TaskType {
 
-	private static String key;
 	public KillMobTaskType() {
-		super("KillMob", "Kill a Mob");
-		key = getKey();
+		super("KillMob");
 	}
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
-	private static void onEntityDie(EntityDeathEvent event) {
+	private void onEntityDie(EntityDeathEvent event) {
 		if (event.getEntity().getKiller()==null)
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
@@ -47,7 +46,7 @@ public class KillMobTaskType extends TaskType {
 		}
 		
 	}
-	public class KillMobTask extends Task {
+	public class KillMobTask extends AbstractTask {
 		private final EntityTaskInfo entityInfo;
 		private final DropsTaskInfo drops;
 		
