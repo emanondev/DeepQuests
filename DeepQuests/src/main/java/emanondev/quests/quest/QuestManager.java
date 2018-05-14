@@ -20,19 +20,21 @@ public class QuestManager {
 	public QuestManager() {
 		Set<String> s = data.getValues(false).keySet();
 		s.forEach((key)->{
-			boolean shouldSave = false;
+			boolean dirty = false;
 			try {
 				Quest quest = new Quest((MemorySection) data.get(key));
 				quests.put(quest.getNameID(),quest);
-				shouldSave = shouldSave || quest.shouldSave();
+				if (quest.isDirty())
+					dirty = true;
 			}catch (Exception e) {
+				e.printStackTrace();
 				Quests.getInstance().getLoggerManager().getLogger("errors")
 					.log("Error while loading Quests on file quests.yml '"
 							+key+"' could not be read as valid quest"
 							,ExceptionUtils.getStackTrace(e));
 			}
 			
-			if (shouldSave)
+			if (dirty)
 				data.save();
 		});
 	}

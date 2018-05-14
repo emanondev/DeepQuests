@@ -29,10 +29,6 @@ public class Defaults {
 
 	public static class QuestDef {
 		private static final String BASE_PATH = "quest.";
-		
-		public static String getDisplayNameDefaultPrefix() {
-			return data.getString(BASE_PATH+"display-name-prefix.value", "");
-		}
 	
 		public static int getDefaultCooldownMinutes() {
 			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);
@@ -243,9 +239,6 @@ public class Defaults {
 	
 	public static class MissionDef {
 		private static final String BASE_PATH = "mission.";
-		public static String getDisplayNameDefaultPrefix() {
-			return data.getString(BASE_PATH+"display-name-prefix.default-value", "");
-		}
 	
 		public static int getDefaultCooldownMinutes() {
 			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);

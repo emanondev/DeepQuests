@@ -23,8 +23,11 @@ import emanondev.quests.reward.type.ConsoleCommandRewardType;
 import emanondev.quests.task.TaskManager;
 import emanondev.quests.task.type.BreakBlockTaskType;
 import emanondev.quests.task.type.BreedMobTaskType;
+import emanondev.quests.task.type.EnterRegionTaskType;
 import emanondev.quests.task.type.FishingTaskType;
 import emanondev.quests.task.type.KillMobTaskType;
+import emanondev.quests.task.type.LeaveRegionTaskType;
+import emanondev.quests.task.type.MythicMobKillTaskType;
 import emanondev.quests.task.type.NPCKillTaskType;
 import emanondev.quests.task.type.NPCTalkTaskType;
 import emanondev.quests.task.type.PlaceBlockTaskType;
@@ -171,6 +174,14 @@ public class Quests extends JavaPlugin {
 		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
 			taskManager.registerType(new NPCKillTaskType());
 			taskManager.registerType(new NPCTalkTaskType());
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
+				&& Bukkit.getPluginManager().isPluginEnabled("WGRegionEvents")) {
+			taskManager.registerType(new EnterRegionTaskType());
+			taskManager.registerType(new LeaveRegionTaskType());
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("MythicMobs")) {
+			taskManager.registerType(new MythicMobKillTaskType());
 		}
 		//TODO implement a way to activate listeners only if required
 		

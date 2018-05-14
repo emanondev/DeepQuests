@@ -15,14 +15,14 @@ import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.utils.MemoryUtils;
-import emanondev.quests.utils.YmlLoadableWithDisplay;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
-public class Quest extends YmlLoadableWithDisplay{
+public class Quest extends YmlLoadableWithCooldown{
 	public static final String HOLDER_MISSION_NUMBER = "{mission-number}";
 	public static final String HOLDER_QUEST_NAME = "{quest-name}";
 	public static final String HOLDER_COMPLETED_MISSION_NUMBER = "{completed-mission-number}";
@@ -46,8 +46,8 @@ public class Quest extends YmlLoadableWithDisplay{
 		if (req!=null)
 			requires.addAll(req);		
 		displayInfo = loadDisplayInfo(m);
-		if (displayInfo.shouldSave())
-			shouldSave = true;
+		if (displayInfo.isDirty())
+			this.setDirty(true);
 	}
 	
 	protected List<QuestRequire> loadRequires(MemorySection m) {
@@ -63,7 +63,8 @@ public class Quest extends YmlLoadableWithDisplay{
 			try {
 				Mission mission = new Mission((MemorySection) m.get(key),this);
 				map.put(mission.getNameID(), mission);
-				shouldSave = shouldSave || mission.shouldSave();
+				if( mission.isDirty() )
+					this.setDirty(true);
 			} catch (Exception e) {
 				Quests.getInstance().getLoggerManager().getLogger("errors")
 				.log("Error while loading Mission on file quests.yml '"
@@ -93,14 +94,8 @@ public class Quest extends YmlLoadableWithDisplay{
 		return Defaults.QuestDef.getDefaultCooldownMinutes();
 	}
 
-	@Override
-	protected QuestDisplayInfo loadDisplayInfo(MemorySection m) {
+	private QuestDisplayInfo loadDisplayInfo(MemorySection m) {
 		return new QuestDisplayInfo(m,this);
-	}
-
-	@Override
-	protected String getDisplayNameDefaultPrefix() {
-		return Defaults.QuestDef.getDisplayNameDefaultPrefix();
 	}
 	
 	public List<QuestRequire> getRequires(){

@@ -21,28 +21,33 @@ import emanondev.quests.require.MissionRequire;
 import emanondev.quests.reward.MissionReward;
 import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.Task;
+import emanondev.quests.task.TaskType;
+import emanondev.quests.task.VoidTaskType;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadableWithDisplay;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
-public class Mission extends YmlLoadableWithDisplay{
-	private final Quest parent;
-	public static final String PATH_TASKS = "tasks";
-	public static final String PATH_REQUIRES = "requires";
-	private static final String PATH_START_REWARDS = "start-rewards";
-	private static final String PATH_COMPLETE_REWARDS = "complete-rewards";
-	private static final String PATH_START_TEXT = "start-text";
-	private static final String PATH_COMPLETE_TEXT = "complete-text";
-	private static final String PATH_PAUSE_TEXT = "pause-text";
-	private static final String PATH_UNPAUSE_TEXT = "unpause-text";
-	private static final String PATH_FAIL_TEXT = "fail-text";
+public class Mission extends YmlLoadableWithCooldown{
+	
+	
+	protected static final String PATH_TASKS = "tasks";
+	protected static final String PATH_REQUIRES = "requires";
+	protected static final String PATH_START_REWARDS = "start-rewards";
+	protected static final String PATH_COMPLETE_REWARDS = "complete-rewards";
+	protected static final String PATH_START_TEXT = "start-text";
+	protected static final String PATH_COMPLETE_TEXT = "complete-text";
+	protected static final String PATH_PAUSE_TEXT = "pause-text";
+	protected static final String PATH_UNPAUSE_TEXT = "unpause-text";
+	protected static final String PATH_FAIL_TEXT = "fail-text";
+	protected static final TaskType voidTaskType = new VoidTaskType();
 
+	private final Quest parent;
 	
 	public Mission(MemorySection m,Quest parent) {
 		super(m);
@@ -71,8 +76,8 @@ public class Mission extends YmlLoadableWithDisplay{
 		this.displayInfo = loadDisplayInfo(m);
 		fixDisplays();
 		holders = setupHolders();
-		if (displayInfo.shouldSave())
-			shouldSave = true;
+		if (displayInfo.isDirty())
+			setDirty(true);
 		
 	}
 	public String[] getHolders(Player p,DisplayState state) {
@@ -161,7 +166,7 @@ public class Mission extends YmlLoadableWithDisplay{
 		}
 	}
 	
-	protected LinkedHashMap<String, Task> loadTasks(MemorySection m) {
+	private LinkedHashMap<String, Task> loadTasks(MemorySection m) {
 		if (m==null)
 			return new LinkedHashMap<String, Task>();
 		Set<String> s = m.getKeys(false);
@@ -172,12 +177,16 @@ public class Mission extends YmlLoadableWithDisplay{
 						.readTask(m.getString(key+"."+AbstractTask.PATH_TASK_TYPE),
 								(MemorySection) m.get(key), this);
 				map.put(task.getNameID(), task);
-				shouldSave = shouldSave || task.shouldSave();
+				if (task.isDirty())
+					this.setDirty(true);
 			} catch (Exception e) {
+				e.printStackTrace();
 				Quests.getInstance().getLoggerManager().getLogger("errors")
 				.log("Error while loading Mission on file quests.yml '"
 						+m.getCurrentPath()+"."+key+"' could not be read as valid task"
 						,ExceptionUtils.getStackTrace(e));
+				Task task = voidTaskType.getTaskInstance(m, this);
+				map.put(task.getNameID(), task);
 			}
 		});
 		return map;
@@ -252,8 +261,7 @@ public class Mission extends YmlLoadableWithDisplay{
 		return Collections.unmodifiableList(completeRewards);
 	}
 	
-	@Override
-	protected MissionDisplayInfo loadDisplayInfo(MemorySection m) {
+	private MissionDisplayInfo loadDisplayInfo(MemorySection m) {
 		return new MissionDisplayInfo(m,this);
 	}
 	@Override
@@ -271,10 +279,6 @@ public class Mission extends YmlLoadableWithDisplay{
 	@Override
 	protected int getDefaultCooldownMinutes() {
 		return Defaults.MissionDef.getDefaultCooldownMinutes();
-	}
-	@Override
-	protected String getDisplayNameDefaultPrefix() {
-		return Defaults.MissionDef.getDisplayNameDefaultPrefix();
 	}
 	public List<MissionRequire> getRequires() {
 		return Collections.unmodifiableList(requires);

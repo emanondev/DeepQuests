@@ -9,26 +9,29 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class DisplayStateInfo {
+public abstract class DisplayStateInfo implements Savable {
 	
 	private final static String PATH_LORE = ".lore";
 	private final static String PATH_ITEM = ".item";//state.title
 	private final static String PATH_TITLE = ".title";
 	private final static String PATH_HIDE = ".hide";
 	
-	protected boolean shouldSave = false;//utility
-	public boolean shouldSave(){
-		return shouldSave;
+	private boolean dirty = false;//utility
+	public boolean isDirty(){
+		return dirty;
+	}
+	public void setDirty(boolean value) {
+		dirty = value;
 	}
 	
 	private EnumMap<DisplayState,Info> infos = new EnumMap<DisplayState,Info>(DisplayState.class);
 	
 
-	private final YmlLoadableWithDisplay parent;
-	protected YmlLoadableWithDisplay getParent() {
+	private final YmlLoadable parent;
+	protected YmlLoadable getParent() {
 		return parent;
 	}
-	public DisplayStateInfo(MemorySection m,YmlLoadableWithDisplay parent) {
+	public DisplayStateInfo(MemorySection m,YmlLoadable parent) {
 		if (m == null || parent == null)
 			throw new NullPointerException();
 		MemorySection m2 = (MemorySection) m.get("display");
@@ -67,7 +70,7 @@ public abstract class DisplayStateInfo {
 				tempStack = defaults;
 				if (autosave) {
 					m.set(path, MemoryUtils.getGuiItemString(tempStack));
-					shouldSave = true;
+					dirty = true;
 				}
 			}
 			item = tempStack;
@@ -80,7 +83,7 @@ public abstract class DisplayStateInfo {
 				tempList = defaults;
 				if (tempList!=null && autosave) {
 					m.set(path, tempList);
-					shouldSave = true;
+					dirty = true;
 				}
 			}
 			lore = tempList;
@@ -94,7 +97,7 @@ public abstract class DisplayStateInfo {
 					tempText = getParent().getDisplayName();
 				if (autosave) {
 					m.set(path, tempText);
-					shouldSave = true;
+					dirty = true;
 				}
 			}
 			title = tempText;
@@ -108,7 +111,7 @@ public abstract class DisplayStateInfo {
 				tempBool = defaults;
 				if (autosave) {
 					m.set(path,tempBool);
-					shouldSave = true;
+					dirty = true;
 				}
 			}
 			hide = tempBool;
