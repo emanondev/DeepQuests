@@ -95,6 +95,11 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	public Mission getParent() {
 		return parent;
 	}
+	public void setDirty(boolean value) {
+		super.setDirty(value);
+		if (this.isDirty()==true)
+			parent.setDirty(true);
+	}
 	/**
 	 * 
 	 * @return the type of the task

@@ -1,6 +1,6 @@
 name: DeepQuests
 main: emanondev.quests.Quests
-version: 0.8.1 ALPHA
+version: ${project.version}
 author: emanon
 softdepend: [Factions,Towny,SuperVanish,PremiumVanish,Mcmmo,VirginBlock,WorldGuard,PlaceHolderAPI,Citizens,MythicMobs,WGRegionEvents,Jobs]
 
@@ -17,6 +17,8 @@ commands:
         
 permissions:
     quests.commands.admin.reload:
+        default: op
+    quests.commands.admin.help:
         default: op
     quests.commands.quests:
         default: true

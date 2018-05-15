@@ -49,6 +49,107 @@ public class Mission extends YmlLoadableWithCooldown{
 
 	private final Quest parent;
 	
+	public Quest getParent() {
+		return parent;
+	}
+	@Override
+	public void setDirty(boolean value) {
+		super.setDirty(value);
+		if (this.isDirty()==true)
+			parent.setDirty(true);
+		else if (this.isDirty()==false) {
+			for (Task task : tasks.values())
+				task.setDirty(false);
+			this.displayInfo.setDirty(false);
+		}
+	}
+
+	private final List<String> onStartText;
+	private final List<String> onCompleteText;
+	private final List<String> onPauseText;
+	private final List<String> onUnpauseText;
+	private final List<String> onFailText;
+
+	public BaseComponent[] getStartMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onStartText));
+	}
+	public BaseComponent[] getCompleteMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onCompleteText));
+	}
+	public BaseComponent[] getUnpauseMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onUnpauseText));
+	}
+	public BaseComponent[] getPauseMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onPauseText));
+	}
+	public BaseComponent[] getFailMessage(QuestPlayer p) {
+		return YMLConfig.translateComponent(StringUtils
+				.convertList(p.getPlayer(), onFailText));
+	}
+
+
+	private final LinkedHashMap<String,Task> tasks = new LinkedHashMap<String,Task>();
+	public Collection<Task> getTasks(){
+		return Collections.unmodifiableCollection(tasks.values());
+	}
+
+
+	private final List<MissionReward> completeRewards = new ArrayList<MissionReward>();
+	private final List<MissionReward> startRewards = new ArrayList<MissionReward>();
+	private final List<MissionRequire> requires = new ArrayList<MissionRequire>();
+	public List<MissionReward> getStartRewards(){
+		return Collections.unmodifiableList(startRewards);
+	}
+	public List<MissionReward> getCompleteRewards(){
+		return Collections.unmodifiableList(completeRewards);
+	}
+	public List<MissionRequire> getRequires() {
+		return Collections.unmodifiableList(requires);
+	}
+
+
+	private final MissionDisplayInfo displayInfo;
+
+	@Override
+	public MissionDisplayInfo getDisplayInfo() {
+		return displayInfo;
+	}
+	public BaseComponent[] toComponent() {
+		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
+				+ChatColor.AQUA+this.getNameID()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
+				+ChatColor.AQUA+this.getDisplayName()+"\n");
+		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
+		
+		if (!this.isRepetable())
+			comp.append(ChatColor.RED+"Disabled\n");
+		else
+			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
+		if (tasks.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Tasks:\n");
+			for (Task task : tasks.values()) {
+				comp.append(ChatColor.AQUA+" - "+task.getNameID()+"\n")
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+							"/qa quest "+this.parent.getNameID()+" mission "+this.getNameID()
+							+" task "+task.getNameID()+ " info"))
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							new ComponentBuilder(ChatColor.YELLOW+"Click for details")
+							.create()));
+			}
+		}
+		if (requires.size() > 0) {
+			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
+			for (MissionRequire require : requires) {
+				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
+			}
+		}
+		
+		return comp.create();
+	}
 	public Mission(MemorySection m,Quest parent) {
 		super(m);
 		if (parent == null)
@@ -104,11 +205,6 @@ public class Mission extends YmlLoadableWithCooldown{
 		list.forEach((task)->{holders.add( new ProgressHolder(task)); });
 		return holders;
 	}
-	
-	public Collection<Task> getTasks(){
-		return Collections.unmodifiableCollection(tasks.values());
-	}
-	
 	
 	private ArrayList<ProgressHolder> holders;
 	public class ProgressHolder {
@@ -177,8 +273,6 @@ public class Mission extends YmlLoadableWithCooldown{
 						.readTask(m.getString(key+"."+AbstractTask.PATH_TASK_TYPE),
 								(MemorySection) m.get(key), this);
 				map.put(task.getNameID(), task);
-				if (task.isDirty())
-					this.setDirty(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Quests.getInstance().getLoggerManager().getLogger("errors")
@@ -190,39 +284,6 @@ public class Mission extends YmlLoadableWithCooldown{
 			}
 		});
 		return map;
-	}
-	public Quest getParent() {
-		return parent;
-	}
-	private final List<MissionReward> completeRewards = new ArrayList<MissionReward>();
-	private final List<MissionReward> startRewards = new ArrayList<MissionReward>();
-	private final List<MissionRequire> requires = new ArrayList<MissionRequire>();
-	private final LinkedHashMap<String,Task> tasks = new LinkedHashMap<String,Task>();
-	private final List<String> onStartText;
-	private final List<String> onCompleteText;
-	private final List<String> onPauseText;
-	private final List<String> onUnpauseText;
-	private final List<String> onFailText;
-	
-	public BaseComponent[] getStartMessage(QuestPlayer p) {
-		return YMLConfig.translateComponent(StringUtils
-				.convertList(p.getPlayer(), onStartText));
-	}
-	public BaseComponent[] getCompleteMessage(QuestPlayer p) {
-		return YMLConfig.translateComponent(StringUtils
-				.convertList(p.getPlayer(), onCompleteText));
-	}
-	public BaseComponent[] getUnpauseMessage(QuestPlayer p) {
-		return YMLConfig.translateComponent(StringUtils
-				.convertList(p.getPlayer(), onUnpauseText));
-	}
-	public BaseComponent[] getPauseMessage(QuestPlayer p) {
-		return YMLConfig.translateComponent(StringUtils
-				.convertList(p.getPlayer(), onPauseText));
-	}
-	public BaseComponent[] getFailMessage(QuestPlayer p) {
-		return YMLConfig.translateComponent(StringUtils
-				.convertList(p.getPlayer(), onFailText));
 	}
 	private List<String> loadStartText(MemorySection m){
 		List<String> list = m.getStringList(PATH_START_TEXT);
@@ -254,34 +315,8 @@ public class Mission extends YmlLoadableWithCooldown{
 			list = Defaults.MissionDef.getDefaultFailText();
 		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
 	}
-	public List<MissionReward> getStartRewards(){
-		return Collections.unmodifiableList(startRewards);
-	}
-	public List<MissionReward> getCompleteRewards(){
-		return Collections.unmodifiableList(completeRewards);
-	}
-	
 	private MissionDisplayInfo loadDisplayInfo(MemorySection m) {
 		return new MissionDisplayInfo(m,this);
-	}
-	@Override
-	public MissionDisplayInfo getDisplayInfo() {
-		return displayInfo;
-	}
-	@Override
-	protected boolean getDefaultCooldownUse() {
-		return Defaults.MissionDef.getDefaultCooldownUse();
-	}
-	@Override
-	protected boolean shouldCooldownAutogen() {
-		return Defaults.MissionDef.shouldCooldownAutogen();
-	}
-	@Override
-	protected int getDefaultCooldownMinutes() {
-		return Defaults.MissionDef.getDefaultCooldownMinutes();
-	}
-	public List<MissionRequire> getRequires() {
-		return Collections.unmodifiableList(requires);
 	}
 	private List<MissionRequire> loadRequires(MemorySection m) {
 		List<String> l = MemoryUtils.getStringList(m, PATH_REQUIRES);
@@ -312,38 +347,16 @@ public class Mission extends YmlLoadableWithCooldown{
 	protected boolean shouldAutogenDisplayName() {
 		return Defaults.MissionDef.shouldAutogenDisplayName();
 	}
-	private final MissionDisplayInfo displayInfo;
-
-	public BaseComponent[] toComponent() {
-		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
-				+ChatColor.AQUA+this.getNameID()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
-				+ChatColor.AQUA+this.getDisplayName()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
-		
-		if (!this.isRepetable())
-			comp.append(ChatColor.RED+"Disabled\n");
-		else
-			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
-		if (tasks.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Tasks:\n");
-			for (Task task : tasks.values()) {
-				comp.append(ChatColor.AQUA+" - "+task.getNameID()+"\n")
-					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-							"/qa quest "+this.parent.getNameID()+" mission "+this.getNameID()
-							+" task "+task.getNameID()+ " info"))
-					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-							new ComponentBuilder(ChatColor.YELLOW+"Click for details")
-							.create()));
-			}
-		}
-		if (requires.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
-			for (MissionRequire require : requires) {
-				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
-			}
-		}
-		
-		return comp.create();
+	@Override
+	protected boolean getDefaultCooldownUse() {
+		return Defaults.MissionDef.getDefaultCooldownUse();
+	}
+	@Override
+	protected boolean shouldCooldownAutogen() {
+		return Defaults.MissionDef.shouldCooldownAutogen();
+	}
+	@Override
+	protected int getDefaultCooldownMinutes() {
+		return Defaults.MissionDef.getDefaultCooldownMinutes();
 	}
 }

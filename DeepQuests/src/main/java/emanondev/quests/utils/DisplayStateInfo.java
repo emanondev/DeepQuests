@@ -22,6 +22,8 @@ public abstract class DisplayStateInfo implements Savable {
 	}
 	public void setDirty(boolean value) {
 		dirty = value;
+		if (dirty==true)
+			parent.setDirty(true);
 	}
 	
 	private EnumMap<DisplayState,Info> infos = new EnumMap<DisplayState,Info>(DisplayState.class);

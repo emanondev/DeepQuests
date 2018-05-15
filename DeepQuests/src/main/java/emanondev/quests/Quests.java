@@ -1,6 +1,7 @@
 package emanondev.quests;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -9,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.LoggerManager.Logger;
+import emanondev.quests.command.CmdManager;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
 import emanondev.quests.inventory.GuiManager;
@@ -82,29 +84,15 @@ public class Quests extends JavaPlugin {
 	 * utility: register a command for this plugin
 	 * @param name - command name used for /commandname
 	 * @param tabExe - the class responsible for the command and the completer
-	 */
-	public void registerCommand(String name,TabExecutor tabExe){
-		registerCommand(name,tabExe,(String[]) null);
-	}
-	/**
-	 * utility: register a command for this plugin
-	 * @param name - command name used for /commandname
-	 * @param tabExe - the class responsible for the command and the completer
 	 * @param aliases - aliases of the command should be also saved on plugin.yml
 	 */
-	public void registerCommand(String name,TabExecutor tabExe,String... aliases){
-		PluginCommand cmd = getCommand(name);
-		cmd.setExecutor(tabExe);
-		cmd.setTabCompleter(tabExe);
+	public void registerCommand(CmdManager cmdManager){
+		PluginCommand cmd = getCommand(cmdManager.getName());
+		cmd.setExecutor(cmdManager);
+		cmd.setTabCompleter(cmdManager);
 		
-		if (aliases!=null) {
-			ArrayList<String> list = new ArrayList<String>();
-			for (int i = 0; i<aliases.length ; i++)
-				if (aliases[i]!=null)
-					list.add(aliases[i]);
-			if (list.size()>0)
-				cmd.setAliases(list);
-		}
+		if (cmdManager.getAliases()!=null && !cmdManager.getAliases().isEmpty())
+			cmd.setAliases(cmdManager.getAliases());
 	}
 	
 	public QuestManager getQuestManager() {
@@ -139,8 +127,9 @@ public class Quests extends JavaPlugin {
 	public ConfigManager getConfigManager() {
 		return configManager;
 	}
+
 	@Override
-	public void onEnable() {
+	public void onLoad() {
 		instance = this;
 		new SpawnReasonTracker();
 		new YMLConfig(this,"quests-example");
@@ -184,6 +173,11 @@ public class Quests extends JavaPlugin {
 			taskManager.registerType(new MythicMobKillTaskType());
 		}
 		//TODO implement a way to activate listeners only if required
+	}
+	
+	@Override
+	public void onEnable() {
+		
 		
 		questManager = new QuestManager();
 		

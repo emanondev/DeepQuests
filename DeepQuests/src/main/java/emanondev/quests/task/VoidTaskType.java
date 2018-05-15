@@ -61,6 +61,10 @@ public class VoidTaskType extends TaskType {
 		@Override
 		public boolean isDirty() { return dirty;	}
 		@Override
-		public void setDirty(boolean value) { dirty = value;	}
+		public void setDirty(boolean value) { 
+			dirty = value;
+			if (dirty==true)
+				parent.setDirty(true);
+		}
 	}
 }
