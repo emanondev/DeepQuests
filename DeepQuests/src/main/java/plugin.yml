@@ -16,10 +16,24 @@ commands:
         aliases: [qa,questadmin,questsadmin,qadmin]
         
 permissions:
-    quests.commands.admin.reload:
+    quests.admin.help:
         default: op
-    quests.commands.admin.help:
+    quests.admin.reload:
         default: op
+    quests.admin.listquest:
+        default: op
+    quests.admin.quest:
+        default: op
+    quests.admin.quest.listmission:
+        default: op
+    quests.admin.quest.mission:
+        default: op
+    quests.admin.quest.mission.info:
+        default: op
+        
+        
     quests.commands.quests:
         default: true
+    quests.gui.seeall:
+        default: op
     

@@ -19,8 +19,9 @@ public class CommandQuestsAdmin extends CmdManager {
 		super("questsadmin", Arrays.asList("qa","questadmin","questsadmin","qadmin"),null,
 				new SubReload(),
 				new SubListQuest(),
-				new SubQuest()
-				
+				new SubQuest(),
+				new SubAddQuest(),
+				new SubDeleteQuest()
 				
 				
 				);
@@ -122,7 +123,7 @@ public class CommandQuestsAdmin extends CmdManager {
 		return list;
 	}*/
 }
-	
+
 class SubReload extends SubCmdManager {
 	SubReload() {
 		super("reload",Perms.ADMIN_RELOAD);
@@ -132,6 +133,79 @@ class SubReload extends SubCmdManager {
 	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
 		Quests.getInstance().reload();
 		sender.sendMessage(ChatColor.GREEN+"Plugin Reloaded");
+	}
+}
+//qa	addquest	<id>	[name...]
+//		0			1		2+
+class SubAddQuest extends SubCmdManager {
+	SubAddQuest() {
+		super("addquest",Perms.ADMIN_ADDQUEST);
+		this.setDescription(ChatColor.GOLD+"Create a new quest with given id and name");
+		this.setParams("<questID> [display name]");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		String id = params.get(0).toLowerCase();
+		if (id.contains (":") || id.contains(".")){
+			sender.sendMessage(ChatColor.RED+"Invalid quest ID '"+id+"'");
+			return;
+		}
+		if (Quests.getInstance().getQuestManager().getQuestByNameID(id)!=null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+id+"' already exist");
+			return;
+		}
+		String displayName = null;
+		if (params.size()>1) {
+			params.remove(0);
+			StringBuilder text = new StringBuilder("");
+			for (String word : params)
+				text.append(" "+word);
+			displayName = text.toString().replaceFirst(" ","");
+		}
+		if (Quests.getInstance().getQuestManager().addQuest(id, displayName))
+			sender.sendMessage(ChatColor.GREEN+"Quest added");
+		else
+			sender.sendMessage(ChatColor.RED+"Can't create quest");
+	}
+	
+}
+//qa	addquest	<id>
+//		0			1
+class SubDeleteQuest extends SubCmdManager {
+	SubDeleteQuest() {
+		super("deletequest",Perms.ADMIN_DELETEQUEST);
+		this.setDescription(ChatColor.GOLD+"Delete selected quest\n"
+				+ChatColor.RED+"Deleting a quest erase it forever\n"
+				+ChatColor.RED+"Deleting can't be undone\n"
+				+ChatColor.RED+"Also delete quest's missions and tasks");
+		this.setParams("<questID>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()!=1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(params.get(0));
+		if (q == null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+params.get(0)+"' do not exist");
+			return;
+		}
+		Quests.getInstance().getQuestManager().deleteQuest(q);
+		sender.sendMessage(ChatColor.GREEN+"Quest '"+q.getNameID()+"' deleted");
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		ArrayList<String> list = new ArrayList<String>();
+		if (params.size()==1) {
+			Completer.completeQuests(list, params.get(0), Quests.getInstance().getQuestManager().getQuests());
+		}
+		return list;
 	}
 }
 class SubListQuest extends SubCmdManager {

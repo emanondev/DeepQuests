@@ -12,9 +12,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
 
 public abstract class YmlLoadable implements Savable {
-	static final protected String PATH_DISPLAY_NAME = "name";
-	static final protected String PATH_WORLDS_LIST = "worlds.list";
-	static final protected String PATH_WORLDS_IS_BLACKLIST = "worlds.is-blacklist";
+	public static final String PATH_DISPLAY_NAME = "name";
+	public static final String PATH_WORLDS_LIST = "worlds.list";
+	public static final String PATH_WORLDS_IS_BLACKLIST = "worlds.is-blacklist";
 	
 	
 	private String displayName;

@@ -39,6 +39,9 @@ public class Quest extends YmlLoadableWithCooldown{
 				mission.setDirty(false);
 			this.displayInfo.setDirty(false);
 		}
+		else {
+			Quests.getInstance().getQuestManager().setDirty(true);
+		}
 	}
 	
 	private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
