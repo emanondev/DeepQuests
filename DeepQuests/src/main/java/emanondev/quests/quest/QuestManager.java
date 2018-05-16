@@ -15,7 +15,6 @@ import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.YmlLoadable;
 
 public class QuestManager implements Savable {
-	//private final static String PATH_QUESTS = "quests.";
 	
 	private YMLConfig data = new YMLConfig(Quests.getInstance(),"quests");
 	private static HashMap<String,Quest> quests = new HashMap<String,Quest>();
@@ -25,7 +24,7 @@ public class QuestManager implements Savable {
 		s.forEach((key)->{
 			boolean dirty = false;
 			try {
-				Quest quest = new Quest((MemorySection) data.get(key));
+				Quest quest = new Quest((MemorySection) data.get(key),this);
 				quests.put(quest.getNameID(),quest);
 				if (quest.isDirty())
 					dirty = true;
@@ -36,7 +35,13 @@ public class QuestManager implements Savable {
 							+key+"' could not be read as valid quest"
 							,ExceptionUtils.getStackTrace(e));
 			}
-			
+			for (Quest quest : quests.values()){
+				if (isDirty())
+					break;
+				if (quest.isDirty())
+					setDirty(true);
+			}
+				
 			if (dirty)
 				data.save();
 		});
@@ -91,7 +96,7 @@ public class QuestManager implements Savable {
 		if (quests.containsKey(id))
 			return false;
 		data.set(id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
-		Quest q = new Quest((MemorySection) data.get(id));
+		Quest q = new Quest((MemorySection) data.get(id),this);
 		quests.put(q.getNameID(), q);
 		q.setDirty(true);
 		return true;

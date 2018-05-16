@@ -58,7 +58,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			String val = Defaults.TaskDef.getUnstartedDescription()
 					.replace("<task>",this.getNameID());
 			m.set(PATH_TASK_DESCRIPTION_UNSTARTED, val);
-			setDirty(true);
+			dirty = true;
 			return val;
 		}
 		return m.getString(PATH_TASK_DESCRIPTION_UNSTARTED, 
@@ -76,7 +76,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			String val = Defaults.TaskDef.getProgressDescription()
 					.replace("<task>",this.getNameID());
 			m.set(PATH_TASK_DESCRIPTION_PROGRESS, val);
-			setDirty(true);
+			dirty = true;
 			return val;
 		}
 		return m.getString(PATH_TASK_DESCRIPTION_PROGRESS, 

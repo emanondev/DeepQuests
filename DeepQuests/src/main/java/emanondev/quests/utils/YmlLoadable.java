@@ -27,7 +27,7 @@ public abstract class YmlLoadable implements Savable {
 		return section;
 	}
 	
-	private boolean dirty = false;
+	protected boolean dirty = false;
 	public boolean isDirty(){
 		return dirty;
 	}
@@ -121,7 +121,7 @@ public abstract class YmlLoadable implements Savable {
 					worlds.addAll(tempList);
 				ArrayList<String> values = new ArrayList<String>(worlds);
 				m.set(PATH_WORLDS_LIST,values);
-				setDirty(true);
+				dirty = true;
 			}
 		}
 		else {
@@ -137,7 +137,7 @@ public abstract class YmlLoadable implements Savable {
 		if (!m.isBoolean(PATH_WORLDS_IS_BLACKLIST)) {
 			boolean v = getUseWorldsAsBlackListDefault();
 			m.set(PATH_WORLDS_IS_BLACKLIST,v);
-			setDirty(true);
+			dirty = true;
 			return v;
 		}
 		return m.getBoolean(PATH_WORLDS_IS_BLACKLIST,true);
@@ -165,7 +165,7 @@ public abstract class YmlLoadable implements Savable {
 			
 			if (shouldAutogenDisplayName()) {
 				m.set(PATH_DISPLAY_NAME, tempDisplayName);
-				setDirty(true);
+				dirty = true;
 				return ChatColor.translateAlternateColorCodes('&', tempDisplayName);
 			}
 		}

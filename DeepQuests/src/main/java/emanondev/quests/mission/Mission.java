@@ -158,6 +158,12 @@ public class Mission extends YmlLoadableWithCooldown{
 		LinkedHashMap<String,Task> tasks = loadTasks((MemorySection) m.get(PATH_TASKS));
 		if (tasks!=null)
 			this.tasks.putAll(tasks);
+		for (Task task : tasks.values()) {
+			if (isDirty())
+				break;
+			if (task.isDirty())
+				setDirty(true);
+		}
 		List<MissionRequire> req = loadRequires(m);
 		if (req !=null)
 			this.requires.addAll(req);

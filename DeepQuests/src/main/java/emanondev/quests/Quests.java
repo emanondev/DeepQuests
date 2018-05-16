@@ -1,11 +1,7 @@
 package emanondev.quests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -131,15 +127,11 @@ public class Quests extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		instance = this;
-		new SpawnReasonTracker();
 		new YMLConfig(this,"quests-example");
 		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config = new YMLConfig(this,"config");
 		configManager = new ConfigManager();
-		//
-		new CommandQuests();
-		new CommandQuestsAdmin();
 		guiManager = new GuiManager();
 		
 		requireManager = new RequireManager();
@@ -177,6 +169,10 @@ public class Quests extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		new SpawnReasonTracker();
+		//
+		new CommandQuests();
+		new CommandQuestsAdmin();
 		
 		
 		questManager = new QuestManager();

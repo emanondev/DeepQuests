@@ -19,7 +19,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			throw new NullPointerException();
 		if (!m.isBoolean(PATH_COOLDOWN_IS_ENABLED) && shouldCooldownAutogen()) {
 			m.set(PATH_COOLDOWN_IS_ENABLED, getDefaultCooldownUse());
-			setDirty(true);
+			dirty = true;
 		}
 		return m.getBoolean(PATH_COOLDOWN_IS_ENABLED,getDefaultCooldownUse());
 	}
@@ -29,7 +29,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			throw new NullPointerException();
 		if (!m.isInt(PATH_COOLDOWN_AMOUNT) && shouldCooldownAutogen()) {
 			m.set(PATH_COOLDOWN_AMOUNT, getDefaultCooldownMinutes());
-			setDirty(true);
+			dirty = true;
 		}
 		return m.getInt(PATH_COOLDOWN_AMOUNT, getDefaultCooldownMinutes());
 	}

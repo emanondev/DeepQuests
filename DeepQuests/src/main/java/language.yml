@@ -1,10 +1,3 @@
-blocks:
-    "STONE": stone
-    "STONE:1": granite
-entity:
-    CREEPER: creeper
-    ZOMBIE: zombie
-    
 time:
     WEEK:
         single: week
@@ -25,8 +18,4 @@ conjunctions:
     AND: and
     OR: or
     NOT: not
-    
-action:
-    BREAKBLOCKTASK: mine
-    PLACEBLOCKTASK: place
     

@@ -40,10 +40,13 @@ public class Quest extends YmlLoadableWithCooldown{
 			this.displayInfo.setDirty(false);
 		}
 		else {
-			Quests.getInstance().getQuestManager().setDirty(true);
+			getParent().setDirty(true);
 		}
 	}
-	
+	private final QuestManager parent;
+	public QuestManager getParent(){
+		return parent;
+	}
 	private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
 	public List<QuestRequire> getRequires(){
 		return Collections.unmodifiableList(requires);
@@ -54,11 +57,21 @@ public class Quest extends YmlLoadableWithCooldown{
 	public Collection<Mission> getMissions(){
 		return Collections.unmodifiableCollection(missions.values());
 	}
-	public Quest(MemorySection m) {
+	public Quest(MemorySection m,QuestManager parent) {
 		super(m);
+		if (parent == null)
+			throw new NullPointerException();
+		this.parent = parent;
 		LinkedHashMap<String,Mission> map = this.loadMissions((MemorySection) m.get(PATH_MISSIONS));
 		if (map!=null)
 			missions.putAll(map);
+		for (Mission mission : missions.values()) {
+			if (isDirty())
+				break;
+			if (mission.isDirty())
+				setDirty(true);
+		}
+			
 		List<QuestRequire> req= loadRequires(m);
 		if (req!=null)
 			requires.addAll(req);		
