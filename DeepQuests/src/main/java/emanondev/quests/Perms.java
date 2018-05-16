@@ -12,4 +12,5 @@ public class Perms {
 	public static final String ADMIN_QUEST_MISSION_INFO = 	"quests.admin.quest.mission.info";
 	public static final String ADMIN_DELETEQUEST =			"quests.admin.deletequest";
 	public static final String ADMIN_ADDQUEST =				"quests.admin.addquest";
+	public static final String ADMIN_QUEST_INFO = 			"quests.admin.quest.info";
 }

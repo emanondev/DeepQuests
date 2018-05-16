@@ -61,24 +61,26 @@ public class SubCmdManager {
 	}
 	
 	public void onCmd(ArrayList<String> params,CommandSender sender,String label,String[] args) {
-		if (params==null || params.isEmpty() || subs.isEmpty()) {
+		if (subs.isEmpty()) {
 			CmdUtils.notImplemented(sender);
 			return;
 		}
-		if (!subsByAlias.containsKey(params.get(0).toLowerCase())) {
+		if (params==null || params.isEmpty() || !subsByAlias.containsKey(params.get(0).toLowerCase())) {
 			onHelp(params,sender,label,args);
 			return;
 		}
 		SubCmdManager sub = subsByAlias.get(params.get(0).toLowerCase());
+		
+		if (sub.playersOnly() && !(sender instanceof Player)) {
+			CmdUtils.playersOnly(sender);
+			return;
+		}
 		if (sub.hasPermission(sender)) {
 			params.remove(0);
 			sub.onCmd(params,sender,label, args);
+			return;
 		}
-		else if (sub.playersOnly() && !(sender instanceof Player)) {
-			CmdUtils.playersOnly(sender);
-		}
-		else
-			CmdUtils.lackPermission(sender, sub.getPermission());
+		CmdUtils.lackPermission(sender, sub.getPermission());
 	}
 	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender,String label,String[] args) {
 		if (params==null || params.isEmpty() || subs.isEmpty())
@@ -165,12 +167,12 @@ public class SubCmdManager {
 	public void onHelp(ArrayList<String> params,CommandSender sender,String label,String[] args) {
 		String previusArgs = getPreviusParams(params,label,args);
 		ComponentBuilder comp = new ComponentBuilder(
-				""+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+				""+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Help "
+				+ChatColor.BLUE+"   Help   "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
-				+"\n"+ChatColor.DARK_AQUA+" - /"+previusArgs+ " [...]");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
+				+"\n"+ChatColor.BLUE+" - /"+previusArgs+ " [...]");
 		if (getDescription()!=null)
 			comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 					new ComponentBuilder( StringUtils.fixColorsAndHolders(getDescription()) ).create()
@@ -183,7 +185,7 @@ public class SubCmdManager {
 					if (sub.getParams()==null)
 						comp.append("\n"+ChatColor.DARK_AQUA+sub.getFirstAlias());
 					else
-						comp.append("\n"+ChatColor.DARK_AQUA+sub.getFirstAlias()+" "+ChatColor.AQUA+getParams());
+						comp.append("\n"+ChatColor.DARK_AQUA+sub.getFirstAlias()+" "+ChatColor.AQUA+sub.getParams());
 					if (sub.getDescription()!=null)
 						comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 								new ComponentBuilder( StringUtils.fixColorsAndHolders(sub.getDescription()) ).create()
@@ -194,19 +196,20 @@ public class SubCmdManager {
 					if (sub.getParams()==null)
 						comp.append("\n"+ChatColor.RED+sub.getFirstAlias());
 					else
-						comp.append("\n"+ChatColor.RED+sub.getFirstAlias()+" "+ChatColor.GOLD+getParams());
+						comp.append("\n"+ChatColor.RED+sub.getFirstAlias()+" "+ChatColor.GOLD+sub.getParams());
 					if (getDescription()!=null)
 						comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 							new ComponentBuilder( StringUtils.fixColorsAndHolders(getDescription()) ).create()
 								));
 				}
-						
 			}
-		comp.append("\n"+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Help "
+				+ChatColor.BLUE+"   Help   "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
+		
+		sender.spigot().sendMessage(comp.create());
 	}
 	private String getPreviusParams(ArrayList<String> params,String label,String[] args) {
 		int max = args.length-params.size();

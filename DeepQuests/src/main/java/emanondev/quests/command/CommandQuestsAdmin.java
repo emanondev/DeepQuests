@@ -28,7 +28,7 @@ public class CommandQuestsAdmin extends CmdManager {
 	}
 
 	
-	/*
+	/* TODO
 	 * qa
 	 * 		quest <-- in sviluppo
 	 * 			<quest>
@@ -58,70 +58,8 @@ public class CommandQuestsAdmin extends CmdManager {
 	 * 				addmission
 	 * 				deletemission
 	 * 					<mission>
-	 * 		addquest
-	 * 		deletequest
-	 * 			<quest>
 	 * 		
 	 */
-	
-	
-	/*
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission(Perms.ADMIN_COMMAND_HELP))
-			return null;
-		ArrayList<String> list = new ArrayList<String>();
-		String prefix = args[args.length-1];
-		switch (args.length) {
-		case 1:
-			Completer.complete(list, prefix, "reload","quest","listquest","addquest","deletequest");
-			return list;
-		case 2: 
-			if (args[0].equalsIgnoreCase("quest")||args[0].equalsIgnoreCase("deletequest"))
-				Completer.completeQuests(list, prefix, 
-						Quests.getInstance().getQuestManager().getQuests());
-			return list;
-		case 3:
-			if (args[0].equalsIgnoreCase("quest"))
-				Completer.complete(list, prefix,"mission","info","require","reward","reset","lock",
-						"title","listmission","addmission","deletemission");
-			return list;
-		case 4:
-			if (args[0].equalsIgnoreCase("quest")) {
-				if (args[2].equalsIgnoreCase("mission")||args[2].equalsIgnoreCase("deletemission")) {
-					Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
-					if (q==null)
-						return list;
-					Completer.completeMissions(list, prefix,q.getMissions());
-				}
-				else
-					if (args[2].equalsIgnoreCase("reset")||args[2].equalsIgnoreCase("lock"))
-						Completer.completePlayerNames(list,prefix);
-			}
-			return list;
-		case 5:
-			if (args[0].equalsIgnoreCase("quest")&&args[2].equalsIgnoreCase("mission"))
-				list.addAll(Arrays.asList("listtask","addtask","deletetask","task","info"));
-			return list;
-		case 6:
-			if (args[0].equalsIgnoreCase("quest") && args[2].equalsIgnoreCase("mission")) {
-				if (args[4].equalsIgnoreCase("task")||args[4].equalsIgnoreCase("deletetask")) {
-					Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
-					if (q==null)
-						return list;
-					Mission m = q.getMissionByNameID(args[3]);
-					if (m==null)
-						return list;
-					Completer.completeTasks(list, prefix,m.getTasks());
-				}
-				else
-					if (args[2].equalsIgnoreCase("reset")||args[2].equalsIgnoreCase("lock"))
-						Completer.completePlayerNames(list,prefix);
-			}
-				
-		}
-		return list;
-	}*/
 }
 
 class SubReload extends SubCmdManager {
@@ -216,17 +154,17 @@ class SubListQuest extends SubCmdManager {
 	@Override
 	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
 		ComponentBuilder comp = new ComponentBuilder(
-				""+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+				""+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Quests List "
+				+ChatColor.BLUE+"  Quests List  "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---\n");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----\n");
 		boolean val = false;
 		for ( Quest quest : Quests.getInstance().getQuestManager().getQuests()) {
 			if (val==false)
-				comp.append(ChatColor.AQUA+quest.getDisplayName()+" ");
+				comp.append(ChatColor.YELLOW+quest.getDisplayName()+" ");
 			else
-				comp.append(ChatColor.GREEN+quest.getDisplayName()+" ");
+				comp.append(ChatColor.GOLD+quest.getDisplayName()+" ");
 			comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ComponentBuilder(
 					ChatColor.GOLD+"Click to examine Quest\n"+
 					ChatColor.DARK_AQUA+"ID: "+ChatColor.AQUA+quest.getNameID()+"\n"+
@@ -235,11 +173,11 @@ class SubListQuest extends SubCmdManager {
 			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/qa quest "+quest.getNameID()+" info"));
 			val = !val;
 		}
-		comp.append("\n"+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Quests List "
+				+ChatColor.BLUE+" Quests List "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---");
 		sender.spigot().sendMessage(comp.create());
 	}
 }
@@ -292,10 +230,7 @@ class SubQuest extends SubCmdManager {
 //		0		1		2
 class SubQuestSubInfo extends SubCmdManager {
 	SubQuestSubInfo(){
-		super("info",Perms.ADMIN_QUEST,
-				new SubQuestSubInfo(),
-				new SubQuestSubListMission(),
-				new SubQuestSubMission()
+		super("info",Perms.ADMIN_QUEST_INFO
 				
 				);
 		this.setDescription(ChatColor.GOLD+"Shows selected quest info");
@@ -328,17 +263,17 @@ class SubQuestSubListMission extends SubCmdManager {
 		}
 		
 		ComponentBuilder comp = new ComponentBuilder(
-				""+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+				""+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Mission List "
+				+ChatColor.BLUE+"  Mission List  "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---\n");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----\n");
 		boolean val = false;
 		for ( Mission mission : q.getMissions()) {
 			if (val==false)
-				comp.append(ChatColor.AQUA+mission.getDisplayName()+" ");
+				comp.append(ChatColor.YELLOW+mission.getDisplayName()+" ");
 			else
-				comp.append(ChatColor.GREEN+mission.getDisplayName()+" ");
+				comp.append(ChatColor.GOLD+mission.getDisplayName()+" ");
 			comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ComponentBuilder(
 					ChatColor.GOLD+"Click to examine Mission\n"+
 					ChatColor.DARK_AQUA+"ID: "+ChatColor.AQUA+mission.getNameID()+"\n"+
@@ -347,11 +282,11 @@ class SubQuestSubListMission extends SubCmdManager {
 			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/qa quest "+q.getNameID()+" mission "+mission.getNameID()+" info"));
 			val = !val;
 		}
-		comp.append("\n"+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.DARK_AQUA+" Mission List "
+				+ChatColor.BLUE+"  Mission List  "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.DARK_AQUA+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
 		sender.spigot().sendMessage(comp.create());
 	}
 }
@@ -371,7 +306,7 @@ class SubQuestSubMission extends SubCmdManager {
 			onHelp( params, sender, label, args);
 			return;
 		}
-		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(params.get(0));
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
 		if (q==null) {
 			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
 			return;
