@@ -209,11 +209,11 @@ public class OfflineQuestPlayer {
 		public boolean hasCompleted() {
 			return completedBefore;
 		}
-		public long cooldownTimeLeft() {
+		public long getCooldownTimeLeft() {
 			return lastCompleted+quest.getCooldownTime()-new Date().getTime();
 		}
 		public boolean isOnCooldown() {
-			return cooldownTimeLeft()>0;
+			return getCooldownTimeLeft()>0;
 		}
 		
 		public class MissionData {
@@ -248,31 +248,31 @@ public class OfflineQuestPlayer {
 					registerActiveTask(tasksData.values());
 			}
 			public boolean isFailed() {
-				return isFailed;
+				return this.isFailed;
 			}
 			public boolean isStarted() {
-				return started;
+				return this.started;
 			}
 			public boolean isPaused() {
-				return !active;
+				return !this.active;
 			}
 			public long getLastStarted() {
-				return lastStarted;
+				return this.lastStarted;
 			}
 			public long getLastCompleted() {
-				return lastCompleted;
+				return this.lastCompleted;
 			}
 			public boolean hasStarted() {
-				return lastStarted > 0;
+				return this.lastStarted > 0;
 			}
 			public boolean hasCompleted() {
 				return completedBefore;
 			}
 			public long getCooldownTimeLeft() {
-				return lastCompleted+mission.getCooldownTime()-new Date().getTime();
+				return this.lastCompleted+this.mission.getCooldownTime()-new Date().getTime();
 			}
 			public boolean isOnCooldown() {
-				return cooldownTimeLeft()>0;
+				return this.getCooldownTimeLeft()>0;
 			}
 			
 			protected void start() {//TODO
