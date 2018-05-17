@@ -82,7 +82,7 @@ public class QuestManager implements Savable {
 					man.data.save();
 					man.setDirty(false);
 				}
-			}, 100);
+			}, 20);
 		}
 		else {
 			for (Quest quest : quests.values()) {

@@ -36,29 +36,40 @@ public class CommandQuestsAdmin extends CmdManager {
 	 * 					<mission> <- in sviluppo
 	 * 						require
 	 * 						reward
-	 * 						reset
-	 * 							<player>
-	 * 						lock
-	 * 							<player>
-	 * 						title
 	 * 						task
 	 * 							<task>
 	 * 								info
+	 * 								setdisplayname
 	 * 						listtask
-	 * 						addtask
+	 * 						addtask <name> <displayname>
 	 * 						deletetask
 	 * 							<task>
 	 * 				require
 	 * 				reward
-	 * 				reset
-	 * 					<player>
-	 * 				lock
-	 * 					<player>
-	 * 				title
 	 * 				addmission
 	 * 				deletemission
 	 * 					<mission>
-	 * 		
+	 * 		player
+	 * 			<player>
+	 * 				reset
+	 * 				erase
+	 * 				quest
+	 * 					<questid>
+	 * 						erase
+	 * 						reset
+	 * 						mission
+	 * 							<missionid>
+	 * 								erase
+	 * 								reset
+	 * 								task
+	 * 									<taskid>
+	 * 										reset
+	 * 						liststartedmissions
+	 * 						listcompletedmissions
+	 * 						missionpoint
+	 * 				questpoint
+	 * 				liststartedquests
+	 * 				listcompletedquests
 	 */
 }
 
@@ -186,7 +197,10 @@ class SubQuest extends SubCmdManager {
 		super("quest",Perms.ADMIN_QUEST,
 				new SubQuestSubInfo(),
 				new SubQuestSubListMission(),
-				new SubQuestSubMission()
+				new SubQuestSubMission(),
+				new SubQuestSubSetRepeatable(),
+				new SubQuestSubSetCooldown(),
+				new SubQuestSubSetDisplayName()
 				
 				);
 		this.setDescription(ChatColor.GOLD+"Shows registered quests menu");
@@ -245,7 +259,126 @@ class SubQuestSubInfo extends SubCmdManager {
 		sender.spigot().sendMessage(q.toComponent());
 	}
 }
-
+//qa 	quest 	<id> 	setdisplayname 	[name]
+//		0		1		2				3+
+class SubQuestSubSetDisplayName extends SubCmdManager {
+	SubQuestSubSetDisplayName(){
+		super("setdisplayname",Perms.ADMIN_QUEST_SETDISPLAYNAME
+				);
+		this.setDescription(ChatColor.GOLD+"Set a new display name for selected quest");
+		this.setParams("[display name]");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0) {
+			onHelp(params,sender, label, args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		String displayName = null;
+		if (params.size()>0) {
+			StringBuilder text = new StringBuilder("");
+			for (String word : params)
+				text.append(" "+word);
+			displayName = text.toString().replaceFirst(" ","");
+		}
+		if (q.setDisplayName(displayName))
+			sender.sendMessage(ChatColor.GREEN+"Quest ["+q.getNameID()+"] has now '"+q.getDisplayName()
+					+ChatColor.GREEN+"' as display name");
+		else
+			sender.sendMessage(ChatColor.RED+"Quest ["+q.getNameID()+"] has already '"+q.getDisplayName()
+					+ChatColor.RED+"' as display name");
+	}
+}
+//qa 	quest 	<id> 	setrepeatable 	<true/false>
+//		0		1		2				3
+class SubQuestSubSetRepeatable extends SubCmdManager {
+	SubQuestSubSetRepeatable(){
+		super("setrepeatable",Perms.ADMIN_QUEST_SETREPEATABLE
+				);
+		this.setDescription(ChatColor.GOLD+"Set the quest as repeatable");
+		this.setParams("<true/false>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (params.size() != 1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		boolean value;
+		try {
+			 if ("true".equalsIgnoreCase(args[3]))
+				 value = true;
+			 else if ("false".equalsIgnoreCase(args[3]))
+				 value = false;
+			 else
+				 throw new IllegalArgumentException();
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED+"Value '"+args[3]+"' is not a valid boolean");
+			return;
+		}
+		if (q.setRepeatable(value))
+			if (value == true)
+				sender.sendMessage(ChatColor.GREEN+"Quest "+q.getDisplayName()
+							+ChatColor.GREEN+" ["+q.getNameID()+"] is now repeatable");
+			else
+				sender.sendMessage(ChatColor.GREEN+"Quest "+q.getDisplayName()
+					+ChatColor.GREEN+" ["+q.getNameID()+"] is no more repeatable");
+		else
+			if (value == true)
+				sender.sendMessage(ChatColor.RED+"Quest "+q.getDisplayName()
+					+ChatColor.RED+" ["+q.getNameID()+"] is already repeatable");
+			else
+				sender.sendMessage(ChatColor.RED+"Quest "+q.getDisplayName()
+					+ChatColor.RED+" ["+q.getNameID()+"] is already not repeatable");
+				
+	}
+}
+//qa 	quest 	<id> 	setcooldown 	<minutes>
+//		0		1		2				3
+class SubQuestSubSetCooldown extends SubCmdManager {
+	SubQuestSubSetCooldown(){
+		super("setcooldown",Perms.ADMIN_QUEST_SETCOOLDOWN
+				);
+		this.setDescription(ChatColor.GOLD+"Set the quest cooldown (minutes)");
+		this.setParams("<minutes>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (params.size() != 1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		int minutes;
+		try {
+			minutes = Integer.valueOf(args[3]);
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED+"Value '"+args[3]+"' is not a number");
+			return;
+		}
+		if (q.setCooldownTime(minutes))
+			sender.sendMessage(ChatColor.GREEN+"Quest "+q.getDisplayName()
+				+ChatColor.GREEN+" ["+q.getNameID()+"] has now "+Math.max(0, minutes)+" minutes of cooldown");
+		else
+			sender.sendMessage(ChatColor.RED+"Quest "+q.getDisplayName()
+				+ChatColor.RED+" ["+q.getNameID()+"] has already "+Math.max(0, minutes)+" minutes of cooldown");
+				
+	}
+}
 
 //qa 	quest 	<id> 	listmission
 //		0		1		2
@@ -295,7 +428,10 @@ class SubQuestSubListMission extends SubCmdManager {
 class SubQuestSubMission extends SubCmdManager {
 	SubQuestSubMission() {
 		super("mission",Perms.ADMIN_QUEST_MISSION,
-				new SubQuestSubMissionSubInfo()
+				new SubQuestSubMissionSubInfo(),
+				new SubQuestSubMissionSubSetCooldown(),
+				new SubQuestSubMissionSubSetRepeatable(),
+				new SubQuestSubMissionSubSetDisplayName()
 				);
 		this.setDescription(ChatColor.GOLD+"Shows quest's missions menu");
 	}
@@ -340,6 +476,49 @@ class SubQuestSubMission extends SubCmdManager {
 		return super.onTab(params, sender, label, args);	
 	}
 }
+
+//qa 	quest 	<id> 	setdisplayname 	[name]
+//		0		1		2				3+
+class SubQuestSubMissionSubSetDisplayName extends SubCmdManager {
+	SubQuestSubMissionSubSetDisplayName(){
+		super("setdisplayname",Perms.ADMIN_QUEST_MISSION_SETDISPLAYNAME
+				);
+		this.setDescription(ChatColor.GOLD+"Set a new display name for selected mission");
+		this.setParams("[display name]");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0) {
+			onHelp(params,sender, label, args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		String displayName = null;
+		if (params.size()>0) {
+			StringBuilder text = new StringBuilder("");
+			for (String word : params)
+				text.append(" "+word);
+			displayName = text.toString().replaceFirst(" ","");
+		}
+		if (q.setDisplayName(displayName))
+			sender.sendMessage(ChatColor.GREEN+"Mission ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+				+ChatColor.GREEN+" ["+q.getNameID()+"] has now '"+m.getDisplayName()
+				+ChatColor.GREEN+"' as display name");
+		else
+			sender.sendMessage(ChatColor.RED+"Mission ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+				+ChatColor.RED+" ["+q.getNameID()+"] has already '"+m.getDisplayName()
+				+ChatColor.RED+"' as display name");
+	}
+}
 //qa 	quest 	<id> 	mission		<id>	info
 //		0		1		2			3		4
 class SubQuestSubMissionSubInfo extends SubCmdManager {
@@ -361,5 +540,108 @@ class SubQuestSubMissionSubInfo extends SubCmdManager {
 			return;
 		}
 		sender.spigot().sendMessage(m.toComponent());
+	}
+}
+
+
+//qa 	quest 	<id> 	mission		<missid>	setrepeatable 	<true/false>
+//		0		1		2			3			4				5
+class SubQuestSubMissionSubSetRepeatable extends SubCmdManager {
+	SubQuestSubMissionSubSetRepeatable(){
+		super("setrepeatable",Perms.ADMIN_QUEST_MISSION_SETREPEATABLE
+				);
+		this.setDescription(ChatColor.GOLD+"Set the mission as repeatable");
+		this.setParams("<true/false>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (params.size() != 1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		boolean value;
+		try {
+			 if ("true".equalsIgnoreCase(args[5]))
+				 value = true;
+			 else if ("false".equalsIgnoreCase(args[5]))
+				 value = false;
+			 else
+				 throw new IllegalArgumentException();
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED+"Value '"+args[5]+"' is not a valid boolean");
+			return;
+		}
+		if (q.setRepeatable(value))
+			if (value == true)
+				sender.sendMessage(ChatColor.GREEN+"Mission "+m.getDisplayName()
+					+ChatColor.GREEN+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+					+ChatColor.GREEN+" ["+q.getNameID()+"] is now repeatable");
+			else
+				sender.sendMessage(ChatColor.GREEN+"Mission "+m.getDisplayName()
+					+ChatColor.GREEN+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+					+ChatColor.GREEN+" ["+q.getNameID()+"] is no more repeatable");
+		else
+			if (value == true)
+				sender.sendMessage(ChatColor.RED+"Mission "+m.getDisplayName()
+					+ChatColor.RED+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+					+ChatColor.RED+" ["+q.getNameID()+"] is already repeatable");
+			else
+				sender.sendMessage(ChatColor.RED+"Mission "+m.getDisplayName()
+					+ChatColor.RED+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+					+ChatColor.RED+" ["+q.getNameID()+"] is already not repeatable");
+				
+	}
+}
+//qa 	quest 	<id> 	mission		<missid>	setcooldown 	<minutes>
+//		0		1		2			3			4				5
+class SubQuestSubMissionSubSetCooldown extends SubCmdManager {
+	SubQuestSubMissionSubSetCooldown(){
+		super("setcooldown",Perms.ADMIN_QUEST_MISSION_SETCOOLDOWN
+				);
+		this.setDescription(ChatColor.GOLD+"Set the mission cooldown (minutes)");
+		this.setParams("<minutes>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (params.size() != 1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		int minutes;
+		try {
+			minutes = Integer.valueOf(args[5]);
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED+"Value '"+args[5]+"' is not a number");
+			return;
+		}
+		if (q.setCooldownTime(minutes))
+			sender.sendMessage(ChatColor.GREEN+"Mission "+m.getDisplayName()
+				+ChatColor.GREEN+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+				+ChatColor.GREEN+" ["+q.getNameID()+"] has now "+Math.max(0, minutes)+" minutes of cooldown");
+		else
+			sender.sendMessage(ChatColor.RED+"Mission "+m.getDisplayName()
+				+ChatColor.RED+" ["+m.getNameID()+"] of quest "+q.getDisplayName() 
+				+ChatColor.RED+" ["+q.getNameID()+"] has already "+Math.max(0, minutes)+" minutes of cooldown");
+				
 	}
 }

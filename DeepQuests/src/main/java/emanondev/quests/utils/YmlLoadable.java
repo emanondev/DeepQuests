@@ -94,10 +94,14 @@ public abstract class YmlLoadable implements Savable {
 	public String getDisplayName() {
 		return displayName;
 	}
-	public void setDisplayName(String name) {
+	public boolean setDisplayName(String name) {
 		if (name==null)
-			throw new NullPointerException();
+			return false;
+		if (name.equals(displayName))
+			return false;
 		this.displayName = name;
+		setDirty(true);
+		return true;
 	}
 	
 	
