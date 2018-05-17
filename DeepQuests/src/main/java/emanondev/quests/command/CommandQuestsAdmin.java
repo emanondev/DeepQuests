@@ -173,11 +173,11 @@ class SubListQuest extends SubCmdManager {
 			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/qa quest "+quest.getNameID()+" info"));
 			val = !val;
 		}
-		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---"
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
-				+ChatColor.BLUE+" Quests List "
+				+ChatColor.BLUE+"  Quests List  "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"---");
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
 		sender.spigot().sendMessage(comp.create());
 	}
 }

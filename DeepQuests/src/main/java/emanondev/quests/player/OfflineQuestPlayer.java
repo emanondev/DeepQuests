@@ -210,22 +210,11 @@ public class OfflineQuestPlayer {
 			return completedBefore;
 		}
 		public long cooldownTimeLeft() {
-			if (this.quest.getCooldownTime()<0)
-				return -1L;
-			long l =  new Date().getTime()-(lastCompleted+quest.getCooldownTime());
-			if (l<0)
-				return 0L;
-			return l;
+			return lastCompleted+quest.getCooldownTime()-new Date().getTime();
 		}
 		public boolean isOnCooldown() {
 			return cooldownTimeLeft()>0;
 		}
-		
-		
-		
-		
-		
-		
 		
 		public class MissionData {
 			private final static String PATH_MISSIONS = "missions";
@@ -255,8 +244,8 @@ public class OfflineQuestPlayer {
 				this.active = data.getBoolean(baseMissionPath+"."+PATH_IS_ACTIVE, false);
 				this.completedTimes = data.getInt(baseMissionPath+"."+PATH_COMPLETED_TIMES, 0);
 				this.isFailed = data.getBoolean(baseMissionPath+"."+PATH_IS_FAILED, false);
-				registerActiveTask(tasksData.values());
-					
+				if (this.active == true)
+					registerActiveTask(tasksData.values());
 			}
 			public boolean isFailed() {
 				return isFailed;
@@ -280,12 +269,10 @@ public class OfflineQuestPlayer {
 				return completedBefore;
 			}
 			public long getCooldownTimeLeft() {
-				if (this.mission.getCooldownTime()<0)
-					return -1L;
-				long l =  lastCompleted+mission.getCooldownTime()-new Date().getTime();
-				if (l<0)
-					return 0L;
-				return l;
+				return lastCompleted+mission.getCooldownTime()-new Date().getTime();
+			}
+			public boolean isOnCooldown() {
+				return cooldownTimeLeft()>0;
 			}
 			
 			protected void start() {//TODO

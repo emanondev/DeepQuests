@@ -24,6 +24,7 @@ public class BreakBlockTaskType extends TaskType {
 		super("breakblock");
 	}
 	
+	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
 	private void onBlockBreak(BlockBreakEvent event) {
 		if (event.getPlayer()==null)

@@ -127,7 +127,6 @@ public class Quests extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		instance = this;
-		
 	}
 	
 	@Override
@@ -182,14 +181,13 @@ public class Quests extends JavaPlugin {
 	
 	public void reload(){
 		
-		playerManager.saveAll();
 		Language.reload();
 		Defaults.reload();
-		loggerManager = new LoggerManager();
+		loggerManager.reload();
 		config.reload();
-		questManager = new QuestManager();
 		
-		playerManager = new PlayerManager();
+		questManager.reload();
+		playerManager.reload();
 	}
 	public void onDisable() {
 		playerManager.saveAll();

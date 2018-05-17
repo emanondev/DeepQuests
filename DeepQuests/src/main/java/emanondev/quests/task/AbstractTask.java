@@ -53,7 +53,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		this.descUnstarted = loadDescUnstarted(m);
 		this.descProgress = loadDescProgress(m);
 	}
-	private String loadDescProgress(MemorySection m) {
+	private String loadDescUnstarted(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
 			String val = Defaults.TaskDef.getUnstartedDescription()
 					.replace("<task>",this.getNameID());
@@ -65,13 +65,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			Defaults.TaskDef.getUnstartedDescription()
 			.replace("<task>",this.getNameID()));
 	}
-	public String getUnstartedDescription() {
-		return this.descUnstarted;
-	}
-	public String getProgressDescription() {
-		return this.descProgress;
-	}
-	private String loadDescUnstarted(MemorySection m) {
+	private String loadDescProgress(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_PROGRESS)) {
 			String val = Defaults.TaskDef.getProgressDescription()
 					.replace("<task>",this.getNameID());
@@ -82,6 +76,12 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		return m.getString(PATH_TASK_DESCRIPTION_PROGRESS, 
 			Defaults.TaskDef.getProgressDescription()
 			.replace("<task>",this.getNameID()));
+	}
+	public String getUnstartedDescription() {
+		return this.descUnstarted;
+	}
+	public String getProgressDescription() {
+		return this.descProgress;
 	}
 	private final String descUnstarted;
 	private final String descProgress;

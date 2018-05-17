@@ -16,10 +16,15 @@ import emanondev.quests.utils.YmlLoadable;
 
 public class QuestManager implements Savable {
 	
-	private YMLConfig data = new YMLConfig(Quests.getInstance(),"quests");
-	private static HashMap<String,Quest> quests = new HashMap<String,Quest>();
+	private final YMLConfig data = new YMLConfig(Quests.getInstance(),"quests");
+	private static final HashMap<String,Quest> quests = new HashMap<String,Quest>();
 	
 	public QuestManager() {
+		reload();
+	}
+	public void reload() {
+		quests.clear();
+		data.reload();
 		Set<String> s = data.getValues(false).keySet();
 		s.forEach((key)->{
 			boolean dirty = false;
@@ -46,6 +51,7 @@ public class QuestManager implements Savable {
 				data.save();
 		});
 	}
+	
 	
 	public Quest getQuestByNameID(String key) {
 		return quests.get(key);

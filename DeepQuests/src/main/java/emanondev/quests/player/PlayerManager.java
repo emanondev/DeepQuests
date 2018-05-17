@@ -37,6 +37,14 @@ public class PlayerManager implements Listener {
 		});
 	}
 	
+	public void reload(){
+		saveAll();
+		players.clear();
+		Bukkit.getOnlinePlayers().forEach((p)->{
+			players.put(p, new QuestPlayer(p));
+		});
+		
+	}
 
 	/**
 	 * 
