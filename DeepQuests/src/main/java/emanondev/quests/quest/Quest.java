@@ -191,6 +191,7 @@ public class Quest extends YmlLoadableWithCooldown{
 		Mission m = new Mission((MemorySection) getSection().get(PATH_MISSIONS+"."+id),this);
 		missions.put(m.getNameID(), m);
 		m.setDirty(true);
+		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
 
@@ -200,6 +201,7 @@ public class Quest extends YmlLoadableWithCooldown{
 		getSection().set(PATH_MISSIONS+"."+mission.getNameID(),null);
 		missions.remove(mission.getNameID());
 		setDirty(true);
+		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
 }

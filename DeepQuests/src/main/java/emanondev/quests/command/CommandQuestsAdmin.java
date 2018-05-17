@@ -46,9 +46,6 @@ public class CommandQuestsAdmin extends CmdManager {
 	 * 							<task>
 	 * 				require
 	 * 				reward
-	 * 				addmission
-	 * 				deletemission
-	 * 					<mission>
 	 * 		player
 	 * 			<player>
 	 * 				reset
@@ -200,7 +197,9 @@ class SubQuest extends SubCmdManager {
 				new SubQuestSubMission(),
 				new SubQuestSubSetRepeatable(),
 				new SubQuestSubSetCooldown(),
-				new SubQuestSubSetDisplayName()
+				new SubQuestSubSetDisplayName(),
+				new SubQuestSubDeleteMission(),
+				new SubQuestSubAddMission()
 				
 				);
 		this.setDescription(ChatColor.GOLD+"Shows registered quests menu");
@@ -239,7 +238,94 @@ class SubQuest extends SubCmdManager {
 		return super.onTab(params, sender, label, args);	
 	}
 }
-
+//qa	quest	<questid>	addmission	<id>	[displayname]
+//		0		1			2			3		4+
+class SubQuestSubAddMission extends SubCmdManager {
+	SubQuestSubAddMission() {
+		super("addmission",Perms.ADMIN_QUEST_ADDMISSION);
+		this.setDescription(ChatColor.GOLD+"Create a new quest with given id and name");
+		this.setParams("<missionID> [display name]");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		String id = params.get(0).toLowerCase();
+		if (id.contains (":") || id.contains(".")){
+			sender.sendMessage(ChatColor.RED+"Invalid mission ID '"+id+"'");
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		if (q.getMissionByNameID(id)!=null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+id+"' on quest "+q.getDisplayName()+
+					ChatColor.RED+" ["+q.getNameID()+"] already exist");
+			return;
+		}
+		String displayName = null;
+		if (params.size()>1) {
+			params.remove(0);
+			StringBuilder text = new StringBuilder("");
+			for (String word : params)
+				text.append(" "+word);
+			displayName = text.toString().replaceFirst(" ","");
+		}
+		if (q.addMission(id, displayName))
+			sender.sendMessage(ChatColor.GREEN+"Mission '"+id+"' added on quest "+q.getDisplayName()+
+					ChatColor.GREEN+" ["+q.getNameID()+"]");
+		else
+			sender.sendMessage(ChatColor.RED+"Can't create Mission '"+id+"' on quest "+q.getDisplayName()+
+					ChatColor.RED+" ["+q.getNameID()+"]");
+	}
+	
+}
+//qa	quest	<questid>	deletemission	<id>
+//		0		1			2				3
+class SubQuestSubDeleteMission extends SubCmdManager {
+	SubQuestSubDeleteMission() {
+		super("deletemission",Perms.ADMIN_QUEST_DELETEMISSION);
+		this.setDescription(ChatColor.GOLD+"Delete selected quest\n"
+					+ChatColor.RED+"Deleting a mission erase it forever\n"
+					+ChatColor.RED+"Deleting can't be undone\n"
+					+ChatColor.RED+"Also delete mission's and tasks");
+		this.setParams("<questID>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()!=1) {
+			onHelp(params,sender,label,args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found on Quest '"+q.getDisplayName()
+				+ChatColor.RED+"' ["+q.getNameID()+"]");
+			return;
+		}
+		q.deleteMission(m);
+		sender.sendMessage(ChatColor.GREEN+"Mission '"+m.getDisplayName()
+			+ChatColor.GREEN+"' ["+m.getNameID()+"] deleted from Quest '"+q.getDisplayName()
+			+ChatColor.GREEN+"' ["+q.getNameID()+"]");
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		ArrayList<String> list = new ArrayList<String>();
+		if (params.size()==1) {
+			Completer.completeQuests(list, params.get(0), Quests.getInstance().getQuestManager().getQuests());
+		}
+		return list;
+	}
+}
 //qa 	quest 	<id> 	info
 //		0		1		2
 class SubQuestSubInfo extends SubCmdManager {

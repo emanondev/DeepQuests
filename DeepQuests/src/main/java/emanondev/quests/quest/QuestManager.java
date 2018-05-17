@@ -105,6 +105,7 @@ public class QuestManager implements Savable {
 		Quest q = new Quest((MemorySection) data.get(id),this);
 		quests.put(q.getNameID(), q);
 		q.setDirty(true);
+		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
 
@@ -114,6 +115,7 @@ public class QuestManager implements Savable {
 		data.set(quest.getNameID(),null);
 		quests.remove(quest.getNameID());
 		setDirty(true);
+		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
 }
