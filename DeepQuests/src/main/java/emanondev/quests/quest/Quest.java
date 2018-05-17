@@ -15,6 +15,7 @@ import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.utils.MemoryUtils;
+import emanondev.quests.utils.YmlLoadable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -175,5 +176,30 @@ public class Quest extends YmlLoadableWithCooldown{
 	@Override
 	protected boolean shouldAutogenDisplayName() {
 		return Defaults.QuestDef.shouldAutogenDisplayName();
+	}
+	
+	public boolean addMission(String id,String displayName) {
+		if (id == null || id.isEmpty() || 
+				id.contains(" ")||id.contains(".")||id.contains(":"))
+			return false;
+		if (displayName == null)
+			displayName = id.replace("_"," ");
+		id = id.toLowerCase();
+		if (missions.containsKey(id))
+			return false;
+		getSection().set(PATH_MISSIONS+"."+id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
+		Mission m = new Mission((MemorySection) getSection().get(PATH_MISSIONS+"."+id),this);
+		missions.put(m.getNameID(), m);
+		m.setDirty(true);
+		return true;
+	}
+
+	public boolean deleteMission(Mission mission) {
+		if (mission == null || !missions.containsKey(mission.getNameID()) )
+			return false;
+		getSection().set(PATH_MISSIONS+"."+mission.getNameID(),null);
+		missions.remove(mission.getNameID());
+		setDirty(true);
+		return true;
 	}
 }
