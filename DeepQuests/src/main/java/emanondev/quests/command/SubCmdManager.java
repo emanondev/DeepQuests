@@ -171,15 +171,15 @@ public class SubCmdManager {
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
 				+ChatColor.BLUE+"   Help   "
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
-				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
-				+"\n"+ChatColor.BLUE+" - /"+previusArgs+ " [...]");
-		if (getDescription()!=null)
-			comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					new ComponentBuilder( StringUtils.fixColorsAndHolders(getDescription()) ).create()
-					));
-		comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/"+previusArgs));
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
+		if (!subs.isEmpty()) {
+			comp.append("\n"+ChatColor.BLUE+" - /"+previusArgs+ " [...]");
+			if (getDescription()!=null)
+				comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder( StringUtils.fixColorsAndHolders(getDescription()) ).create()
+						));
+			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/"+previusArgs));
 		
-		if (!subs.isEmpty())
 			for (SubCmdManager sub : subs) {
 				if (sub.hasPermission(sender)) {
 					if (sub.getParams()==null)
@@ -203,6 +203,19 @@ public class SubCmdManager {
 								));
 				}
 			}
+		}
+		else {
+			if (getParams()!=null)
+				comp.append("\n"+ChatColor.RED+" - /"+previusArgs+" "+ChatColor.GOLD+getParams());
+			else
+				comp.append("\n"+ChatColor.RED+" - /"+previusArgs);
+			if (getDescription()!=null)
+				comp.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder( StringUtils.fixColorsAndHolders(getDescription()) ).create()
+						));
+			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,"/"+previusArgs));
+			
+		}
 		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
 				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
 				+ChatColor.BLUE+"   Help   "

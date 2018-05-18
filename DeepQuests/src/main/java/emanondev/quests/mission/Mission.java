@@ -96,6 +96,9 @@ public class Mission extends YmlLoadableWithCooldown{
 	public Collection<Task> getTasks(){
 		return Collections.unmodifiableCollection(tasks.values());
 	}
+	public Task getTaskByNameID(String key) {
+		return tasks.get(key);
+	}
 
 
 	private final List<MissionReward> completeRewards = new ArrayList<MissionReward>();
@@ -119,21 +122,29 @@ public class Mission extends YmlLoadableWithCooldown{
 		return displayInfo;
 	}
 	public BaseComponent[] toComponent() {
-		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
-				+ChatColor.AQUA+this.getNameID()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
-				+ChatColor.AQUA+this.getDisplayName()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
+		ComponentBuilder comp = new ComponentBuilder(
+				""+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
+				+ChatColor.BLUE+"   Mission Info   "
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
+				
+		comp.append("\n"+ChatColor.DARK_AQUA+"ID: "
+				+ChatColor.AQUA+this.getNameID()+"");
+		comp.append("\n"+ChatColor.DARK_AQUA+"DisplayName: "
+				+ChatColor.AQUA+this.getDisplayName());
 		
 		if (!this.isRepetable())
-			comp.append(ChatColor.RED+"Disabled\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Repeatable: "+ChatColor.RED+"Disabled");
 		else
-			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Repeatable: "+ChatColor.GREEN+"Enabled");
+		
+		comp.append(ChatColor.DARK_AQUA+"Cooldown: "+ChatColor.YELLOW+(this.getCooldownTime()/60/1000)+" minutes\n");
 		if (tasks.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Tasks:\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Tasks:");
 			for (Task task : tasks.values()) {
-				comp.append(ChatColor.AQUA+" - "+task.getNameID()+"\n")
-					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+				comp.append("\n"+ChatColor.AQUA+" - "+task.getNameID())
+					.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/qa quest "+this.parent.getNameID()+" mission "+this.getNameID()
 							+" task "+task.getNameID()+ " info"))
 					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -141,13 +152,33 @@ public class Mission extends YmlLoadableWithCooldown{
 							.create()));
 			}
 		}
-		if (requires.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
-			for (MissionRequire require : requires) {
-				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
-			}
+		if (this.getWorldsList().size()>0) {
+			if (this.isWorldListBlackList())
+				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			else
+				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
+			for (String world : this.getWorldsList())
+				comp.append("\n"+ChatColor.AQUA+" - "+world)
+				.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+						"/qa quest "+parent.getNameID()+" mission "
+								+this.getNameID()+" worlds remove "+world))
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder(ChatColor.YELLOW+"Click to remove")
+						.create()));
 		}
 		
+		if (requires.size() > 0) {
+			comp.append("\n"+ChatColor.DARK_AQUA+"Requires:");
+			for (MissionRequire require : requires) {
+				comp.append("\n"+ChatColor.AQUA+" - "+require.toText());
+			}
+		}
+
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
+				+ChatColor.BLUE+"   Mission Info   "
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
 		return comp.create();
 	}
 	public Mission(MemorySection m,Quest parent) {

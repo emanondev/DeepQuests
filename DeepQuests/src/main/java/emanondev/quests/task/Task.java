@@ -3,6 +3,7 @@ package emanondev.quests.task;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.Savable;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public interface Task extends Savable {
 	public String getDisplayName();
@@ -31,5 +32,6 @@ public interface Task extends Savable {
 	public boolean onProgress(QuestPlayer p);
 	public boolean onProgress(QuestPlayer p,int amount);
 	
+	public BaseComponent[] toComponent();
 	
 }

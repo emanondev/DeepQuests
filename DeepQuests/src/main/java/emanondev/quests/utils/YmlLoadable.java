@@ -47,8 +47,12 @@ public abstract class YmlLoadable implements Savable {
 		
 	}
 	public void setWorldsList(Collection<String> coll) {
-		if (coll == null)
+		if (coll == null) {
+			this.worlds.clear();
+			section.set(PATH_WORLDS_LIST, new ArrayList<String>());
+			this.setDirty(true);
 			return;
+		}
 		this.worlds.clear();
 		this.worlds.addAll(coll);
 		section.set(PATH_WORLDS_LIST, new ArrayList<String>(this.worlds));
@@ -76,8 +80,12 @@ public abstract class YmlLoadable implements Savable {
 	public boolean isWorldListBlackList() {
 		return this.useWorldsAsBlackList;
 	}
-	public void setWorldListBlackList(boolean isBlackList) {
+	public boolean setWorldListBlackList(boolean isBlackList) {
+		if (this.useWorldsAsBlackList == isBlackList)
+			return false;
 		this.useWorldsAsBlackList = isBlackList;
+		this.setDirty(true);
+		return true;
 	}
 	
 	public boolean isWorldAllowed(World w) {

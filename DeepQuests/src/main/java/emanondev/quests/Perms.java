@@ -21,4 +21,10 @@ public class Perms {
 	public static final String ADMIN_QUEST_MISSION_SETDISPLAYNAME = "quests.admin.quest.mission.setdisplayname";
 	public static final String ADMIN_QUEST_DELETEMISSION = 			"quests.admin.quest.deletemission";
 	public static final String ADMIN_QUEST_ADDMISSION = 			"quests.admin.quest.addmission";
+	public static final String ADMIN_QUEST_WORLDS = 				"quests.admin.quest.worlds";
+	public static final String ADMIN_QUEST_MISSION_WORLDS = 		"quests.admin.quest.mission.worlds";
+	public static final String ADMIN_QUEST_MISSION_TASK_WORLDS = 	"quests.admin.quest.mission.task.worlds";
+	public static final String ADMIN_QUEST_MISSION_TASK = 			"quests.admin.quest.mission.task";
+	public static final String ADMIN_QUEST_MISSION_TASK_INFO = 		"quests.admin.quest.mission.task.info";
+	
 }

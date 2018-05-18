@@ -88,21 +88,26 @@ public class Quest extends YmlLoadableWithCooldown{
 	}
 
 	public BaseComponent[] toComponent() {
-		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"ID: "
-				+ChatColor.AQUA+this.getNameID()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"DisplayName: "
-				+ChatColor.AQUA+this.getDisplayName()+"\n");
-		comp.append(ChatColor.DARK_AQUA+"CoolDown: ");
+		ComponentBuilder comp = new ComponentBuilder(""+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
+				+ChatColor.BLUE+"   Quest Info   "
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
+		comp.append("\n"+ChatColor.DARK_AQUA+"ID: "
+				+ChatColor.AQUA+this.getNameID());
+		comp.append("\n"+ChatColor.DARK_AQUA+"DisplayName: "
+				+ChatColor.AQUA+this.getDisplayName());
 		
 		if (!this.isRepetable())
-			comp.append(ChatColor.RED+"Disabled\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Repeatable: "+ChatColor.RED+"Disabled");
 		else
-			comp.append(ChatColor.YELLOW+""+this.getCooldownTime()+" minutes\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Repeatable: "+ChatColor.GREEN+"Enabled");
+		comp.append("\n"+ChatColor.DARK_AQUA+"Cooldown: "+ChatColor.YELLOW+(this.getCooldownTime()/60/1000)+" minutes");
 		if (missions.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Missions:\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Missions:");
 			for (Mission mission : missions.values()) {
-				comp.append(ChatColor.AQUA+" - "+mission.getNameID()+"\n")
-					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+				comp.append("\n"+ChatColor.AQUA+" - "+mission.getNameID())
+					.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 							"/qa quest "+this.getNameID()+" mission "
 							+mission.getNameID()+ " info"))
 					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -111,14 +116,31 @@ public class Quest extends YmlLoadableWithCooldown{
 				
 			}
 		}
+		if (this.getWorldsList().size()>0) {
+			if (this.isWorldListBlackList())
+				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			else
+				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
+			for (String world : this.getWorldsList())
+				comp.append("\n"+ChatColor.AQUA+" - "+world)
+				.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+						"/qa quest "+this.getNameID()+" worlds remove "+world))
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder(ChatColor.YELLOW+"Click to remove")
+						.create()));
+		}
 		if (requires.size() > 0) {
-			comp.append(ChatColor.DARK_AQUA+"Requires:\n");
+			comp.append("\n"+ChatColor.DARK_AQUA+"Requires:");
 			for (QuestRequire require : requires) {
-				comp.append(ChatColor.AQUA+" - "+require.toText()+"\n");
+				comp.append("\n"+ChatColor.AQUA+" - "+require.toText());
 				
 			}
 		}
-		
+		comp.append("\n"+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----"
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"[--"
+				+ChatColor.BLUE+"   Quest Info   "
+				+ChatColor.GRAY+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"--]"
+				+ChatColor.BLUE+ChatColor.BOLD+ChatColor.STRIKETHROUGH+"-----");
 		return comp.create();
 	}
 	private QuestDisplayInfo loadDisplayInfo(MemorySection m) {
@@ -190,7 +212,8 @@ public class Quest extends YmlLoadableWithCooldown{
 		getSection().set(PATH_MISSIONS+"."+id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
 		Mission m = new Mission((MemorySection) getSection().get(PATH_MISSIONS+"."+id),this);
 		missions.put(m.getNameID(), m);
-		m.setDirty(true);
+		parent.save();
+		parent.reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
@@ -200,7 +223,8 @@ public class Quest extends YmlLoadableWithCooldown{
 			return false;
 		getSection().set(PATH_MISSIONS+"."+mission.getNameID(),null);
 		missions.remove(mission.getNameID());
-		setDirty(true);
+		parent.save();
+		parent.reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}

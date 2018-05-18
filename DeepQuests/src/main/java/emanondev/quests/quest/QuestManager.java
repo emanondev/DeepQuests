@@ -22,6 +22,10 @@ public class QuestManager implements Savable {
 	public QuestManager() {
 		reload();
 	}
+	public void save() {
+		data.save();
+		setDirty(false);
+	}
 	public void reload() {
 		quests.clear();
 		data.reload();
@@ -104,7 +108,8 @@ public class QuestManager implements Savable {
 		data.set(id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
 		Quest q = new Quest((MemorySection) data.get(id),this);
 		quests.put(q.getNameID(), q);
-		q.setDirty(true);
+		save();
+		reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
@@ -114,7 +119,8 @@ public class QuestManager implements Savable {
 			return false;
 		data.set(quest.getNameID(),null);
 		quests.remove(quest.getNameID());
-		setDirty(true);
+		save();
+		reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}

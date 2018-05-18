@@ -9,6 +9,11 @@ import emanondev.quests.Defaults;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.YmlLoadable;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 /**
  * Any implementations of Task require to implement a Constructor like<br>
@@ -179,6 +184,32 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * type:
 	 * maxprogress:
 	 */
-	
-
+	@Override
+	public BaseComponent[] toComponent() {
+		ComponentBuilder comp = new ComponentBuilder(ChatColor.DARK_AQUA+"Type: "+ChatColor.GOLD+type.getKey())
+			.append("\n"+ChatColor.DARK_AQUA+"ID: "+ChatColor.YELLOW+getNameID())
+			.append("\n"+ChatColor.DARK_AQUA+"DisplayName: "+ChatColor.GREEN+getDisplayName())
+			.append("\n"+ChatColor.DARK_AQUA+"MaxProgress: "+ChatColor.GREEN+getMaxProgress())
+			.append("\n"+ChatColor.DARK_AQUA+"Description Unstarted: \n"
+					+ChatColor.GREEN+" '"+getUnstartedDescription()+"'")
+			.append("\n"+ChatColor.DARK_AQUA+"Description Progress: \n"
+					+ChatColor.GREEN+" '"+getProgressDescription()+"'");
+		if (this.getWorldsList().size()>0) {
+			if (this.isWorldListBlackList())
+				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			else
+				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
+			for (String world : this.getWorldsList())
+				comp.append("\n"+ChatColor.AQUA+" - "+world)
+				.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+						"/qa quest "+parent.getParent().getNameID()+" mission "
+								+parent.getNameID()+" task "
+								+this.getNameID()+" worlds remove "+world))
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder(ChatColor.YELLOW+"Click to remove")
+						.create()));
+		}
+		
+		return comp.create();
+	}	
 }

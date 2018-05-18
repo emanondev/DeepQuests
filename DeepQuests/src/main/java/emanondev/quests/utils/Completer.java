@@ -1,9 +1,11 @@
 package emanondev.quests.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import emanondev.quests.mission.Mission;
 import emanondev.quests.quest.Quest;
@@ -133,5 +135,19 @@ public class Completer {
 				l.add(p.getName());
 		});
 		return;
+	}
+
+	public static void completeWorlds(ArrayList<String> l, String prefix, List<World> worlds) {
+		String text = prefix.toLowerCase();
+		worlds.forEach((w)->{
+			if (l.size()<Completer.MAX_COMPLETES && w.getName().toLowerCase().startsWith(text))
+				l.add(w.getName());
+		});
+		return;
+		
+	}
+	private static final String[] boolValues = new String[]{"true","false"};
+	public static void completeBoolean(ArrayList<String> l, String prefix) {
+		complete(l,prefix,boolValues);
 	}
 }
