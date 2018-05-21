@@ -211,5 +211,5 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		}
 		
 		return comp.create();
-	}	
+	}
 }

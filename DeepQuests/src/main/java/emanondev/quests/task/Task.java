@@ -1,5 +1,8 @@
 package emanondev.quests.task;
 
+import org.bukkit.entity.Player;
+
+import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.Savable;
@@ -33,5 +36,9 @@ public interface Task extends Savable {
 	public boolean onProgress(QuestPlayer p,int amount);
 	
 	public BaseComponent[] toComponent();
+	
+	public void openEditorGui(Player p);
+
+	public void openEditorGui(Player p,CustomGuiHolder previusHolder);
 	
 }

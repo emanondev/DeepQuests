@@ -42,7 +42,6 @@ public class CommandQuestsAdmin extends CmdManager {
 	 * 						reward
 	 * 						task
 	 * 							<task>
-	 * 								info
 	 * 								setdisplayname
 	 * 								worlds
 	 * 									add
@@ -1171,4 +1170,195 @@ class SubQuestSubMissionSubTaskSubInfo extends SubCmdManager {
 		}
 		sender.spigot().sendMessage(t.toComponent());
 	}
+}
+
+class SubQuestSubMissionSubTaskSubWorlds extends SubCmdManager {
+	SubQuestSubMissionSubTaskSubWorlds() {
+		super("worlds",Perms.ADMIN_QUEST_MISSION_TASK_WORLDS,
+				new SubQuestSubMissionSubTaskSubWorldsSubAdd(),
+				new SubQuestSubMissionSubTaskSubWorldsSubDelete(),
+				new SubQuestSubMissionSubTaskSubWorldsSubSetBlacklist());
+		this.setDescription(ChatColor.GOLD+"Edit allowes/unallowed worlds for the task");
+	}
+}
+
+class SubQuestSubMissionSubTaskSubWorldsSubAdd extends SubCmdManager {
+	SubQuestSubMissionSubTaskSubWorldsSubAdd(){
+		super("add",null);
+		this.setDescription(ChatColor.GOLD+"Add selected world to list");
+		this.setParams("<world>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()!=1) {
+			onHelp(params, sender, label, args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		if (m.addWorldToWorldList(params.get(0)))
+			sender.sendMessage(
+					ChatColor.GREEN+"World '"+params.get(0)+"' added to task '"+t.getDisplayName()
+					+ChatColor.GREEN+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+					+ChatColor.GREEN+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.GREEN+"' ["+q.getNameID()+"]");
+		else
+			sender.sendMessage(ChatColor.RED+"World '"+params.get(0)+"' is already set on task '"+t.getDisplayName()
+					+ChatColor.RED+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName() 
+					+ChatColor.RED+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.RED+"' ["+q.getNameID()+"]");
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Completer.completeWorlds(list, params.get(0), Bukkit.getWorlds());
+			return list;
+		}
+		return super.onTab(params, sender, label, args);
+	}
+}
+//qa	quest	<questid>	worlds	deleteworld	<world>
+//		0		1			2		3			(4)
+class SubQuestSubMissionSubTaskSubWorldsSubDelete extends SubCmdManager {
+	SubQuestSubMissionSubTaskSubWorldsSubDelete(){
+		super("delete",null);
+		this.setDescription(ChatColor.GOLD+"Remove selected world from list");
+		this.setParams("<world>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()!=1) {
+			onHelp(params, sender, label, args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		if (q.removeWorldToWorldList(params.get(0)))
+			sender.sendMessage(ChatColor.GREEN+"World '"+params.get(0)+"' removed from task '"+t.getDisplayName()
+				+ChatColor.GREEN+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+				+ChatColor.GREEN+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+				+ChatColor.GREEN+"' ["+q.getNameID()+"]");
+		else
+			sender.sendMessage(ChatColor.RED+"World '"+params.get(0)+"' was not found on task '"+t.getDisplayName()
+				+ChatColor.RED+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName() 
+				+ChatColor.RED+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+				+ChatColor.RED+"' ["+q.getNameID()+"]");
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+			ArrayList<String> list = new ArrayList<String>();
+			if (q==null) {
+				return list;
+			}
+			Completer.complete(list, params.get(0), q.getWorldsList());
+			return list;
+		}
+		return super.onTab(params, sender, label, args);
+	}
+}
+class SubQuestSubMissionSubTaskSubWorldsSubSetBlacklist extends SubCmdManager {
+	SubQuestSubMissionSubTaskSubWorldsSubSetBlacklist(){
+		super("setblacklist",null);
+		this.setDescription(ChatColor.GOLD+"Set the worlds as blacklist (true) or as whitelist (false)");
+		this.setParams("<true/false>");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()!=1) {
+			onHelp(params, sender, label, args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		boolean value;
+		try {
+			 if ("true".equalsIgnoreCase(params.get(0)))
+				 value = true;
+			 else if ("false".equalsIgnoreCase(params.get(0)))
+				 value = false;
+			 else
+				 throw new IllegalArgumentException();
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED+"Value '"+params.get(0)+"' is not a valid boolean");
+			return;
+		}
+		if (q.setWorldListBlackList(value))
+			if (value == true)
+				sender.sendMessage(ChatColor.GREEN+"Worlds on task '"+t.getDisplayName()
+					+ChatColor.GREEN+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+					+ChatColor.GREEN+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.GREEN+"' ["+q.getNameID()+"] are now a BlackList");
+			else
+				sender.sendMessage(ChatColor.GREEN+"Worlds on task '"+t.getDisplayName()
+					+ChatColor.RED+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+					+ChatColor.GREEN+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.GREEN+"' ["+q.getNameID()+"] are now a Whitelist");
+		else
+			if (value == true)
+				sender.sendMessage(ChatColor.RED+"Worlds on task '"+t.getDisplayName()
+					+ChatColor.RED+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+					+ChatColor.RED+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.RED+"' ["+q.getNameID()+"] is already a BlackList");
+			else
+				sender.sendMessage(ChatColor.RED+"Worlds on task '"+t.getDisplayName()
+					+ChatColor.RED+"' ["+t.getNameID()+"] of mission '"+m.getDisplayName()
+					+ChatColor.RED+"' ["+m.getNameID()+"] of quest '"+q.getDisplayName()
+					+ChatColor.RED+"' ["+q.getNameID()+"] is already a Whitelist");
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Completer.completeBoolean(list, params.get(0));
+			return list;
+		}
+		return super.onTab(params, sender, label, args);
+	}
+	
 }
