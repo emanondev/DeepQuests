@@ -49,8 +49,9 @@ public class ShearSheepTaskType extends TaskType {
 		private final DropsTaskInfo drops;
 		public ShearSheepTask(MemorySection m, Mission parent) {
 			super(m, parent,ShearSheepTaskType.this);
-			entity = new EntityTaskInfo(m);
+			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
+			this.addToEditor(entity.getEntityTypeEditorButton());
 		}
 		
 	}

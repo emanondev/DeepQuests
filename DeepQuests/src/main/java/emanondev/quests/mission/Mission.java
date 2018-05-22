@@ -139,7 +139,7 @@ public class Mission extends YmlLoadableWithCooldown{
 		else
 			comp.append("\n"+ChatColor.DARK_AQUA+"Repeatable: "+ChatColor.GREEN+"Enabled");
 		
-		comp.append(ChatColor.DARK_AQUA+"Cooldown: "+ChatColor.YELLOW+(this.getCooldownTime()/60/1000)+" minutes\n");
+		comp.append("\n"+ChatColor.DARK_AQUA+"Cooldown: "+ChatColor.YELLOW+(this.getCooldownTime()/60/1000)+" minutes\n");
 		if (tasks.size() > 0) {
 			comp.append("\n"+ChatColor.DARK_AQUA+"Tasks:");
 			for (Task task : tasks.values()) {

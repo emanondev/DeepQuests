@@ -20,6 +20,7 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 				int rows,int page) {
 		super(p, previusHolder, Math.max(2, rows));
 		this.page = Math.max(1,page);
+		this.currPageButton = craftCurrentPageButton();
 	}
 	public void addButton(T button) {
 		if (button!=null)
@@ -213,7 +214,7 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 				clicker.closeInventory();
 		}
 	}
-	private CustomGuiItem currPageButton = craftCurrentPageButton();
+	private CustomGuiItem currPageButton;
 	private CustomGuiItem nextPageButton = craftNextPageButton();
 	private CustomGuiItem prevPageButton = craftPrevPageButton();
 

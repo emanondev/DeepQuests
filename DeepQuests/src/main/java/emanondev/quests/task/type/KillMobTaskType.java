@@ -52,8 +52,9 @@ public class KillMobTaskType extends TaskType {
 		
 		public KillMobTask(MemorySection m, Mission parent) {
 			super(m, parent, KillMobTaskType.this);
-			entityInfo = new EntityTaskInfo(m);
+			entityInfo = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
+			this.addToEditor(entityInfo.getEntityTypeEditorButton());
 		}
 	}
 	@Override

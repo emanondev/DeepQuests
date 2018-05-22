@@ -407,10 +407,5 @@ public abstract class YmlLoadable implements Savable {
 			update();
 			getParent().reloadInventory();
 		}
-		
 	}
-	
-	
-	
-
 }

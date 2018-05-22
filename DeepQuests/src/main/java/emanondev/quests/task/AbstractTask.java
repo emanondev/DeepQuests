@@ -1,13 +1,24 @@
 package emanondev.quests.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.gui.CustomGuiItem;
+import emanondev.quests.gui.CustomLinkedGuiHolder;
+import emanondev.quests.gui.EditorGui;
+import emanondev.quests.gui.EditorGuiItemFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -46,6 +57,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * @param m must be != null
 	 * @param parent must be != null
 	 */
+	@SuppressWarnings("rawtypes")
 	public AbstractTask(MemorySection m,Mission parent,TaskType type) {
 		super(m);
 		if (parent == null||type ==null)
@@ -57,6 +69,8 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			throw new IllegalArgumentException("task max progress must be always > 0");
 		this.descUnstarted = loadDescUnstarted(m);
 		this.descProgress = loadDescProgress(m);
+		
+		this.addToEditor(new EditMaxProgressFactory());
 	}
 	private String loadDescUnstarted(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
@@ -91,7 +105,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	private final String descUnstarted;
 	private final String descProgress;
 	private final TaskType type;
-	private final int maxProgress;
+	private int maxProgress;
 	private final Mission parent;
 	/**
 	 * 
@@ -120,6 +134,17 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	public int getMaxProgress() {
 		return maxProgress;
 	}
+	
+	public boolean setMaxProgress(int value) {
+		value = Math.max(1,value);
+		if (this.maxProgress == value)
+			return false;
+		
+		this.maxProgress = value;
+		this.setDirty(true);
+		return true;
+	}
+	
 	/**
 	 * returned value must be > 0
 	 * @param m config
@@ -211,5 +236,110 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		}
 		
 		return comp.create();
+	}
+	
+	private class EditMaxProgressFactory<T extends AbstractTask> implements EditorGuiItemFactory<T> {
+		private class EditMaxProgressButton extends CustomGuiItem {
+			private ItemStack item = new ItemStack(Material.DIODE);
+			public EditMaxProgressButton(EditorGui<?> parent) {
+				super(parent);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMax Progress Editor"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit task max progress"));
+				lore.add(StringUtils.fixColorsAndHolders("&aMax progress is &e"+getMaxProgress()));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new MaxProgressEditorGui(clicker,
+						(EditorGui<?>) this.getParent()).getInventory());
+			}
+		}
+		@Override
+		public CustomGuiItem getCustomGuiItem(EditorGui<T> parent) {
+			return new EditMaxProgressButton(parent);
+		}
+	}
+	
+	private class MaxProgressEditorGui extends CustomLinkedGuiHolder<CustomGuiItem> {
+		public MaxProgressEditorGui(Player p, EditorGui<?> previusHolder) {
+			super(p,previusHolder, 6);
+			items.put(4, new MaxProgressButton());
+			items.put(19, new MaxProgressEditorButton(1));
+			items.put(20, new MaxProgressEditorButton(10));
+			items.put(21, new MaxProgressEditorButton(100));
+			items.put(22, new MaxProgressEditorButton(1000));
+			items.put(23, new MaxProgressEditorButton(10000));
+			items.put(24, new MaxProgressEditorButton(100000));
+			items.put(25, new MaxProgressEditorButton(1000000));
+			items.put(28, new MaxProgressEditorButton(-1));
+			items.put(29, new MaxProgressEditorButton(-10));
+			items.put(30, new MaxProgressEditorButton(-100));
+			items.put(31, new MaxProgressEditorButton(-1000));
+			items.put(32, new MaxProgressEditorButton(-10000));
+			items.put(33, new MaxProgressEditorButton(-100000));
+			items.put(34, new MaxProgressEditorButton(-1000000));
+			this.setFromEndCloseButtonPosition(8);
+			reloadInventory();
+		}
+		private class MaxProgressButton extends CustomGuiItem {
+			private ItemStack item = new ItemStack(Material.DIODE);
+			public MaxProgressButton() {
+				super(MaxProgressEditorGui.this);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void update() {
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Max Task Progress: &e"+getMaxProgress()));
+				item.setItemMeta(meta);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {}
+		}
+		
+		private class MaxProgressEditorButton extends CustomGuiItem {
+			private int amount;
+			public MaxProgressEditorButton(int amount) {
+				super(MaxProgressEditorGui.this);
+				this.amount = amount;
+				
+				ItemMeta meta = item.getItemMeta();
+				if (this.amount>0) {
+					this.item.setDurability((short) 5);
+					meta.setDisplayName(StringUtils.fixColorsAndHolders("&aAdd "+this.amount));
+				}
+				else {
+					this.item.setDurability((short) 14);
+					meta.setDisplayName(StringUtils.fixColorsAndHolders("&cRemove "+(-this.amount)));
+				}
+				item.setItemMeta(meta);
+			}
+			private ItemStack item = new ItemStack(Material.WOOL);
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (setMaxProgress(getMaxProgress()+amount))
+					getParent().update();
+			}
+		}
+		
 	}
 }

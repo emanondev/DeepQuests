@@ -46,7 +46,8 @@ public class TameMobTaskType extends TaskType {
 		//TODO option CHECKTOOL
 		public TameMobTask(MemorySection m, Mission parent) {
 			super(m, parent,TameMobTaskType.this);
-			entity = new EntityTaskInfo(m);
+			entity = new EntityTaskInfo(m,this);
+			this.addToEditor(entity.getEntityTypeEditorButton());
 		}
 		
 	}

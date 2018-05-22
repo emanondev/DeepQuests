@@ -384,8 +384,9 @@ public class GuiManager implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled = true)
 	private void onClick(InventoryClickEvent event) {
-		if (event.getView().getTopInventory().getHolder() instanceof GuiHolder)
-			event.setCancelled(true);
+		if (!(event.getView().getTopInventory().getHolder() instanceof GuiHolder))
+			return;
+		event.setCancelled(true);
 		if (event.getClickedInventory()!=null && event.getClickedInventory().equals(event.getView().getTopInventory())) {
 			GuiHolder holder = (GuiHolder) event.getView().getTopInventory().getHolder();
 			if (event.getWhoClicked() instanceof Player)

@@ -50,8 +50,9 @@ public class BreedMobTaskType extends TaskType {
 		private final DropsTaskInfo drops;
 		public BreedMobTask(MemorySection m, Mission parent) {
 			super(m, parent,BreedMobTaskType.this);
-			entity = new EntityTaskInfo(m);
+			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
+			this.addToEditor(entity.getEntityTypeEditorButton());
 		}
 		
 	}
