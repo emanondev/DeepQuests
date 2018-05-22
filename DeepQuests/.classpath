@@ -28,12 +28,14 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG/spigot-1.12.jar"/>
-	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/PlaceholderAPI-2.8.6.jar"/>
-	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/MythicMobs-4.3.2-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/WGRegionEvents.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirginBlock"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/citizens-2.0.22-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/MythicMobs-4.3.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/PlaceholderAPI-2.8.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/SuperVanish.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/WGRegionEvents.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/spigot-latest.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/worldguard-6.2.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

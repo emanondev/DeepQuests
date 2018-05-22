@@ -169,6 +169,7 @@ public class OfflineQuestPlayer {
 		private long lastStarted;
 		private long lastCompleted;
 		private boolean completedBefore;
+		@SuppressWarnings("unused")
 		private int completedTimes;//TODO
 		private boolean isFailed;
 		

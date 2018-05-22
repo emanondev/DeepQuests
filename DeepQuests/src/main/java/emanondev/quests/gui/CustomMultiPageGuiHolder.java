@@ -39,26 +39,20 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		setPage(page-1);
 	}
 	public void setPage(int pag) {
+		pag = Math.max(1,pag);
 		if (pag==page)
 			return;
-		
+		if (pag*(size()-9)>items.size())
+			return;
+		page = pag;
 		for (int i = 0; i < size()-9 ; i++)
-			if (items.size() < ((this.page)*(size()-9)))
-				getInventory().setItem(i,items.get((this.page-1)*(size()-9)+i).getItem());
+			if ((getPageOffset()+size()) < items.size() )
+				getInventory().setItem(i,items.get(getPageOffset()+i).getItem());
 			else
 				getInventory().setItem(i,null);
 		currPageButton.update();
 	}
 	public void onSlotClick(Player clicker,int slot,ClickType click) {
-		if (slot==size()-this.fromEndBackButtonPosition()) {
-			if (getPreviusHolder()!=null)
-				clicker.openInventory(getPreviusInventory());
-			return;
-		}
-		if (slot == size()-this.fromEndCloseButtonPosition()) {
-			clicker.closeInventory();
-			return;
-		}
 		if (slot == size()-this.fromEndPrevPageButtonPosition()) {
 			decrementPage();
 			return;
@@ -67,24 +61,36 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 			incrementPage();
 			return;
 		}
-		if (items.size() < (page-1)*(size()-9)+slot)
-			items.get((page-1)*(size()-9)+slot).onClick(clicker,click);
+		if (slot<(size()-9) && getPageOffset()+slot < items.size() ) {
+			items.get(getPageOffset()+slot).onClick(clicker,click);
+			return;
+		}
+		super.onSlotClick(clicker,slot,click);
 	}
-	protected void loadInventory() {
-		for (int i = 0; (i < size()-9) && (items.size() < ((this.page-1)*(size()-9)+i)); i++)
-			getInventory().setItem(i,items.get((this.page-1)*(size()-9)+i).getItem());
-		getInventory().setItem(size()-this.fromEndBackButtonPosition(),getBackButton().getItem());
-		getInventory().setItem(size()-this.fromEndCloseButtonPosition(),getCloseButton().getItem());
-		getInventory().setItem(size()-this.fromEndNextPageButtonPosition(),nextPageButton.getItem());
-		getInventory().setItem(size()-this.fromEndPrevPageButtonPosition(),prevPageButton.getItem());
-		getInventory().setItem(size()-this.fromEndCurrentPageButtonPosition(),currPageButton.getItem());
+	public void reloadInventory() {
+		for (int i = 0; i < size()-9;i++)
+			if ((getPageOffset()+i) <items.size())
+				getInventory().setItem(i,items.get(getPageOffset()+i).getItem());
+			else
+				getInventory().setItem(i,null);
+		
+		if (!nextPageButton.getItem().equals(getInventory().getItem(size()-this.fromEndNextPageButtonPosition())))
+				getInventory().setItem(size()-this.fromEndNextPageButtonPosition(),nextPageButton.getItem());
+		if (!prevPageButton.getItem().equals(getInventory().getItem(size()-this.fromEndPrevPageButtonPosition())))
+				getInventory().setItem(size()-this.fromEndPrevPageButtonPosition(),prevPageButton.getItem());
+		if (!currPageButton.getItem().equals(getInventory().getItem(size()-this.fromEndCurrentPageButtonPosition())))
+				getInventory().setItem(size()-this.fromEndCurrentPageButtonPosition(),currPageButton.getItem());
+		super.reloadInventory();
 	}
 	public void update() {
 		for (T customItem : items)
 			customItem.update();
 		currPageButton.update();
+		reloadInventory();
 	}
-		
+	private int getPageOffset() {
+		return (this.page-1)*(size()-9);
+	}
 	private int prevPageButtonPos = 6;
 	private int nextPageButtonPos = 4;
 	private int currPageButtonPos = 5;
@@ -134,13 +140,13 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 	}
 
 	protected CustomGuiItem craftPrevPageButton() {
-		return new BackButton(this);
+		return new PrevPageButton();
 	}
 	protected CustomGuiItem craftNextPageButton() {
-		return new BackButton(this);
+		return new NextPageButton();
 	}
 	protected CustomGuiItem craftCurrentPageButton() {
-		return new CloseButton(this);
+		return new CurrPageButton();
 	}
 
 	private static ItemStack loadPrevPageItem() {
@@ -164,8 +170,8 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		public ItemStack getItem() {
 			return prevPageButtonItem;
 		}
-		public PrevPageButton(CustomGuiHolder parent) {
-			super(parent);
+		public PrevPageButton() {
+			super(CustomMultiPageGuiHolder.this);
 		}
 
 		@Override
@@ -177,8 +183,8 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		public ItemStack getItem() {
 			return nextPageButtonItem;
 		}
-		public NextPageButton(CustomGuiHolder parent) {
-			super(parent);
+		public NextPageButton() {
+			super(CustomMultiPageGuiHolder.this);
 		}
 		@Override
 		public void onClick(Player clicker, ClickType click) {
@@ -191,12 +197,10 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		public ItemStack getItem() {
 			return item;
 		}
-		public CurrPageButton(CustomGuiHolder parent) {
-			super(parent);
+		public CurrPageButton() {
+			super(CustomMultiPageGuiHolder.this);
 			this.item = new ItemStack(Material.NAME_TAG);
-			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(StringUtils.fixColorsAndHolders("&9&lPage <&5&l{page}&9&l>","{page}",""+page));
-			item.setItemMeta(meta);
+			update();
 		}
 		public void update() {
 			ItemMeta meta = item.getItemMeta();
@@ -209,8 +213,8 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 				clicker.closeInventory();
 		}
 	}
-	private CustomGuiItem currPageButton = new CurrPageButton(this);
-	private CustomGuiItem nextPageButton = new NextPageButton(this);
-	private CustomGuiItem prevPageButton = new PrevPageButton(this);
+	private CustomGuiItem currPageButton = craftCurrentPageButton();
+	private CustomGuiItem nextPageButton = craftNextPageButton();
+	private CustomGuiItem prevPageButton = craftPrevPageButton();
 
 }

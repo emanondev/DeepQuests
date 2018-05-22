@@ -40,5 +40,9 @@ public interface Task extends Savable {
 	public void openEditorGui(Player p);
 
 	public void openEditorGui(Player p,CustomGuiHolder previusHolder);
+	public boolean setDisplayName(String displayName);
+	public boolean setWorldListBlackList(boolean value);
+	public boolean removeWorldToWorldList(String string);
+	public boolean addWorldToWorldList(String string);
 	
 }

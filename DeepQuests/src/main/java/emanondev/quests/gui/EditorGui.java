@@ -17,7 +17,7 @@ public class EditorGui<T extends YmlLoadable> extends CustomMultiPageGuiHolder<C
 		this.loadable = loadable;
 		for (EditorGuiItemFactory<T> factory : facts)
 			this.addButton(factory.getCustomGuiItem(this));
-		loadInventory();
+		reloadInventory();
 	}
 	
 	public T getLoadable() {

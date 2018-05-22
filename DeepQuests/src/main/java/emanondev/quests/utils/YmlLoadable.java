@@ -225,17 +225,17 @@ public abstract class YmlLoadable implements Savable {
 			private ItemStack item = new ItemStack(Material.PAPER);
 			public EditDisplayNameButton(EditorGui<?> parent) {
 				super(parent);
+				update();
 			}
 			@Override
 			public ItemStack getItem() {
-				update();
 				return item;
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lDisplayName editor"));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6click to edit name"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit name"));
 				lore.add(StringUtils.fixColorsAndHolders("&aDisplayName &r'")
 							+getDisplayName()+StringUtils.fixColorsAndHolders("&r'"));
 				meta.setLore(lore);
@@ -257,26 +257,30 @@ public abstract class YmlLoadable implements Savable {
 			private ItemStack item = new ItemStack(Material.COMPASS);
 			public EditWorldsButton(EditorGui<?> parent) {
 				super(parent);
+				update();
 			}
 			@Override
 			public ItemStack getItem() {
-				update();
 				return item;
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWolds editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorlds editor"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to edit");
 				if (getWorldsList().isEmpty())
 					lore.add("&aNo worlds restrictions are set");
 				else {
-					if (isWorldListBlackList()) 
-						lore.add("&aAll listed worlds are disabled");
-					else 
-						lore.add("&aAll listed worlds are enabled");
-					for (String world : getWorldsList())
-						lore.add(" &a- "+world);
+					if (isWorldListBlackList()) {
+						lore.add("&6All listed worlds are &cdisabled");
+						for (String world : getWorldsList())
+							lore.add(" &6- &c"+world);
+					}
+					else {
+						lore.add("&6All listed worlds are &aenabled");
+						for (String world : getWorldsList())
+							lore.add(" &6- &a"+world);
+					}
 				}
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);
@@ -303,8 +307,11 @@ public abstract class YmlLoadable implements Savable {
 				addButton(new WorldButton(this,world));
 			}
 			this.setFromEndCloseButtonPosition(8);
+			reloadInventory();
+		}
+		public void reloadInventory() {
 			getInventory().setItem(size()-1,blacklistButton.getItem());
-			loadInventory();
+			super.reloadInventory();
 		}
 		@Override
 		public void onSlotClick(Player clicker,int slot,ClickType click) {
@@ -350,11 +357,10 @@ public abstract class YmlLoadable implements Savable {
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				setWorldListBlackList(!isWorldListBlackList());
-				getParent().update();				
+				update();
+				getParent().update();
 			}
-			
 		}
-		
 	}
 	
 	private class WorldButton extends CustomGuiItem {
@@ -399,6 +405,7 @@ public abstract class YmlLoadable implements Savable {
 			else
 				addWorldToWorldList(worldName);
 			update();
+			getParent().reloadInventory();
 		}
 		
 	}

@@ -2,8 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emanondev</groupId>
   <artifactId>DeepQuests</artifactId>
-  <version>0.9.6-ALPHA</version>
+  <version>0.9.7-ALPHA</version>
   <build>
 	<finalName>DeepQuests_v${project.version}</finalName>
   </build>
+  
 </project>

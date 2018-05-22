@@ -33,7 +33,17 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 		return player;
 	}
 	public abstract void update();
-	public abstract void onSlotClick(Player clicker,int slot,ClickType click);
+	public void onSlotClick(Player clicker,int slot,ClickType click) {
+		if (slot == size()-fromEndBackButtonPosition()) {
+			backButton.onClick(clicker,click);
+			return;
+		}
+		if (slot == size()-fromEndCloseButtonPosition()) {
+			closeButton.onClick(clicker,click);
+			return;
+		}
+			
+	}
 	public Inventory getPreviusInventory() {
 		if (previusHolder==null)
 			return null;
@@ -62,7 +72,8 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	
 	protected boolean setFromEndBackButtonPosition(int i) {
 		if (i>0 && i <= size() && i!=backButtonPos) {
-			if (getInventory().getItem(size()-backButtonPos).equals(backButton.getItem()))
+			if (getInventory().getItem(size()-backButtonPos)!=null
+					&& getInventory().getItem(size()-backButtonPos).equals(backButton.getItem()))
 				getInventory().setItem(size()-backButtonPos,null);
 			backButtonPos=i;
 			
@@ -74,7 +85,8 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	}
 	protected boolean setFromEndCloseButtonPosition(int i) {
 		if (i>0 && i <= size() && i!=closeButtonPos) {
-			if (getInventory().getItem(size()-closeButtonPos).equals(closeButton.getItem()))
+			if (getInventory().getItem(size()-closeButtonPos)!=null
+					&& getInventory().getItem(size()-closeButtonPos).equals(closeButton.getItem()))
 				getInventory().setItem(size()-closeButtonPos,null);
 			closeButtonPos=i;
 			
@@ -86,10 +98,10 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	private int backButtonPos = 9;
 	private int closeButtonPos = 1;
 	protected CustomGuiItem craftBackButton() {
-		return new BackButton(this);
+		return new BackButton();
 	}
 	protected CustomGuiItem craftCloseButton() {
-		return new CloseButton(this);
+		return new CloseButton();
 	}
 
 	//TODO read material and text by config
@@ -106,8 +118,8 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 			return backButtonItem;
 		}
 		
-		public BackButton(CustomGuiHolder parent) {
-			super(parent);
+		public BackButton() {
+			super(CustomGuiHolder.this);
 		}
 
 		@Override
@@ -133,15 +145,21 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 			return closeButtonItem;
 		}
 		
-		public CloseButton(CustomGuiHolder parent) {
-			super(parent);
+		public CloseButton() {
+			super(CustomGuiHolder.this);
 		}
 
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (getParent()==null)
-				clicker.closeInventory();
+			clicker.closeInventory();
 		}
+	}
+	
+	public void reloadInventory() {
+		if (!backButton.getItem().equals(getInventory().getItem(size()-this.fromEndBackButtonPosition())))
+			getInventory().setItem(size()-this.fromEndBackButtonPosition(),getBackButton().getItem());
+		if (!closeButton.getItem().equals(getInventory().getItem(size()-this.fromEndCloseButtonPosition())))
+			getInventory().setItem(size()-this.fromEndCloseButtonPosition(),getCloseButton().getItem());
 	}
 	
 	

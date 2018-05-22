@@ -9,6 +9,7 @@ import emanondev.quests.LoggerManager.Logger;
 import emanondev.quests.command.CmdManager;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
+import emanondev.quests.gui.CustomGuiHandler;
 import emanondev.quests.inventory.GuiManager;
 import emanondev.quests.mission.MissionManager;
 import emanondev.quests.player.PlayerManager;
@@ -140,6 +141,7 @@ public class Quests extends JavaPlugin {
 		//
 		new CommandQuests();
 		new CommandQuestsAdmin();
+		registerListener(new CustomGuiHandler());
 		guiManager = new GuiManager();
 		
 		requireManager = new RequireManager();
