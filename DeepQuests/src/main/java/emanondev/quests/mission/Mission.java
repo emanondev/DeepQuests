@@ -164,10 +164,10 @@ public class Mission extends YmlLoadableWithCooldown{
 			}
 		}
 		if (this.getWorldsList().size()>0) {
-			if (this.isWorldListBlackList())
-				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			if (this.isWorldListBlacklist())
+				comp.append("\n"+ChatColor.RED+"Blacklisted "+ChatColor.DARK_AQUA+"Worlds:");
 			else
-				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
+				comp.append("\n"+ChatColor.GREEN+"Whitelisted "+ChatColor.DARK_AQUA+"Worlds:");
 			for (String world : this.getWorldsList())
 				comp.append("\n"+ChatColor.AQUA+" - "+world)
 				.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
@@ -227,7 +227,8 @@ public class Mission extends YmlLoadableWithCooldown{
 		holders = setupHolders();
 		if (displayInfo.isDirty())
 			setDirty(true);
-		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks()));
+		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks(),
+				"&8Tasks List"));
 		this.addToEditor(new AddTaskFactory());
 	}
 	private class AddTaskFactory implements EditorButtonFactory {
@@ -565,8 +566,8 @@ public class Mission extends YmlLoadableWithCooldown{
 		return  Defaults.MissionDef.shouldWorldsAutogen();
 	}
 	@Override
-	protected boolean getUseWorldsAsBlackListDefault() {
-		return  Defaults.MissionDef.getUseWorldsAsBlackListDefault();
+	protected boolean getUseWorldsAsBlacklistDefault() {
+		return  Defaults.MissionDef.getUseWorldsAsBlacklistDefault();
 	}
 	@Override
 	protected boolean shouldAutogenDisplayName() {

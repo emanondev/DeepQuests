@@ -145,8 +145,10 @@ public class QuestManager implements Savable {
 		public QuestsEditorGui(Player p, CustomGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			this.setFromEndCloseButtonPosition(8);
-			this.addButton(new SubExplorerFactory<Quest>(Quest.class,getQuests()).getCustomButton(this));			
+			this.addButton(new SubExplorerFactory<Quest>(Quest.class,getQuests(),
+					"&8Quests List").getCustomButton(this));			
 			this.addButton(new AddQuestGuiItem(this));
+			this.setTitle(null, StringUtils.fixColorsAndHolders("&8Quests Manager Editor"));
 			reloadInventory();
 		}
 		

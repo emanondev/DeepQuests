@@ -70,7 +70,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		this.descUnstarted = loadDescUnstarted(m);
 		this.descProgress = loadDescProgress(m);
 		
-		this.addToEditor(new EditMaxProgressFactory());
+		this.addToEditor(new MaxProgressButtonFactory());
 	}
 	private String loadDescUnstarted(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
@@ -179,8 +179,8 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	protected boolean shouldWorldsAutogen() {
 		return Defaults.TaskDef.shouldWorldsAutogen();
 	}
-	protected boolean getUseWorldsAsBlackListDefault() {
-		return Defaults.TaskDef.getUseWorldsAsBlackListDefault();
+	protected boolean getUseWorldsAsBlacklistDefault() {
+		return Defaults.TaskDef.getUseWorldsAsBlacklistDefault();
 	}
 	@Override
 	protected boolean shouldAutogenDisplayName() {
@@ -225,8 +225,8 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			.append("\n"+ChatColor.DARK_AQUA+"Description Progress: \n"
 					+ChatColor.GREEN+" '"+getProgressDescription()+"'");
 		if (this.getWorldsList().size()>0) {
-			if (this.isWorldListBlackList())
-				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			if (this.isWorldListBlacklist())
+				comp.append("\n"+ChatColor.RED+"Blacklisted "+ChatColor.DARK_AQUA+"Worlds:");
 			else
 				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
 			for (String world : this.getWorldsList())
@@ -243,10 +243,10 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		return comp.create();
 	}
 	
-	private class EditMaxProgressFactory implements EditorButtonFactory {
-		private class EditMaxProgressButton extends CustomButton {
+	private class MaxProgressButtonFactory implements EditorButtonFactory {
+		private class MaxProgressEditorButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.DIODE);
-			public EditMaxProgressButton(CustomGui parent) {
+			public MaxProgressEditorButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -268,85 +268,89 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 				clicker.openInventory(new MaxProgressEditorGui(clicker,
 						(EditorGui) this.getParent()).getInventory());
 			}
+			
+
+			private class MaxProgressEditorGui extends CustomLinkedGui<CustomButton> {
+				public MaxProgressEditorGui(Player p, EditorGui previusHolder) {
+					super(p,previusHolder, 6);
+					items.put(4, new ShowMaxProgressButton());
+					items.put(19, new EditMaxProgressButton(1));
+					items.put(20, new EditMaxProgressButton(10));
+					items.put(21, new EditMaxProgressButton(100));
+					items.put(22, new EditMaxProgressButton(1000));
+					items.put(23, new EditMaxProgressButton(10000));
+					items.put(24, new EditMaxProgressButton(100000));
+					items.put(25, new EditMaxProgressButton(1000000));
+					items.put(28, new EditMaxProgressButton(-1));
+					items.put(29, new EditMaxProgressButton(-10));
+					items.put(30, new EditMaxProgressButton(-100));
+					items.put(31, new EditMaxProgressButton(-1000));
+					items.put(32, new EditMaxProgressButton(-10000));
+					items.put(33, new EditMaxProgressButton(-100000));
+					items.put(34, new EditMaxProgressButton(-1000000));
+					this.setFromEndCloseButtonPosition(8);
+					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Task Max Progress Editor"));
+					reloadInventory();
+				}
+				private class ShowMaxProgressButton extends CustomButton {
+					private ItemStack item = new ItemStack(Material.DIODE);
+					public ShowMaxProgressButton() {
+						super(MaxProgressEditorGui.this);
+						update();
+					}
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					@Override
+					public void update() {
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Max Task Progress: &e"+getMaxProgress()));
+						item.setItemMeta(meta);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {}
+				}
+				
+				private class EditMaxProgressButton extends CustomButton {
+					private int amount;
+					public EditMaxProgressButton(int amount) {
+						super(MaxProgressEditorGui.this);
+						this.amount = amount;
+						
+						ItemMeta meta = item.getItemMeta();
+						if (this.amount>0) {
+							this.item.setDurability((short) 5);
+							meta.setDisplayName(StringUtils.fixColorsAndHolders("&aAdd "+this.amount));
+						}
+						else {
+							this.item.setDurability((short) 14);
+							meta.setDisplayName(StringUtils.fixColorsAndHolders("&cRemove "+(-this.amount)));
+						}
+						item.setItemMeta(meta);
+					}
+					private ItemStack item = new ItemStack(Material.WOOL);
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (setMaxProgress(getMaxProgress()+amount))
+							getParent().update();
+					}
+				}
+				
+			}
+			
 		}
 		@Override
 		public CustomButton getCustomButton(CustomGui parent) {
-			return new EditMaxProgressButton(parent);
+			return new MaxProgressEditorButton(parent);
 		}
 	}
 	
-	private class MaxProgressEditorGui extends CustomLinkedGui<CustomButton> {
-		public MaxProgressEditorGui(Player p, EditorGui previusHolder) {
-			super(p,previusHolder, 6);
-			items.put(4, new MaxProgressButton());
-			items.put(19, new MaxProgressEditorButton(1));
-			items.put(20, new MaxProgressEditorButton(10));
-			items.put(21, new MaxProgressEditorButton(100));
-			items.put(22, new MaxProgressEditorButton(1000));
-			items.put(23, new MaxProgressEditorButton(10000));
-			items.put(24, new MaxProgressEditorButton(100000));
-			items.put(25, new MaxProgressEditorButton(1000000));
-			items.put(28, new MaxProgressEditorButton(-1));
-			items.put(29, new MaxProgressEditorButton(-10));
-			items.put(30, new MaxProgressEditorButton(-100));
-			items.put(31, new MaxProgressEditorButton(-1000));
-			items.put(32, new MaxProgressEditorButton(-10000));
-			items.put(33, new MaxProgressEditorButton(-100000));
-			items.put(34, new MaxProgressEditorButton(-1000000));
-			this.setFromEndCloseButtonPosition(8);
-			reloadInventory();
-		}
-		private class MaxProgressButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.DIODE);
-			public MaxProgressButton() {
-				super(MaxProgressEditorGui.this);
-				update();
-			}
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-			@Override
-			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Max Task Progress: &e"+getMaxProgress()));
-				item.setItemMeta(meta);
-			}
-			@Override
-			public void onClick(Player clicker, ClickType click) {}
-		}
-		
-		private class MaxProgressEditorButton extends CustomButton {
-			private int amount;
-			public MaxProgressEditorButton(int amount) {
-				super(MaxProgressEditorGui.this);
-				this.amount = amount;
-				
-				ItemMeta meta = item.getItemMeta();
-				if (this.amount>0) {
-					this.item.setDurability((short) 5);
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&aAdd "+this.amount));
-				}
-				else {
-					this.item.setDurability((short) 14);
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&cRemove "+(-this.amount)));
-				}
-				item.setItemMeta(meta);
-			}
-			private ItemStack item = new ItemStack(Material.WOOL);
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-			public void update() {}
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				if (setMaxProgress(getMaxProgress()+amount))
-					getParent().update();
-			}
-		}
-		
-	}
 	public String getGuiTitle() {
 		return StringUtils.fixColorsAndHolders(
 				"&8"+StringUtils.withoutColor(getDisplayName())+

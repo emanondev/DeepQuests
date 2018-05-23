@@ -16,15 +16,20 @@ import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
 public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactory {
-	public SubExplorerFactory(Class<T> type,Collection<T> coll) {
+	public SubExplorerFactory(Class<T> type,Collection<T> coll,String title) {
 		this.coll = coll;
 		this.type = type;
+		if (title!=null)
+			this.title = title;
+		else
+			this.title = "";
 	}
-	private Collection<T> coll;
-	private Class<T> type;
+	private final Collection<T> coll;
+	private final Class<T> type;
+	private final String title;
 
-	public class SubExplorer extends CustomButton {
-		public SubExplorer(CustomGui parent) {
+	public class SubExplorerButton extends CustomButton {
+		public SubExplorerButton(CustomGui parent) {
 			super(parent);
 			item.setAmount(Math.max(1,Math.min(127,coll.size())));
 			ItemMeta meta = item.getItemMeta();
@@ -54,23 +59,24 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 	
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			clicker.openInventory(new YmlLoadableEditorExplorer(clicker,getParent(),coll).getInventory());
+			clicker.openInventory(new WGExplorerGui(clicker,getParent(),coll).getInventory());
 		}
-		private class YmlLoadableEditorExplorer extends CustomMultiPageGui<CustomButton>{
+		private class WGExplorerGui extends CustomMultiPageGui<CustomButton>{
 	
-			public YmlLoadableEditorExplorer(Player p, CustomGui previusHolder, Collection<T> coll) {
+			public WGExplorerGui(Player p, CustomGui previusHolder, Collection<T> coll) {
 				super(p, previusHolder, 6, 1);
 				this.setFromEndCloseButtonPosition(8);
 				for (T ld : coll)
-					addButton(new YLButton(ld));
+					addButton(new WGButton(ld));
+				this.setTitle(null, StringUtils.fixColorsAndHolders(title));
 				reloadInventory();
 			}
 			
 			
-			private class YLButton extends CustomButton {
+			private class WGButton extends CustomButton {
 				private final T ld;
-				public YLButton(T ld) {
-					super(YmlLoadableEditorExplorer.this);
+				public WGButton(T ld) {
+					super(WGExplorerGui.this);
 					this.ld = ld;
 					update();
 				}
@@ -89,7 +95,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 				}
 				@Override
 				public void onClick(Player clicker, ClickType click) {
-					ld.openEditorGui(clicker, YmlLoadableEditorExplorer.this);			
+					ld.openEditorGui(clicker, WGExplorerGui.this);			
 				}
 			}
 		}
@@ -99,7 +105,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 	public CustomButton getCustomButton(CustomGui parent) {
 		if (coll.isEmpty())
 			return null;
-		return new SubExplorer(parent);
+		return new SubExplorerButton(parent);
 	}
 }
 

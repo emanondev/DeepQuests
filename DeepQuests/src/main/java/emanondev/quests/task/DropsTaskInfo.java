@@ -134,7 +134,7 @@ public class DropsTaskInfo {
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				setDropsRemoved(!removeExp);
+				setExpRemoved(!removeExp);
 				update();
 				getParent().reloadInventory();
 			}

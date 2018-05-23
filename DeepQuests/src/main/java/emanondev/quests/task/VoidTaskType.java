@@ -86,8 +86,8 @@ public class VoidTaskType extends TaskType {
 		protected boolean shouldWorldsAutogen() {
 			return Defaults.TaskDef.shouldWorldsAutogen();
 		}
-		protected boolean getUseWorldsAsBlackListDefault() {
-			return Defaults.TaskDef.getUseWorldsAsBlackListDefault();
+		protected boolean getUseWorldsAsBlacklistDefault() {
+			return Defaults.TaskDef.getUseWorldsAsBlacklistDefault();
 		}
 		@Override
 		protected boolean shouldAutogenDisplayName() {

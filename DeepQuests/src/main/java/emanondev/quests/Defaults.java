@@ -225,7 +225,7 @@ public class Defaults {
 		public static boolean shouldWorldsAutogen() {
 			return data.getBoolean(BASE_PATH+"disabled-world.autogenerate",false);
 		}
-		public static boolean getUseWorldsAsBlackListDefault() {
+		public static boolean getUseWorldsAsBlacklistDefault() {
 			return data.getBoolean(BASE_PATH+"disabled-world.autogenerate",true);
 		}
 		public static boolean getDefaultHide(DisplayState state) {
@@ -434,7 +434,7 @@ public class Defaults {
 		public static boolean shouldWorldsAutogen() {
 			return data.getBoolean(BASE_PATH+"disabled-world.autogenerate",false);
 		}
-		public static boolean getUseWorldsAsBlackListDefault() {
+		public static boolean getUseWorldsAsBlacklistDefault() {
 			return data.getBoolean(BASE_PATH+"disabled-world.use-as-blacklist",true);
 		}
 		public static boolean getDefaultHide(DisplayState state) {
@@ -479,7 +479,7 @@ public class Defaults {
 		public static boolean shouldWorldsAutogen() {
 			return data.getBoolean(BASE_PATH+"disabled-world.autogenerate",false);
 		}
-		public static boolean getUseWorldsAsBlackListDefault() {
+		public static boolean getUseWorldsAsBlacklistDefault() {
 			return data.getBoolean(BASE_PATH+"disabled-world.use-as-blacklist",true);
 		}
 		public static boolean shouldAutogenDisplayName() {

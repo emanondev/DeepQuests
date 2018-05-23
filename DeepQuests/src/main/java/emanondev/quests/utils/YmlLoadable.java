@@ -35,7 +35,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	private String displayName;
 	private final String name;
 	private final HashSet<String> worlds = new HashSet<String>();
-	private boolean useWorldsAsBlackList;
+	private boolean useWorldsAsBlacklist;
 	
 	private final MemorySection section;
 	protected MemorySection getSection() {
@@ -58,9 +58,9 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		this.name = loadName(m).toLowerCase();
 		this.displayName = loadDisplayName(m);
 		this.worlds.addAll(loadWorlds(m));
-		this.useWorldsAsBlackList = loadUseWorldsAsBlackList(m);
-		addToEditor(new EditDisplayNameFactory());
-		addToEditor(new EditWorldsFactory());
+		this.useWorldsAsBlacklist = loadUseWorldsAsBlacklist(m);
+		addToEditor(new DisplayNameEditorButtonFactory());
+		addToEditor(new WorldsEditorButtonFactory());
 	}
 	public void setWorldsList(Collection<String> coll) {
 		if (coll == null) {
@@ -82,7 +82,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		this.setDirty(true);
 		return true;
 	}
-	public boolean removeWorldToWorldList(String name) {
+	public boolean removeWorldFromWorldList(String name) {
 		if (name == null || name.isEmpty() || !this.worlds.contains(name))
 			return false;
 		this.worlds.remove(name);
@@ -93,13 +93,13 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public Set<String> getWorldsList(){
 		return Collections.unmodifiableSet(this.worlds);
 	}
-	public boolean isWorldListBlackList() {
-		return this.useWorldsAsBlackList;
+	public boolean isWorldListBlacklist() {
+		return this.useWorldsAsBlacklist;
 	}
-	public boolean setWorldListBlackList(boolean isBlackList) {
-		if (this.useWorldsAsBlackList == isBlackList)
+	public boolean setWorldListBlacklist(boolean isBlacklist) {
+		if (this.useWorldsAsBlacklist == isBlacklist)
 			return false;
-		this.useWorldsAsBlackList = isBlackList;
+		this.useWorldsAsBlacklist = isBlacklist;
 		this.setDirty(true);
 		return true;
 	}
@@ -107,7 +107,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public boolean isWorldAllowed(World w) {
 		if (w == null)
 			throw new NullPointerException();
-		if (useWorldsAsBlackList == true)
+		if (useWorldsAsBlacklist == true)
 			return !worlds.contains(w.getName().toLowerCase());
 		else
 			return worlds.contains(w.getName().toLowerCase());
@@ -156,11 +156,11 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		return worlds;
 	}
 	
-	private boolean loadUseWorldsAsBlackList(MemorySection m) {
+	private boolean loadUseWorldsAsBlacklist(MemorySection m) {
 		if (worlds.isEmpty())
 			return true;
 		if (!m.isBoolean(PATH_WORLDS_IS_BLACKLIST)) {
-			boolean v = getUseWorldsAsBlackListDefault();
+			boolean v = getUseWorldsAsBlacklistDefault();
 			m.set(PATH_WORLDS_IS_BLACKLIST,v);
 			dirty = true;
 			return v;
@@ -203,7 +203,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 
 	protected abstract List<String> getWorldsListDefault();
 	protected abstract boolean shouldWorldsAutogen();
-	protected abstract boolean getUseWorldsAsBlackListDefault();
+	protected abstract boolean getUseWorldsAsBlacklistDefault();
 	
 	
 	private ArrayList<EditorButtonFactory> tools = new ArrayList<EditorButtonFactory>();
@@ -223,10 +223,10 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			ChatColor.GOLD+"Change override old title writing new title\n"+
 			ChatColor.YELLOW+"/questtext <new display name>"
 			).create();
-	private class EditDisplayNameFactory implements EditorButtonFactory {
-		private class EditDisplayNameButton extends TextEditorButton {
+	private class DisplayNameEditorButtonFactory implements EditorButtonFactory {
+		private class DisplayNameEditorButton extends TextEditorButton {
 			private ItemStack item = new ItemStack(Material.PAPER);
-			public EditDisplayNameButton(CustomGui parent) {
+			public DisplayNameEditorButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -265,13 +265,13 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		}
 		@Override
 		public CustomButton getCustomButton(CustomGui parent) {
-			return new EditDisplayNameButton(parent);
+			return new DisplayNameEditorButton(parent);
 		}
 	}
-	private class EditWorldsFactory implements EditorButtonFactory {
-		private class EditWorldsButton extends CustomButton {
+	private class WorldsEditorButtonFactory implements EditorButtonFactory {
+		private class WorldsEditorButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.COMPASS);
-			public EditWorldsButton(CustomGui parent) {
+			public WorldsEditorButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -287,7 +287,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 				if (getWorldsList().isEmpty())
 					lore.add("&aNo worlds restrictions are set");
 				else {
-					if (isWorldListBlackList()) {
+					if (isWorldListBlacklist()) {
 						lore.add("&6All listed worlds are &cdisabled");
 						for (String world : getWorldsList())
 							lore.add(" &6- &c"+world);
@@ -305,124 +305,132 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new WorldsEditorGui(clicker,(EditorGui) getParent()).getInventory());
 			}
+			private class WorldsEditorGui extends CustomMultiPageGui<CustomButton> {
+				public WorldsEditorGui(Player p, EditorGui previusHolder) {
+					super(p,previusHolder, 6,1);
+					HashSet<String> set = new HashSet<String>();
+					set.addAll(getWorldsList());
+					for (World world : Bukkit.getWorlds())
+						set.add(world.getName());
+					for (String world : set) {
+						addButton(new WorldButton(this,world));
+					}
+					this.setFromEndCloseButtonPosition(8);
+					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Restricted Worlds Editor"));
+					reloadInventory();
+				}
+				public void reloadInventory() {
+					getInventory().setItem(size()-1,blacklistButton.getItem());
+					super.reloadInventory();
+				}
+				@Override
+				public void onSlotClick(Player clicker,int slot,ClickType click) {
+					if (slot==size()-1) {
+						blacklistButton.onClick(clicker,click);
+						return;
+					}
+					super.onSlotClick(clicker, slot, click);
+				}
+				private BlacklistButton blacklistButton = new BlacklistButton(this);
+				@Override
+				public void update() {
+					blacklistButton.update();
+					super.update();
+				}
+				private class BlacklistButton extends CustomButton {
+					public BlacklistButton(WorldsEditorGui parent) {
+						super(parent);
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Click to Revert valid Worlds"));
+						item.setItemMeta(meta);
+						update();
+					}
+					@Override 
+					public void update() {
+						if (isWorldListBlacklist()) {
+							this.item.setDurability((short) 15);
+							ItemMeta meta = item.getItemMeta();
+							ArrayList<String> lore = new ArrayList<String>();
+							lore.add(StringUtils.fixColorsAndHolders("&7(Now Blacklist)"));
+							item.setItemMeta(meta);
+						}
+						else {
+							this.item.setDurability((short) 0);
+							ItemMeta meta = item.getItemMeta();
+							ArrayList<String> lore = new ArrayList<String>();
+							lore.add(StringUtils.fixColorsAndHolders("&7(Now Whitelist)"));
+							item.setItemMeta(meta);
+						}
+					}
+					private ItemStack item = new ItemStack(Material.WOOL);
+
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						setWorldListBlacklist(!isWorldListBlacklist());
+						update();
+						getParent().update();
+					}
+				}
+				private class WorldButton extends CustomButton {
+					private ItemStack item = new ItemStack(Material.COMPASS);
+					private final String worldName;
+					public WorldButton(WorldsEditorGui parent,String world) {
+						super(parent);
+						this.worldName = world;
+						update();
+					}
+					public void update() {
+						ItemMeta meta = this.item.getItemMeta();
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorld: '"+worldName+"'"));
+						ArrayList<String> lore = new ArrayList<String>();
+						if (getWorldsList().contains(worldName)) {
+							if (isWorldListBlacklist())
+								lore.add(StringUtils.fixColorsAndHolders("&6This world is &cUnallowed"));
+							else
+								lore.add(StringUtils.fixColorsAndHolders("&6This world is &aAllowed"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(list contains this world)"));
+						}
+						else {
+							if (!isWorldListBlacklist())
+								lore.add(StringUtils.fixColorsAndHolders("&6This world is &cUnallowed"));
+							else
+								lore.add(StringUtils.fixColorsAndHolders("&6This world is &aAllowed"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this world)"));
+						}
+						meta.setLore(lore);
+						item.setItemMeta(meta);
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (getWorldsList().contains(worldName))
+							removeWorldFromWorldList(worldName);
+						else
+							addWorldToWorldList(worldName);
+						update();
+						getParent().reloadInventory();
+					}
+				}
+			}
 		}
 		@Override
-		public EditWorldsButton getCustomButton(CustomGui parent) {
-			return new EditWorldsButton(parent);
+		public WorldsEditorButton getCustomButton(CustomGui parent) {
+			return new WorldsEditorButton(parent);
 		}
 	}
 	
-	private class WorldsEditorGui extends CustomMultiPageGui<WorldButton> {
-		public WorldsEditorGui(Player p, EditorGui previusHolder) {
-			super(p,previusHolder, 6,1);
-			HashSet<String> set = new HashSet<String>();
-			set.addAll(getWorldsList());
-			for (World world : Bukkit.getWorlds())
-				set.add(world.getName());
-			for (String world : set) {
-				addButton(new WorldButton(this,world));
-			}
-			this.setFromEndCloseButtonPosition(8);
-			reloadInventory();
-		}
-		public void reloadInventory() {
-			getInventory().setItem(size()-1,blacklistButton.getItem());
-			super.reloadInventory();
-		}
-		@Override
-		public void onSlotClick(Player clicker,int slot,ClickType click) {
-			if (slot==size()-1) {
-				blacklistButton.onClick(clicker,click);
-				return;
-			}
-			super.onSlotClick(clicker, slot, click);
-		}
-		private BlackListButton blacklistButton = new BlackListButton(this);
-		@Override
-		public void update() {
-			blacklistButton.update();
-			super.update();
-		}
-		private class BlackListButton extends CustomButton {
-			public BlackListButton(WorldsEditorGui parent) {
-				super(parent);
-				update();
-			}
-			@Override 
-			public void update() {
-				if (isWorldListBlackList()) {
-					this.item.setDurability((short) 15);
-					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected Worlds are on a &lBlackList"));
-					item.setItemMeta(meta);
-				}
-				else {
-					this.item.setDurability((short) 0);
-					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected Worlds are on a &lWhiteList"));
-					item.setItemMeta(meta);
-				}
-			}
-			private ItemStack item = new ItemStack(Material.WOOL);
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				setWorldListBlackList(!isWorldListBlackList());
-				update();
-				getParent().update();
-			}
-		}
-	}
 	
-	private class WorldButton extends CustomButton {
-		private ItemStack item = new ItemStack(Material.COMPASS);
-		private final String worldName;
-		public WorldButton(WorldsEditorGui parent,String world) {
-			super(parent);
-			this.worldName = world;
-			update();
-		}
-		public void update() {
-			ItemMeta meta = this.item.getItemMeta();
-			meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorld: '"+worldName+"'"));
-			ArrayList<String> lore = new ArrayList<String>();
-			if (getWorldsList().contains(worldName)) {
-				if (isWorldListBlackList())
-					lore.add(StringUtils.fixColorsAndHolders("&6This world is &cBlackListed"));
-				else
-					lore.add(StringUtils.fixColorsAndHolders("&6This world is &aWhiteListed"));
-				lore.add(StringUtils.fixColorsAndHolders("&7(list contains this world)"));
-			}
-			else {
-				if (!isWorldListBlackList())
-					lore.add(StringUtils.fixColorsAndHolders("&6This world is &cBlackListed"));
-				else
-					lore.add(StringUtils.fixColorsAndHolders("&6This world is &aWhiteListed"));
-				lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this world)"));
-			}
-			meta.setLore(lore);
-			item.setItemMeta(meta);
-		}
-		
-		@Override
-		public ItemStack getItem() {
-			return item;
-		}
-
-		@Override
-		public void onClick(Player clicker, ClickType click) {
-			if (getWorldsList().contains(worldName))
-				removeWorldToWorldList(worldName);
-			else
-				addWorldToWorldList(worldName);
-			update();
-			getParent().reloadInventory();
-		}
-	}
+	
+	
 
 }

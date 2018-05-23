@@ -25,7 +25,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		super(m);
 		repeatable = loadCooldownAllowed(m);
 		minutes = Math.max(0, loadCooldownMinutes(m));
-		this.addToEditor(new EditCooldownFactory());
+		this.addToEditor(new CooldownEditorFactory());
 	}
 	private boolean loadCooldownAllowed(MemorySection m) {
 		if (m==null)
@@ -90,10 +90,10 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		return repeatable;
 	}
 	public abstract DisplayStateInfo getDisplayInfo();
-	private class EditCooldownFactory implements EditorButtonFactory {
-		private class EditCooldownButton extends CustomButton {
+	private class CooldownEditorFactory implements EditorButtonFactory {
+		private class CooldownEditorButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.WATCH);
-			public EditCooldownButton(CustomGui parent) {
+			public CooldownEditorButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -125,7 +125,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		}
 		@Override
 		public CustomButton getCustomButton(CustomGui parent) {
-			return new EditCooldownButton(parent);
+			return new CooldownEditorButton(parent);
 		}
 	}
 	private class CooldownEditorGui extends CustomLinkedGui<CustomButton> {
@@ -148,6 +148,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			items.put(33, new TimerEditorButton(-10080)); // 1 w
 			items.put(34, new TimerEditorButton(-120960)); //12 w
 			this.setFromEndCloseButtonPosition(8);
+			this.setTitle(null,StringUtils.fixColorsAndHolders("&8Cooldown Editor"));
 			reloadInventory();
 		}
 		private class ClockButton extends CustomButton {

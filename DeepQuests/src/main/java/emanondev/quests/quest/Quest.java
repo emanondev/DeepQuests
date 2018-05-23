@@ -90,7 +90,8 @@ public class Quest extends YmlLoadableWithCooldown{
 		if (displayInfo.isDirty())
 			this.setDirty(true);
 		
-		this.addToEditor(new SubExplorerFactory<Mission>(Mission.class,getMissions()));
+		this.addToEditor(new SubExplorerFactory<Mission>(Mission.class,getMissions(),
+				"&8Missions List"));
 		this.addToEditor(new AddMissionFactory());
 	}
 	
@@ -186,8 +187,8 @@ public class Quest extends YmlLoadableWithCooldown{
 			}
 		}
 		if (this.getWorldsList().size()>0) {
-			if (this.isWorldListBlackList())
-				comp.append("\n"+ChatColor.RED+"BlackListed "+ChatColor.DARK_AQUA+"Worlds:");
+			if (this.isWorldListBlacklist())
+				comp.append("\n"+ChatColor.RED+"Blacklisted "+ChatColor.DARK_AQUA+"Worlds:");
 			else
 				comp.append("\n"+ChatColor.GREEN+"WhiteListed "+ChatColor.DARK_AQUA+"Worlds:");
 			for (String world : this.getWorldsList())
@@ -261,8 +262,8 @@ public class Quest extends YmlLoadableWithCooldown{
 		return  Defaults.QuestDef.shouldWorldsAutogen();
 	}
 	@Override
-	protected boolean getUseWorldsAsBlackListDefault() {
-		return  Defaults.QuestDef.getUseWorldsAsBlackListDefault();
+	protected boolean getUseWorldsAsBlacklistDefault() {
+		return  Defaults.QuestDef.getUseWorldsAsBlacklistDefault();
 	}
 	@Override
 	protected boolean shouldAutogenDisplayName() {
