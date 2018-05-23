@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class CustomGuiItem {
-	private CustomGuiHolder parent;
-	public CustomGuiItem(CustomGuiHolder parent) {
+public abstract class CustomButton {
+	private CustomGui parent;
+	public CustomButton(CustomGui parent) {
 		if (parent==null)
 			throw new NullPointerException();
 		this.parent = parent;
@@ -18,7 +18,7 @@ public abstract class CustomGuiItem {
 	public Player getOwner() {
 		return parent.getPlayer();
 	}
-	public CustomGuiHolder getParent() {
+	public CustomGui getParent() {
 		return parent;
 	}
 

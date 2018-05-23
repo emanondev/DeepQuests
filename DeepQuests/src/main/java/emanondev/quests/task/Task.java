@@ -2,7 +2,7 @@ package emanondev.quests.task;
 
 import org.bukkit.entity.Player;
 
-import emanondev.quests.gui.CustomGuiHolder;
+import emanondev.quests.gui.CustomGui;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.Savable;
@@ -40,7 +40,7 @@ public interface Task extends Savable,WithGui {
 	
 	public void openEditorGui(Player p);
 
-	public void openEditorGui(Player p,CustomGuiHolder previusHolder);
+	public void openEditorGui(Player p,CustomGui previusHolder);
 	public boolean setDisplayName(String displayName);
 	public boolean setWorldListBlackList(boolean value);
 	public boolean removeWorldToWorldList(String string);

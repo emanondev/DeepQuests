@@ -12,11 +12,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomLinkedGuiHolder;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.EditorGui;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.StringUtils;
@@ -150,10 +150,15 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * @param m config
 	 * @return the max progress amount
 	 */
-	protected int loadMaxProgress(MemorySection m) {
+	private int loadMaxProgress(MemorySection m) {
 		if (m == null)
 			throw new NullPointerException();
 		int pr = m.getInt(PATH_TASK_MAX_PROGRESS);
+		if (pr < 1) {
+			m.set(PATH_TASK_MAX_PROGRESS,1);
+			pr = 1;
+			dirty = true;
+		}
 		return pr;
 	}
 	/**
@@ -238,10 +243,10 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		return comp.create();
 	}
 	
-	private class EditMaxProgressFactory implements EditorGuiItemFactory {
-		private class EditMaxProgressButton extends CustomGuiItem {
+	private class EditMaxProgressFactory implements EditorButtonFactory {
+		private class EditMaxProgressButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.DIODE);
-			public EditMaxProgressButton(CustomGuiHolder parent) {
+			public EditMaxProgressButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -265,12 +270,12 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+		public CustomButton getCustomButton(CustomGui parent) {
 			return new EditMaxProgressButton(parent);
 		}
 	}
 	
-	private class MaxProgressEditorGui extends CustomLinkedGuiHolder<CustomGuiItem> {
+	private class MaxProgressEditorGui extends CustomLinkedGui<CustomButton> {
 		public MaxProgressEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6);
 			items.put(4, new MaxProgressButton());
@@ -291,7 +296,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			this.setFromEndCloseButtonPosition(8);
 			reloadInventory();
 		}
-		private class MaxProgressButton extends CustomGuiItem {
+		private class MaxProgressButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.DIODE);
 			public MaxProgressButton() {
 				super(MaxProgressEditorGui.this);
@@ -311,7 +316,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			public void onClick(Player clicker, ClickType click) {}
 		}
 		
-		private class MaxProgressEditorButton extends CustomGuiItem {
+		private class MaxProgressEditorButton extends CustomButton {
 			private int amount;
 			public MaxProgressEditorButton(int amount) {
 				super(MaxProgressEditorGui.this);

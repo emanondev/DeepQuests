@@ -5,10 +5,10 @@ import java.util.LinkedHashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-public abstract class CustomLinkedGuiHolder<T extends CustomGuiItem> extends CustomGuiHolder{
+public abstract class CustomLinkedGui<T extends CustomButton> extends CustomGui{
 
 	protected final LinkedHashMap<Integer,T> items = new LinkedHashMap<Integer,T>();
-	public CustomLinkedGuiHolder(Player p, CustomGuiHolder previusHolder, int rows) {
+	public CustomLinkedGui(Player p, CustomGui previusHolder, int rows) {
 		super(p, previusHolder, Math.max(2,rows));
 	}
 	public void reloadInventory() {

@@ -17,14 +17,14 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomGuiTextItem;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.gui.EditorGui;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.EditorButtonFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import emanondev.quests.gui.CustomMultiPageGuiHolder;
+import emanondev.quests.gui.CustomMultiPageGui;
 
 public abstract class YmlLoadable implements Savable,WithGui {
 	public static final String PATH_DISPLAY_NAME = "name";
@@ -206,14 +206,14 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	protected abstract boolean getUseWorldsAsBlackListDefault();
 	
 	
-	private ArrayList<EditorGuiItemFactory> tools = new ArrayList<EditorGuiItemFactory>();
+	private ArrayList<EditorButtonFactory> tools = new ArrayList<EditorButtonFactory>();
 	public void openEditorGui(Player p){
 		openEditorGui(p,null);
 	}
-	public void openEditorGui(Player p,CustomGuiHolder previusHolder){
+	public void openEditorGui(Player p,CustomGui previusHolder){
 		p.openInventory(new EditorGui(p,this,previusHolder,tools).getInventory());
 	}
-	public void addToEditor(EditorGuiItemFactory item) {
+	public void addToEditor(EditorButtonFactory item) {
 		if (item!=null)
 			tools.add(item);
 	}
@@ -223,10 +223,10 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			ChatColor.GOLD+"Change override old title writing new title\n"+
 			ChatColor.YELLOW+"/questtext <new display name>"
 			).create();
-	private class EditDisplayNameFactory implements EditorGuiItemFactory {
-		private class EditDisplayNameButton extends CustomGuiTextItem {
+	private class EditDisplayNameFactory implements EditorButtonFactory {
+		private class EditDisplayNameButton extends TextEditorButton {
 			private ItemStack item = new ItemStack(Material.PAPER);
-			public EditDisplayNameButton(CustomGuiHolder parent) {
+			public EditDisplayNameButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -264,14 +264,14 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+		public CustomButton getCustomButton(CustomGui parent) {
 			return new EditDisplayNameButton(parent);
 		}
 	}
-	private class EditWorldsFactory implements EditorGuiItemFactory {
-		private class EditWorldsButton extends CustomGuiItem {
+	private class EditWorldsFactory implements EditorButtonFactory {
+		private class EditWorldsButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.COMPASS);
-			public EditWorldsButton(CustomGuiHolder parent) {
+			public EditWorldsButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -307,12 +307,12 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			}
 		}
 		@Override
-		public EditWorldsButton getCustomGuiItem(CustomGuiHolder parent) {
+		public EditWorldsButton getCustomButton(CustomGui parent) {
 			return new EditWorldsButton(parent);
 		}
 	}
 	
-	private class WorldsEditorGui extends CustomMultiPageGuiHolder<WorldButton> {
+	private class WorldsEditorGui extends CustomMultiPageGui<WorldButton> {
 		public WorldsEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			HashSet<String> set = new HashSet<String>();
@@ -343,7 +343,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			blacklistButton.update();
 			super.update();
 		}
-		private class BlackListButton extends CustomGuiItem {
+		private class BlackListButton extends CustomButton {
 			public BlackListButton(WorldsEditorGui parent) {
 				super(parent);
 				update();
@@ -379,7 +379,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		}
 	}
 	
-	private class WorldButton extends CustomGuiItem {
+	private class WorldButton extends CustomButton {
 		private ItemStack item = new ItemStack(Material.COMPASS);
 		private final String worldName;
 		public WorldButton(WorldsEditorGui parent,String world) {

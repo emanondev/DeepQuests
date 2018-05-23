@@ -17,9 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomMultiPageGuiHolder;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
@@ -135,24 +135,24 @@ public class QuestManager implements Savable {
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
-	public void openEditorGui(Player clicker, CustomGuiHolder prevGui) {
+	public void openEditorGui(Player clicker, CustomGui prevGui) {
 		clicker.openInventory(new QuestsEditorGui(clicker,prevGui).getInventory());
 	}
 	public void openEditorGui(Player clicker) {
 		openEditorGui(clicker,null);
 	}
-	private class QuestsEditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
-		public QuestsEditorGui(Player p, CustomGuiHolder previusHolder) {
+	private class QuestsEditorGui extends CustomMultiPageGui<CustomButton> {
+		public QuestsEditorGui(Player p, CustomGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			this.setFromEndCloseButtonPosition(8);
-			this.addButton(new SubExplorerFactory<Quest>(Quest.class,getQuests()).getCustomGuiItem(this));			
+			this.addButton(new SubExplorerFactory<Quest>(Quest.class,getQuests()).getCustomButton(this));			
 			this.addButton(new AddQuestGuiItem(this));
 			reloadInventory();
 		}
 		
-		private class AddQuestGuiItem extends CustomGuiItem {
+		private class AddQuestGuiItem extends CustomButton {
 
-			public AddQuestGuiItem(CustomGuiHolder parent) {
+			public AddQuestGuiItem(CustomGui parent) {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Quest"));

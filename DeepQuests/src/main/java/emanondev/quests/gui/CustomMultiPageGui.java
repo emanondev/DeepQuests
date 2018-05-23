@@ -10,13 +10,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.utils.StringUtils;
 
-public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends CustomGuiHolder{
+public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomGui{
 
 	
 	protected final ArrayList<T> items = new ArrayList<T>();
 
 	private int page;
-	public CustomMultiPageGuiHolder(Player p, CustomGuiHolder previusHolder, 
+	public CustomMultiPageGui(Player p, CustomGui previusHolder, 
 				int rows,int page) {
 		super(p, previusHolder, Math.max(2, rows));
 		this.page = Math.max(1,page);
@@ -141,13 +141,13 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		return false;
 	}
 
-	protected CustomGuiItem craftPrevPageButton() {
+	protected CustomButton craftPrevPageButton() {
 		return new PrevPageButton();
 	}
-	protected CustomGuiItem craftNextPageButton() {
+	protected CustomButton craftNextPageButton() {
 		return new NextPageButton();
 	}
-	protected CustomGuiItem craftCurrentPageButton() {
+	protected CustomButton craftCurrentPageButton() {
 		return new CurrPageButton();
 	}
 
@@ -168,12 +168,12 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 	private final static ItemStack nextPageButtonItem = loadNextPageItem();
 	private final static ItemStack prevPageButtonItem = loadPrevPageItem();
 	
-	public class PrevPageButton extends CustomGuiItem {
+	public class PrevPageButton extends CustomButton {
 		public ItemStack getItem() {
 			return prevPageButtonItem;
 		}
 		public PrevPageButton() {
-			super(CustomMultiPageGuiHolder.this);
+			super(CustomMultiPageGui.this);
 		}
 
 		@Override
@@ -181,26 +181,26 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 			decrementPage();
 		}
 	}
-	public class NextPageButton extends CustomGuiItem {
+	public class NextPageButton extends CustomButton {
 		public ItemStack getItem() {
 			return nextPageButtonItem;
 		}
 		public NextPageButton() {
-			super(CustomMultiPageGuiHolder.this);
+			super(CustomMultiPageGui.this);
 		}
 		@Override
 		public void onClick(Player clicker, ClickType click) {
 			incrementPage();
 		}
 	}
-	public class CurrPageButton extends CustomGuiItem {
+	public class CurrPageButton extends CustomButton {
 		private ItemStack item;
 		
 		public ItemStack getItem() {
 			return item;
 		}
 		public CurrPageButton() {
-			super(CustomMultiPageGuiHolder.this);
+			super(CustomMultiPageGui.this);
 			this.item = new ItemStack(Material.NAME_TAG);
 			update();
 		}
@@ -215,8 +215,8 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 				clicker.closeInventory();
 		}
 	}
-	private CustomGuiItem currPageButton;
-	private CustomGuiItem nextPageButton = craftNextPageButton();
-	private CustomGuiItem prevPageButton = craftPrevPageButton();
+	private CustomButton currPageButton;
+	private CustomButton nextPageButton = craftNextPageButton();
+	private CustomButton prevPageButton = craftPrevPageButton();
 
 }

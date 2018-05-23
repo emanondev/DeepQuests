@@ -15,7 +15,7 @@ import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
-public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFactory {
+public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactory {
 	public SubExplorerFactory(Class<T> type,Collection<T> coll) {
 		this.coll = coll;
 		this.type = type;
@@ -23,8 +23,8 @@ public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFacto
 	private Collection<T> coll;
 	private Class<T> type;
 
-	public class SubExplorer extends CustomGuiItem {
-		public SubExplorer(CustomGuiHolder parent) {
+	public class SubExplorer extends CustomButton {
+		public SubExplorer(CustomGui parent) {
 			super(parent);
 			item.setAmount(Math.max(1,Math.min(127,coll.size())));
 			ItemMeta meta = item.getItemMeta();
@@ -35,7 +35,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFacto
 			}
 			else if (type.isAssignableFrom(Mission.class)) {
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMissions Menù"));
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a misssion to edit"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a mission to edit"));
 				
 			}
 			else if (type.isAssignableFrom(Quest.class)) {
@@ -56,9 +56,9 @@ public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFacto
 		public void onClick(Player clicker, ClickType click) {
 			clicker.openInventory(new YmlLoadableEditorExplorer(clicker,getParent(),coll).getInventory());
 		}
-		private class YmlLoadableEditorExplorer extends CustomMultiPageGuiHolder<CustomGuiItem>{
+		private class YmlLoadableEditorExplorer extends CustomMultiPageGui<CustomButton>{
 	
-			public YmlLoadableEditorExplorer(Player p, CustomGuiHolder previusHolder, Collection<T> coll) {
+			public YmlLoadableEditorExplorer(Player p, CustomGui previusHolder, Collection<T> coll) {
 				super(p, previusHolder, 6, 1);
 				this.setFromEndCloseButtonPosition(8);
 				for (T ld : coll)
@@ -67,7 +67,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFacto
 			}
 			
 			
-			private class YLButton extends CustomGuiItem {
+			private class YLButton extends CustomButton {
 				private final T ld;
 				public YLButton(T ld) {
 					super(YmlLoadableEditorExplorer.this);
@@ -91,18 +91,14 @@ public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFacto
 				public void onClick(Player clicker, ClickType click) {
 					ld.openEditorGui(clicker, YmlLoadableEditorExplorer.this);			
 				}
-				
-				
-				
 			}
-				
-	
 		}
-	
 	}
 
 	@Override
-	public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+	public CustomButton getCustomButton(CustomGui parent) {
+		if (coll.isEmpty())
+			return null;
 		return new SubExplorer(parent);
 	}
 }

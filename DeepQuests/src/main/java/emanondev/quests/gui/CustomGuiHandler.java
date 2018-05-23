@@ -10,11 +10,11 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 public class CustomGuiHandler implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled = true)
 	private void onClick(InventoryClickEvent event) {
-		if (!(event.getView().getTopInventory().getHolder() instanceof CustomGuiHolder))
+		if (!(event.getView().getTopInventory().getHolder() instanceof CustomGui))
 			return;
 		event.setCancelled(true);
 		if (event.getClickedInventory()!=null && event.getClickedInventory().equals(event.getView().getTopInventory())) {
-			CustomGuiHolder holder = (CustomGuiHolder) event.getView().getTopInventory().getHolder();
+			CustomGui holder = (CustomGui) event.getView().getTopInventory().getHolder();
 			if (event.getWhoClicked() instanceof Player)
 				holder.onSlotClick((Player) event.getWhoClicked(),
 						event.getRawSlot(), event.getClick());
@@ -22,7 +22,7 @@ public class CustomGuiHandler implements Listener {
 	}
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled = true)
 	private void onDrag(InventoryDragEvent event) {
-		if (event.getView().getTopInventory().getHolder() instanceof CustomGuiHolder)
+		if (event.getView().getTopInventory().getHolder() instanceof CustomGui)
 			event.setCancelled(true);
 	}
 

@@ -14,17 +14,17 @@ import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
-public class EditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
+public class EditorGui extends CustomMultiPageGui<CustomButton> {
 	private final WithGui loadable;
 
-	public EditorGui(Player p, WithGui loadable, CustomGuiHolder previusHolder,
-			ArrayList<EditorGuiItemFactory> facts) {
+	public EditorGui(Player p, WithGui loadable, CustomGui previusHolder,
+			ArrayList<EditorButtonFactory> facts) {
 		super(p, previusHolder, 6, 1);
 		if (loadable==null)
 			throw new NullPointerException();
 		this.loadable = loadable;
-		for (EditorGuiItemFactory factory : facts) {
-			CustomGuiItem button = factory.getCustomGuiItem(this);
+		for (EditorButtonFactory factory : facts) {
+			CustomButton button = factory.getCustomButton(this);
 			if (button!=null)
 				this.addButton(button);
 		}
@@ -66,7 +66,7 @@ public class EditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
 	}
 	private ParentButton parentButton;
 	
-	public class ParentButton extends CustomGuiItem {
+	public class ParentButton extends CustomButton {
 		private ItemStack item;
 		
 		public ItemStack getItem() {

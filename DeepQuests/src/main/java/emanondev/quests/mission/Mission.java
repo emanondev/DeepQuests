@@ -19,11 +19,11 @@ import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomLinkedGuiHolder;
-import emanondev.quests.gui.CustomMultiPageGuiHolder;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomLinkedGui;
+import emanondev.quests.gui.CustomMultiPageGui;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
@@ -230,11 +230,11 @@ public class Mission extends YmlLoadableWithCooldown{
 		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks()));
 		this.addToEditor(new AddTaskFactory());
 	}
-	private class AddTaskFactory implements EditorGuiItemFactory {
+	private class AddTaskFactory implements EditorButtonFactory {
 
-		private class AddTaskButton extends CustomGuiItem {
+		private class AddTaskButton extends CustomButton {
 
-			public AddTaskButton(CustomGuiHolder parent) {
+			public AddTaskButton(CustomGui parent) {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Task"));
@@ -253,16 +253,16 @@ public class Mission extends YmlLoadableWithCooldown{
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new CreateTaskGui(clicker,this.getParent()).getInventory());
 			}
-			private class CreateTaskGui extends CustomLinkedGuiHolder<CustomGuiItem>{
+			private class CreateTaskGui extends CustomLinkedGui<CustomButton>{
 				private TaskType taskType = null;
-				public CreateTaskGui(Player p, CustomGuiHolder previusHolder) {
+				public CreateTaskGui(Player p, CustomGui previusHolder) {
 					super(p, previusHolder, 6);
 					this.setFromEndCloseButtonPosition(8);
 					this.items.put(20, new SelectTaskTypeButton());
 					this.items.put(24, new CreateTaskButton());
 					reloadInventory();
 				}
-				private class CreateTaskButton extends CustomGuiItem {
+				private class CreateTaskButton extends CustomButton {
 					private ItemStack item = new ItemStack(Material.WOOL);
 					public CreateTaskButton() {
 						super(CreateTaskGui.this);
@@ -285,7 +285,7 @@ public class Mission extends YmlLoadableWithCooldown{
 							meta.setDisplayName(StringUtils.fixColorsAndHolders(
 									"&6&lClick to Create a new Task"));
 							lore.add(StringUtils.fixColorsAndHolders(
-									"&6Task Type: '&f"+taskType.getKey()));
+									"&6Task Type: '&f"+taskType.getKey()+"&6'"));
 							item.setDurability((short) 5); 
 						}
 						meta.setLore(lore);
@@ -326,7 +326,7 @@ public class Mission extends YmlLoadableWithCooldown{
 					
 				}
 				
-				private class SelectTaskTypeButton extends CustomGuiItem {
+				private class SelectTaskTypeButton extends CustomButton {
 					
 					public SelectTaskTypeButton() {
 						super(CreateTaskGui.this);
@@ -343,7 +343,7 @@ public class Mission extends YmlLoadableWithCooldown{
 							meta.setDisplayName(StringUtils.fixColorsAndHolders(
 									"&6Click to change Task Type"));
 							lore.add(StringUtils.fixColorsAndHolders(
-									"&7(CurrentTask Type: '"+taskType.getKey()+"'"));
+									"&7(CurrentTask Type: '"+taskType.getKey()+"')"));
 						}
 						meta.setLore(lore);
 						item.setItemMeta(meta);
@@ -359,16 +359,16 @@ public class Mission extends YmlLoadableWithCooldown{
 						clicker.openInventory(new TaskTypeSelectorGui(clicker,this.getParent()).getInventory());
 					}
 					
-					private class TaskTypeSelectorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
+					private class TaskTypeSelectorGui extends CustomMultiPageGui<CustomButton> {
 
-						public TaskTypeSelectorGui(Player p, CustomGuiHolder previusHolder) {
+						public TaskTypeSelectorGui(Player p, CustomGui previusHolder) {
 							super(p, previusHolder, 6, 1);
 							for (TaskType type : Quests.getInstance().getTaskManager().getTaskTypes()) {
 								this.addButton(new TaskTypeButton(type));
 							}
 							reloadInventory();
 						}
-						private class TaskTypeButton extends CustomGuiItem {
+						private class TaskTypeButton extends CustomButton {
 							private TaskType type;
 							public TaskTypeButton(TaskType type) {
 								super(TaskTypeSelectorGui.this);
@@ -398,7 +398,7 @@ public class Mission extends YmlLoadableWithCooldown{
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+		public CustomButton getCustomButton(CustomGui parent) {
 			return new AddTaskButton(parent);
 		}
 		
@@ -602,6 +602,7 @@ public class Mission extends YmlLoadableWithCooldown{
 			return false;
 		getSection().set(PATH_TASKS+"."+id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
 		getSection().set(PATH_TASKS+"."+id+"."+AbstractTask.PATH_TASK_TYPE,taskType.getKey());
+		getSection().set(PATH_TASKS+"."+id+"."+AbstractTask.PATH_TASK_MAX_PROGRESS,1);
 		Task t = Quests.getInstance().getTaskManager().readTask(taskType.getKey(), getSection(), this);
 		tasks.put(t.getNameID(), t);
 		parent.getParent().save();

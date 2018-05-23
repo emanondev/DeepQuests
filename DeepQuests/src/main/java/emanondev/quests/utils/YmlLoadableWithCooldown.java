@@ -8,11 +8,11 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomLinkedGuiHolder;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.EditorGui;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.EditorButtonFactory;
 
 public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 	protected final static String PATH_DISPLAY = "display";
@@ -90,10 +90,10 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		return repeatable;
 	}
 	public abstract DisplayStateInfo getDisplayInfo();
-	private class EditCooldownFactory implements EditorGuiItemFactory {
-		private class EditCooldownButton extends CustomGuiItem {
+	private class EditCooldownFactory implements EditorButtonFactory {
+		private class EditCooldownButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.WATCH);
-			public EditCooldownButton(CustomGuiHolder parent) {
+			public EditCooldownButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -124,11 +124,11 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+		public CustomButton getCustomButton(CustomGui parent) {
 			return new EditCooldownButton(parent);
 		}
 	}
-	private class CooldownEditorGui extends CustomLinkedGuiHolder<CustomGuiItem> {
+	private class CooldownEditorGui extends CustomLinkedGui<CustomButton> {
 		public CooldownEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6);
 			items.put(2, new RepeatableButton());
@@ -150,7 +150,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			this.setFromEndCloseButtonPosition(8);
 			reloadInventory();
 		}
-		private class ClockButton extends CustomGuiItem {
+		private class ClockButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.WATCH);
 			public ClockButton() {
 				super(CooldownEditorGui.this);
@@ -173,7 +173,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			public void onClick(Player clicker, ClickType click) {}
 		}
 		
-		private class RepeatableButton extends CustomGuiItem {
+		private class RepeatableButton extends CustomButton {
 			public RepeatableButton() {
 				super(CooldownEditorGui.this);
 				update();
@@ -202,7 +202,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 				getParent().reloadInventory();
 			}
 		}
-		private class TimerEditorButton extends CustomGuiItem {
+		private class TimerEditorButton extends CustomButton {
 			private long minutes;
 			public TimerEditorButton(long min) {
 				super(CooldownEditorGui.this);

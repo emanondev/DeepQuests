@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 import emanondev.quests.command.CommandQuestText;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class CustomGuiTextItem extends CustomGuiItem {
+public abstract class TextEditorButton extends CustomButton {
 
-	public CustomGuiTextItem(CustomGuiHolder parent) {
+	public TextEditorButton(CustomGui parent) {
 		super(parent);
 	}
 	

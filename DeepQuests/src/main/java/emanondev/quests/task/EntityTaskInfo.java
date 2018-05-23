@@ -21,11 +21,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
 import emanondev.quests.SpawnReasonTracker;
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.CustomMultiPageGuiHolder;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.EditorGui;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.hooks.Hooks;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
@@ -166,14 +166,14 @@ public class EntityTaskInfo {
 	public boolean isValidEntity(Entity e) {
 		return checkEntityType(e)&&checkSpawnReason(e)&&checkEntityName(e)&&checkNPC(e);
 	}
-	public EditorGuiItemFactory getEntityTypeEditorButton(){
+	public EditorButtonFactory getEntityTypeEditorButton(){
 		return new EditEntityTypeFactory();
 	}
 	
-	private class EditEntityTypeFactory implements EditorGuiItemFactory {
-		private class EditEntityTypeButton extends CustomGuiItem {
+	private class EditEntityTypeFactory implements EditorButtonFactory {
+		private class EditEntityTypeButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.SKULL_ITEM);
-			public EditEntityTypeButton(CustomGuiHolder parent) {
+			public EditEntityTypeButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -209,7 +209,7 @@ public class EntityTaskInfo {
 			}
 		}
 		@Override
-		public EditEntityTypeButton getCustomGuiItem(CustomGuiHolder parent) {
+		public EditEntityTypeButton getCustomButton(CustomGui parent) {
 			return new EditEntityTypeButton(parent);
 		}
 	}
@@ -384,7 +384,7 @@ public class EntityTaskInfo {
 		
 	}
 	
-	private class EntityTypeEditorGui extends CustomMultiPageGuiHolder<EntityTypeButton> {
+	private class EntityTypeEditorGui extends CustomMultiPageGui<EntityTypeButton> {
 		public EntityTypeEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			for (EntityType type : ALLOWED_ENTITY_TYPES) {
@@ -411,7 +411,7 @@ public class EntityTaskInfo {
 			whitelistButton.update();
 			super.update();
 		}
-		private class WhiteListButton extends CustomGuiItem {
+		private class WhiteListButton extends CustomButton {
 			public WhiteListButton(EntityTypeEditorGui parent) {
 				super(parent);
 				update();
@@ -447,7 +447,7 @@ public class EntityTaskInfo {
 		}
 	}
 	
-	private class EntityTypeButton extends CustomGuiItem {
+	private class EntityTypeButton extends CustomButton {
 		private ItemStack item = new ItemStack(Material.WOOL);
 		private final EntityType type;
 		public EntityTypeButton(EntityTypeEditorGui parent,EntityType type) {
@@ -546,14 +546,14 @@ public class EntityTaskInfo {
 		return true;
 	}
 	
-	public EditorGuiItemFactory getSpawnReasonEditorButton(){
+	public EditorButtonFactory getSpawnReasonEditorButton(){
 		return new EditSpawnReasonFactory();
 	}
 	
-	private class EditSpawnReasonFactory implements EditorGuiItemFactory {
-		private class EditSpawnReasonButton extends CustomGuiItem {
+	private class EditSpawnReasonFactory implements EditorButtonFactory {
+		private class EditSpawnReasonButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.MONSTER_EGG);
-			public EditSpawnReasonButton(CustomGuiHolder parent) {
+			public EditSpawnReasonButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -589,12 +589,12 @@ public class EntityTaskInfo {
 			}
 		}
 		@Override
-		public EditSpawnReasonButton getCustomGuiItem(CustomGuiHolder parent) {
+		public EditSpawnReasonButton getCustomButton(CustomGui parent) {
 			return new EditSpawnReasonButton(parent);
 		}
 	}
 	
-	private class SpawnReasonEditorGui extends CustomMultiPageGuiHolder<SpawnReasonButton> {
+	private class SpawnReasonEditorGui extends CustomMultiPageGui<SpawnReasonButton> {
 		public SpawnReasonEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			for (SpawnReason type : SpawnReason.values()) {
@@ -621,7 +621,7 @@ public class EntityTaskInfo {
 			whitelistButton.update();
 			super.update();
 		}
-		private class WhiteListButton extends CustomGuiItem {
+		private class WhiteListButton extends CustomButton {
 			public WhiteListButton(SpawnReasonEditorGui parent) {
 				super(parent);
 				update();
@@ -795,7 +795,7 @@ public class EntityTaskInfo {
 		return desc;
 	}
 	
-	private class SpawnReasonButton extends CustomGuiItem {
+	private class SpawnReasonButton extends CustomButton {
 		private ItemStack item = new ItemStack(Material.WOOL);
 		private final SpawnReason type;
 		public SpawnReasonButton(SpawnReasonEditorGui parent,SpawnReason type) {
@@ -864,17 +864,17 @@ public class EntityTaskInfo {
 		return true;
 	}
 	
-	public EditorGuiItemFactory getIgnoreCitizenNPCEditorButton(){
+	public EditorButtonFactory getIgnoreCitizenNPCEditorButton(){
 		return new EditIgnoreCitizenNPCFactory();
 	}
 	public boolean areCitizensNpcIgnored() {
 		return ignoreNPC;
 	}
 	
-	private class EditIgnoreCitizenNPCFactory implements EditorGuiItemFactory {
-		private class EditIgnoreCitizenNPCButton extends CustomGuiItem {
+	private class EditIgnoreCitizenNPCFactory implements EditorButtonFactory {
+		private class EditIgnoreCitizenNPCButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.MONSTER_EGG);
-			public EditIgnoreCitizenNPCButton(CustomGuiHolder parent) {
+			public EditIgnoreCitizenNPCButton(CustomGui parent) {
 				super(parent);
 				update();
 			}
@@ -906,7 +906,7 @@ public class EntityTaskInfo {
 			}
 		}
 		@Override
-		public EditIgnoreCitizenNPCButton getCustomGuiItem(CustomGuiHolder parent) {
+		public EditIgnoreCitizenNPCButton getCustomButton(CustomGui parent) {
 			if (Hooks.isCitizenEnabled())
 				return new EditIgnoreCitizenNPCButton(parent);
 			return null;

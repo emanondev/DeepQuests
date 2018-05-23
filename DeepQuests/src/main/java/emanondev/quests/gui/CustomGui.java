@@ -11,13 +11,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.utils.StringUtils;
 
-public abstract class CustomGuiHolder implements InventoryHolder {
+public abstract class CustomGui implements InventoryHolder {
 	private final Player player;
-	private final CustomGuiHolder previusHolder;
+	private final CustomGui previusHolder;
 	private int size;
 	private Inventory inv;
 	
-	public CustomGuiHolder(Player p,CustomGuiHolder previusHolder,int rows) {
+	public CustomGui(Player p,CustomGui previusHolder,int rows) {
 		this.player = p;
 		this.previusHolder = previusHolder;
 		this.size = 9*Math.max(1,rows);
@@ -57,7 +57,7 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 			return null;
 		return previusHolder.getInventory();
 	}
-	public CustomGuiHolder getPreviusHolder() {
+	public CustomGui getPreviusHolder() {
 		return previusHolder;
 	}
 	public int size() {
@@ -69,12 +69,12 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	public int fromEndCloseButtonPosition() {
 		return closeButtonPos;
 	}
-	private CustomGuiItem backButton = craftBackButton();
-	private CustomGuiItem closeButton = craftCloseButton();
-	protected CustomGuiItem getBackButton() {
+	private CustomButton backButton = craftBackButton();
+	private CustomButton closeButton = craftCloseButton();
+	protected CustomButton getBackButton() {
 		return backButton;
 	}
-	protected CustomGuiItem getCloseButton() {
+	protected CustomButton getCloseButton() {
 		return closeButton;
 	}
 	
@@ -105,10 +105,10 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	}
 	private int backButtonPos = 9;
 	private int closeButtonPos = 1;
-	protected CustomGuiItem craftBackButton() {
+	protected CustomButton craftBackButton() {
 		return new BackButton();
 	}
-	protected CustomGuiItem craftCloseButton() {
+	protected CustomButton craftCloseButton() {
 		return new CloseButton();
 	}
 
@@ -121,13 +121,13 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 		return item;
 	}
 	private final static ItemStack backButtonItem = loadBackItem();
-	public class BackButton extends CustomGuiItem {
+	public class BackButton extends CustomButton {
 		public ItemStack getItem() {
 			return backButtonItem;
 		}
 		
 		public BackButton() {
-			super(CustomGuiHolder.this);
+			super(CustomGui.this);
 		}
 
 		@Override
@@ -148,13 +148,13 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 		return item;
 	}
 	private final static ItemStack closeButtonItem = loadCloseItem();
-	public class CloseButton extends CustomGuiItem {
+	public class CloseButton extends CustomButton {
 		public ItemStack getItem() {
 			return closeButtonItem;
 		}
 		
 		public CloseButton() {
-			super(CustomGuiHolder.this);
+			super(CustomGui.this);
 		}
 
 		@Override

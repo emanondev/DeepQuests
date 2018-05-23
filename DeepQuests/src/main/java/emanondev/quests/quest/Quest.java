@@ -17,9 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
-import emanondev.quests.gui.CustomGuiHolder;
-import emanondev.quests.gui.CustomGuiItem;
-import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
@@ -94,10 +94,10 @@ public class Quest extends YmlLoadableWithCooldown{
 		this.addToEditor(new AddMissionFactory());
 	}
 	
-	private class AddMissionFactory implements EditorGuiItemFactory{
-		private class AddMissionGuiItem extends CustomGuiItem {
+	private class AddMissionFactory implements EditorButtonFactory{
+		private class AddMissionGuiItem extends CustomButton {
 
-			public AddMissionGuiItem(CustomGuiHolder parent) {
+			public AddMissionGuiItem(CustomGui parent) {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Mission"));
@@ -145,7 +145,7 @@ public class Quest extends YmlLoadableWithCooldown{
 		}
 
 		@Override
-		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+		public CustomButton getCustomButton(CustomGui parent) {
 			return new AddMissionGuiItem(parent);
 		}
 	}

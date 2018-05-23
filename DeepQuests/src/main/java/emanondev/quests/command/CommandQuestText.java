@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import emanondev.quests.gui.CustomGuiTextItem;
+import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -24,7 +24,7 @@ public class CommandQuestText extends CmdManager implements TabExecutor {
 		//Quests.getInstance().registerCommand(this);
 	}
 	
-	private static final HashMap<Player,CustomGuiTextItem> map = new HashMap<Player,CustomGuiTextItem>();
+	private static final HashMap<Player,TextEditorButton> map = new HashMap<Player,TextEditorButton>();
 
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
@@ -56,7 +56,7 @@ public class CommandQuestText extends CmdManager implements TabExecutor {
 		return true;
 	}
 	
-	public static void requestText(Player p,String baseText,BaseComponent[] description,CustomGuiTextItem item) {
+	public static void requestText(Player p,String baseText,BaseComponent[] description,TextEditorButton item) {
 		map.put(p,item);
 		p.closeInventory();
 		ComponentBuilder comp = new ComponentBuilder(
