@@ -166,7 +166,7 @@ public class EntityTaskInfo {
 	public boolean isValidEntity(Entity e) {
 		return checkEntityType(e)&&checkSpawnReason(e)&&checkEntityName(e)&&checkNPC(e);
 	}
-	public EditorButtonFactory getEntityTypeEditorButton(){
+	public EditorButtonFactory getEntityTypeEditorButtonFactory(){
 		return new EditEntityTypeFactory();
 	}
 	
@@ -546,7 +546,7 @@ public class EntityTaskInfo {
 		return true;
 	}
 	
-	public EditorButtonFactory getSpawnReasonEditorButton(){
+	public EditorButtonFactory getSpawnReasonEditorButtonFactory(){
 		return new EditSpawnReasonFactory();
 	}
 	
@@ -855,7 +855,7 @@ public class EntityTaskInfo {
 		
 	}
 	
-	public boolean setIgnoreCitizenNpc(boolean value) {
+	public boolean setIgnoreCitizenNPC(boolean value) {
 		if (value == ignoreNPC)
 			return false;
 		ignoreNPC = value;
@@ -864,10 +864,10 @@ public class EntityTaskInfo {
 		return true;
 	}
 	
-	public EditorButtonFactory getIgnoreCitizenNPCEditorButton(){
+	public EditorButtonFactory getIgnoreCitizenNPCEditorButtonFactory(){
 		return new EditIgnoreCitizenNPCFactory();
 	}
-	public boolean areCitizensNpcIgnored() {
+	public boolean areCitizensNPCIgnored() {
 		return ignoreNPC;
 	}
 	
@@ -900,7 +900,7 @@ public class EntityTaskInfo {
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				setIgnoreCitizenNpc(!areCitizensNpcIgnored());
+				setIgnoreCitizenNPC(!areCitizensNPCIgnored());
 				update();
 				getParent().reloadInventory();
 			}

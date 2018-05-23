@@ -39,9 +39,9 @@ public class MythicMobKillTaskType extends TaskType{
 			if (task.isWorldAllowed(p.getWorld()) 
 					 && task.isValidMythicMob(event.getMobType().getInternalName())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeDrops())
+					if (task.drops.areDropsRemoved())
 						event.setDrops(new ArrayList<ItemStack>());
-					if (task.drops.removeExp())
+					if (task.drops.isExpRemoved())
 						event.setExp(0);
 				}
 			}
@@ -55,8 +55,10 @@ public class MythicMobKillTaskType extends TaskType{
 		//TODO option CHECKTOOL
 		public MythicMobKillTask(MemorySection m, Mission parent) {
 			super(m, parent,MythicMobKillTaskType.this);
-			drops = new DropsTaskInfo(m);
+			drops = new DropsTaskInfo(m,this);
 			mobName = m.getString(PATH_INTERNAL_NAME,null);
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 		public boolean isValidMythicMob(String internalName) {
 			if (mobName==null || mobName.equalsIgnoreCase(internalName))

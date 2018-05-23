@@ -47,9 +47,9 @@ public class TameMobTaskType extends TaskType {
 		public TameMobTask(MemorySection m, Mission parent) {
 			super(m, parent,TameMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
-			this.addToEditor(entity.getEntityTypeEditorButton());
-			this.addToEditor(entity.getSpawnReasonEditorButton());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButton());
+			this.addToEditor(entity.getEntityTypeEditorButtonFactory());
+			this.addToEditor(entity.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
 		}
 		
 	}

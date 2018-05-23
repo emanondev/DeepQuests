@@ -38,7 +38,7 @@ public class BreedMobTaskType extends TaskType {
 			if (task.isWorldAllowed(p.getWorld()) 
 					 && task.entity.isValidEntity(event.getEntity())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeExp())
+					if (task.drops.isExpRemoved())
 						event.setExperience(0);
 				}
 			}
@@ -51,9 +51,10 @@ public class BreedMobTaskType extends TaskType {
 		public BreedMobTask(MemorySection m, Mission parent) {
 			super(m, parent,BreedMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
-			drops = new DropsTaskInfo(m);
-			this.addToEditor(entity.getEntityTypeEditorButton());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButton());
+			drops = new DropsTaskInfo(m,this);
+			this.addToEditor(entity.getEntityTypeEditorButtonFactory());
+			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}

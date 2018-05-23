@@ -44,9 +44,9 @@ public class NPCKillTaskType extends TaskType {
 			if (task.isWorldAllowed(p.getWorld()) 
 					 && task.npc.isValidNPC(event.getNPC())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeExp())
+					if (task.drops.isExpRemoved())
 						event.setDroppedExp(0);
-					if (task.drops.removeDrops())
+					if (task.drops.areDropsRemoved())
 						event.getDrops().clear();
 				}
 			}
@@ -59,7 +59,9 @@ public class NPCKillTaskType extends TaskType {
 		public NPCKillTask(MemorySection m, Mission parent) {
 			super(m, parent,NPCKillTaskType.this);
 			npc = new NPCTaskInfo(m);
-			drops = new DropsTaskInfo(m);
+			drops = new DropsTaskInfo(m,this);
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}

@@ -37,9 +37,9 @@ public class KillMobTaskType extends TaskType {
 			if (task.isWorldAllowed(qPlayer.getPlayer().getWorld()) 
 					 && task.entityInfo.isValidEntity(event.getEntity())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeDrops())
+					if (task.drops.areDropsRemoved())
 						event.getDrops().clear();
-					if (task.drops.removeExp())
+					if (task.drops.isExpRemoved())
 						event.setDroppedExp(0);
 				}
 			}
@@ -53,10 +53,12 @@ public class KillMobTaskType extends TaskType {
 		public KillMobTask(MemorySection m, Mission parent) {
 			super(m, parent, KillMobTaskType.this);
 			entityInfo = new EntityTaskInfo(m,this);
-			drops = new DropsTaskInfo(m);
-			this.addToEditor(entityInfo.getEntityTypeEditorButton());
-			this.addToEditor(entityInfo.getSpawnReasonEditorButton());
-			this.addToEditor(entityInfo.getIgnoreCitizenNPCEditorButton());
+			drops = new DropsTaskInfo(m,this);
+			this.addToEditor(entityInfo.getEntityTypeEditorButtonFactory());
+			this.addToEditor(entityInfo.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(entityInfo.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 	}
 	@Override

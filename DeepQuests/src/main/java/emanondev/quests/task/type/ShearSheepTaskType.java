@@ -35,7 +35,7 @@ public class ShearSheepTaskType extends TaskType {
 			if (task.isWorldAllowed(event.getPlayer().getWorld()) 
 					 && task.entity.isValidEntity(event.getEntity())) {
 				if (task.onProgress(qPlayer) 
-						&& task.drops.removeDrops() 
+						&& task.drops.areDropsRemoved() 
 						&& event.getEntity() instanceof Sheep) {
 					((Sheep) event.getEntity()).setSheared(true);
 					event.setCancelled(true);
@@ -50,9 +50,10 @@ public class ShearSheepTaskType extends TaskType {
 		public ShearSheepTask(MemorySection m, Mission parent) {
 			super(m, parent,ShearSheepTaskType.this);
 			entity = new EntityTaskInfo(m,this);
-			drops = new DropsTaskInfo(m);
-			this.addToEditor(entity.getSpawnReasonEditorButton());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButton());
+			drops = new DropsTaskInfo(m,this);
+			this.addToEditor(entity.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
 		}
 		
 	}

@@ -33,9 +33,9 @@ public class FishingTaskType extends TaskType {
 			FishingTask task = (FishingTask) tasks.get(i);
 			if (task.isWorldAllowed(event.getPlayer().getWorld())) {
 				if (task.onProgress(qPlayer)) {
-					if(task.drops.removeExp())
+					if(task.drops.isExpRemoved())
 						event.setExpToDrop(0);
-					if(task.drops.removeDrops()&&event.getHook()!=null)
+					if(task.drops.areDropsRemoved()&&event.getHook()!=null)
 						event.getHook().remove();
 				}
 			}
@@ -51,7 +51,9 @@ public class FishingTaskType extends TaskType {
 		private final DropsTaskInfo drops;
 		public FishingTask(MemorySection m, Mission parent) {
 			super(m, parent,FishingTaskType.this);
-			drops = new DropsTaskInfo(m);
+			drops = new DropsTaskInfo(m,this);
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}

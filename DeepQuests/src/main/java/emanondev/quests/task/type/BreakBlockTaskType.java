@@ -40,9 +40,9 @@ public class BreakBlockTaskType extends TaskType {
 			if (task.isWorldAllowed(event.getPlayer().getWorld()) 
 					 && task.isValidBlock(event.getBlock())) {
 				if (task.onProgress(qPlayer)) {
-					if (task.drops.removeDrops())
+					if (task.drops.areDropsRemoved())
 						event.setDropItems(false);
-					if (task.drops.removeExp())
+					if (task.drops.isExpRemoved())
 						event.setExpToDrop(0);
 				}
 			}
@@ -57,9 +57,11 @@ public class BreakBlockTaskType extends TaskType {
 		//TODO option CHECKTOOL
 		public BreakBlockTask(MemorySection m, Mission parent) {
 			super(m, parent,BreakBlockTaskType.this);
-			drops = new DropsTaskInfo(m);
+			drops = new DropsTaskInfo(m,this);
 			blocks = new BlocksTaskInfo(m);
 			checkVirgin = m.getBoolean(PATH_CHECK_VIRGIN,true);
+			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
 		}
 		
 		public boolean isValidBlock(Block block) {
