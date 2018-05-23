@@ -15,7 +15,7 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 	private final Player player;
 	private final CustomGuiHolder previusHolder;
 	private int size;
-	private final Inventory inv;
+	private Inventory inv;
 	
 	public CustomGuiHolder(Player p,CustomGuiHolder previusHolder,int rows) {
 		this.player = p;
@@ -23,6 +23,14 @@ public abstract class CustomGuiHolder implements InventoryHolder {
 		this.size = 9*Math.max(1,rows);
 		this.inv = Bukkit.createInventory(this,size);
 	}
+	public void setTitle(Player p,String title) {
+		Inventory oldInv = inv;
+		this.inv = Bukkit.createInventory(this,oldInv.getSize(),title);
+		inv.setStorageContents(oldInv.getStorageContents());
+		if (p!=null)
+			p.openInventory(inv);
+	}
+	
 	
 	@Override
 	public Inventory getInventory() {

@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.gui.CustomGuiItem;
 import emanondev.quests.gui.CustomLinkedGuiHolder;
 import emanondev.quests.gui.EditorGui;
@@ -57,7 +58,6 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * @param m must be != null
 	 * @param parent must be != null
 	 */
-	@SuppressWarnings("rawtypes")
 	public AbstractTask(MemorySection m,Mission parent,TaskType type) {
 		super(m);
 		if (parent == null||type ==null)
@@ -238,10 +238,10 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		return comp.create();
 	}
 	
-	private class EditMaxProgressFactory<T extends AbstractTask> implements EditorGuiItemFactory<T> {
+	private class EditMaxProgressFactory implements EditorGuiItemFactory {
 		private class EditMaxProgressButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.DIODE);
-			public EditMaxProgressButton(EditorGui<?> parent) {
+			public EditMaxProgressButton(CustomGuiHolder parent) {
 				super(parent);
 				update();
 			}
@@ -261,17 +261,17 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new MaxProgressEditorGui(clicker,
-						(EditorGui<?>) this.getParent()).getInventory());
+						(EditorGui) this.getParent()).getInventory());
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(EditorGui<T> parent) {
+		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
 			return new EditMaxProgressButton(parent);
 		}
 	}
 	
 	private class MaxProgressEditorGui extends CustomLinkedGuiHolder<CustomGuiItem> {
-		public MaxProgressEditorGui(Player p, EditorGui<?> previusHolder) {
+		public MaxProgressEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6);
 			items.put(4, new MaxProgressButton());
 			items.put(19, new MaxProgressEditorButton(1));
@@ -341,5 +341,11 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			}
 		}
 		
+	}
+	public String getGuiTitle() {
+		return StringUtils.fixColorsAndHolders(
+				"&8"+StringUtils.withoutColor(getDisplayName())+
+				" <> "+StringUtils.withoutColor(parent.getDisplayName())+
+				" <> "+StringUtils.withoutColor(parent.getParent().getDisplayName()));
 	}
 }

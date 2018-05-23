@@ -23,7 +23,7 @@ import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.EditorGuiItemFactory;
 import emanondev.quests.gui.CustomMultiPageGuiHolder;
 
-public abstract class YmlLoadable implements Savable {
+public abstract class YmlLoadable implements Savable,WithGui {
 	public static final String PATH_DISPLAY_NAME = "name";
 	public static final String PATH_WORLDS_LIST = "worlds.list";
 	public static final String PATH_WORLDS_IS_BLACKLIST = "worlds.is-blacklist";
@@ -48,7 +48,6 @@ public abstract class YmlLoadable implements Savable {
 	}
 	
 	
-	@SuppressWarnings("rawtypes")
 	public YmlLoadable(MemorySection m) {
 		if (m==null)
 			throw new NullPointerException();
@@ -207,23 +206,22 @@ public abstract class YmlLoadable implements Savable {
 	protected abstract boolean getUseWorldsAsBlackListDefault();
 	
 	
-	private ArrayList<EditorGuiItemFactory<?>> tools = new ArrayList<EditorGuiItemFactory<?>>();
+	private ArrayList<EditorGuiItemFactory> tools = new ArrayList<EditorGuiItemFactory>();
 	public void openEditorGui(Player p){
 		openEditorGui(p,null);
 	}
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void openEditorGui(Player p,CustomGuiHolder previusHolder){
 		p.openInventory(new EditorGui(p,this,previusHolder,tools).getInventory());
 	}
-	public void addToEditor(EditorGuiItemFactory<?> item) {
+	public void addToEditor(EditorGuiItemFactory item) {
 		if (item!=null)
 			tools.add(item);
 	}
 	
-	private class EditDisplayNameFactory<T extends YmlLoadable> implements EditorGuiItemFactory<T> {
+	private class EditDisplayNameFactory implements EditorGuiItemFactory {
 		private class EditDisplayNameButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.PAPER);
-			public EditDisplayNameButton(EditorGui<?> parent) {
+			public EditDisplayNameButton(CustomGuiHolder parent) {
 				super(parent);
 				update();
 			}
@@ -248,14 +246,14 @@ public abstract class YmlLoadable implements Savable {
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(EditorGui<T> parent) {
+		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
 			return new EditDisplayNameButton(parent);
 		}
 	}
-	private class EditWorldsFactory<T extends YmlLoadable> implements EditorGuiItemFactory<T> {
+	private class EditWorldsFactory implements EditorGuiItemFactory {
 		private class EditWorldsButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.COMPASS);
-			public EditWorldsButton(EditorGui<?> parent) {
+			public EditWorldsButton(CustomGuiHolder parent) {
 				super(parent);
 				update();
 			}
@@ -287,17 +285,17 @@ public abstract class YmlLoadable implements Savable {
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new WorldsEditorGui(clicker,(EditorGui<?>) getParent()).getInventory());
+				clicker.openInventory(new WorldsEditorGui(clicker,(EditorGui) getParent()).getInventory());
 			}
 		}
 		@Override
-		public EditWorldsButton getCustomGuiItem(EditorGui<T> parent) {
+		public EditWorldsButton getCustomGuiItem(CustomGuiHolder parent) {
 			return new EditWorldsButton(parent);
 		}
 	}
 	
 	private class WorldsEditorGui extends CustomMultiPageGuiHolder<WorldButton> {
-		public WorldsEditorGui(Player p, EditorGui<?> previusHolder) {
+		public WorldsEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			HashSet<String> set = new HashSet<String>();
 			set.addAll(getWorldsList());
@@ -408,4 +406,6 @@ public abstract class YmlLoadable implements Savable {
 			getParent().reloadInventory();
 		}
 	}
+
+	public abstract String getGuiTitle();
 }

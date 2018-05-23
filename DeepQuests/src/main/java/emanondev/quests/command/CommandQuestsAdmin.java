@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.quest.Quest;
@@ -20,8 +22,8 @@ public class CommandQuestsAdmin extends CmdManager {
 				new SubListQuest(),
 				new SubQuest(),
 				new SubAddQuest(),
-				new SubDeleteQuest()
-				
+				new SubDeleteQuest(),
+				new SubEditor()
 				
 				);
 	}
@@ -192,8 +194,17 @@ class SubListQuest extends SubCmdManager {
 		sender.spigot().sendMessage(comp.create());
 	}
 }
-//qa 	quest 	<questID>
-//		0		1
+class SubEditor extends SubCmdManager {
+	SubEditor() {
+		super("editor",Perms.ADMIN_EDITOR);
+		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Quests");
+		this.setPlayersOnly(true);
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quests.getInstance().getQuestManager().openEditorGui((Player) sender);
+	}
+}
 
 //qa 	quest 	<id> 	mission		<id>
 //		0		1		2			(3)

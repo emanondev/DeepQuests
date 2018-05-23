@@ -2,7 +2,6 @@ package emanondev.quests.command;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,10 +17,10 @@ class SubMission extends SubCmdManager {
 		super("mission",Perms.ADMIN_QUEST_MISSION,
 				new SubMissionSubEditor(),
 				new SubMissionSubInfo(),
-				new SubMissionSubSetCooldown(),
-				new SubMissionSubSetRepeatable(),
+				//new SubMissionSubSetCooldown(),
+				//new SubMissionSubSetRepeatable(),
 				new SubMissionSubSetDisplayName(),
-				new SubMissionSubWorlds(),
+				//new SubMissionSubWorlds(),
 				new SubTask()
 				);
 		this.setDescription(ChatColor.GOLD+"Shows quest's missions menu");
@@ -75,7 +74,7 @@ class SubMission extends SubCmdManager {
 }
 class SubMissionSubEditor extends SubCmdManager {
 	SubMissionSubEditor() {
-		super("editor",Perms.ADMIN_QUEST_MISSION_EDITOR);
+		super("editor",Perms.ADMIN_EDITOR);
 		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Mission");
 		this.setPlayersOnly(true);
 	}
@@ -98,7 +97,7 @@ class SubMissionSubEditor extends SubCmdManager {
 //		0		1		2				3+
 class SubMissionSubSetDisplayName extends SubCmdManager {
 	SubMissionSubSetDisplayName(){
-		super("setdisplayname",Perms.ADMIN_QUEST_MISSION_SETDISPLAYNAME
+		super("setdisplayname",Perms.ADMIN_EDITOR
 				);
 		this.setDescription(ChatColor.GOLD+"Set a new display name for selected mission");
 		this.setParams("[display name]");
@@ -160,7 +159,7 @@ class SubMissionSubInfo extends SubCmdManager {
 	}
 }
 
-
+/*
 //qa 	quest 	<id> 	mission		<missid>	setrepeatable 	<true/false>
 //		0		1		2			3			4				5
 class SubMissionSubSetRepeatable extends SubCmdManager {
@@ -438,4 +437,4 @@ class SubMissionSubWorldsSubSetBlacklist extends SubCmdManager {
 		return super.onTab(params, sender, label, args);
 	}
 	
-}
+}*/

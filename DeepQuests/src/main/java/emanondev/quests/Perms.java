@@ -13,22 +13,9 @@ public class Perms {
 	public static final String ADMIN_DELETEQUEST =					"quests.admin.deletequest";
 	public static final String ADMIN_ADDQUEST =						"quests.admin.addquest";
 	public static final String ADMIN_QUEST_INFO = 					"quests.admin.quest.info";
-	public static final String ADMIN_QUEST_SETREPEATABLE =	 		"quests.admin.quest.setrepeatable";
-	public static final String ADMIN_QUEST_SETCOOLDOWN = 			"quests.admin.quest.setcooldown";
-	public static final String ADMIN_QUEST_MISSION_SETCOOLDOWN = 	"quests.admin.quest.mission.setrepeatable";
-	public static final String ADMIN_QUEST_MISSION_SETREPEATABLE = 	"quests.admin.quest.mission.setcooldown";
-	public static final String ADMIN_QUEST_SETDISPLAYNAME = 		"quests.admin.quest.setdisplayname";
-	public static final String ADMIN_QUEST_MISSION_SETDISPLAYNAME = "quests.admin.quest.mission.setdisplayname";
 	public static final String ADMIN_QUEST_DELETEMISSION = 			"quests.admin.quest.deletemission";
 	public static final String ADMIN_QUEST_ADDMISSION = 			"quests.admin.quest.addmission";
-	public static final String ADMIN_QUEST_WORLDS = 				"quests.admin.quest.worlds";
-	public static final String ADMIN_QUEST_MISSION_WORLDS = 		"quests.admin.quest.mission.worlds";
-	public static final String ADMIN_QUEST_MISSION_TASK_WORLDS = 	"quests.admin.quest.mission.task.worlds";
 	public static final String ADMIN_QUEST_MISSION_TASK = 			"quests.admin.quest.mission.task";
 	public static final String ADMIN_QUEST_MISSION_TASK_INFO = 		"quests.admin.quest.mission.task.info";
-	public static final String ADMIN_QUEST_MISSION_TASK_EDITOR = 	"quests.admin.quest.mission.task.editor";
-	public static final String ADMIN_QUEST_MISSION_EDITOR = 		"quests.admin.quest.mission.editor";
-	public static final String ADMIN_QUEST_EDITOR = 				"quests.admin.quest.editor";
-	public static final String ADMIN_QUEST_MISSION_TASK_SETDISPLAYNAME = "quests.admin.quest.mission.task.setdisplayname";;
-	
+	public static final String ADMIN_EDITOR = 						"quests.admin.editor";
 }

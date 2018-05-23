@@ -2,7 +2,6 @@ package emanondev.quests.command;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +18,7 @@ class SubTask extends SubCmdManager {
 		super("task",Perms.ADMIN_QUEST_MISSION_TASK,
 				new SubTaskSubEditor(),
 				new SubTaskSubInfo(),
-				new SubTaskSubWorlds(),
+				//new SubTaskSubWorlds(),
 				new SubTaskSubSetDisplayName()
 				);
 		this.setDescription(ChatColor.GOLD+"Shows quest's missions menu");
@@ -82,7 +81,7 @@ class SubTask extends SubCmdManager {
 }
 class SubTaskSubSetDisplayName extends SubCmdManager {
 	SubTaskSubSetDisplayName(){
-		super("setdisplayname",Perms.ADMIN_QUEST_MISSION_TASK_SETDISPLAYNAME
+		super("setdisplayname",Perms.ADMIN_EDITOR
 				);
 		this.setDescription(ChatColor.GOLD+"Set a new display name for selected task");
 		this.setParams("[display name]");
@@ -130,7 +129,7 @@ class SubTaskSubSetDisplayName extends SubCmdManager {
 
 class SubTaskSubEditor extends SubCmdManager {
 	SubTaskSubEditor() {
-		super("editor",Perms.ADMIN_QUEST_MISSION_TASK_EDITOR);
+		super("editor",Perms.ADMIN_EDITOR);
 		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Task");
 		this.setPlayersOnly(true);
 	}
@@ -180,7 +179,7 @@ class SubTaskSubInfo extends SubCmdManager {
 		sender.spigot().sendMessage(t.toComponent());
 	}
 }
-
+/*
 class SubTaskSubWorlds extends SubCmdManager {
 	SubTaskSubWorlds() {
 		super("worlds",Perms.ADMIN_QUEST_MISSION_TASK_WORLDS,
@@ -371,3 +370,4 @@ class SubTaskSubWorldsSubSetBlacklist extends SubCmdManager {
 	}
 	
 }
+*/

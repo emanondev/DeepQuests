@@ -2,7 +2,6 @@ package emanondev.quests.command;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,12 +21,12 @@ class SubQuest extends SubCmdManager {
 				new SubQuestSubInfo(),
 				new SubQuestSubListMission(),
 				new SubMission(),
-				new SubQuestSubSetRepeatable(),
-				new SubQuestSubSetCooldown(),
+				//new SubQuestSubSetRepeatable(),
+				//new SubQuestSubSetCooldown(),
 				new SubQuestSubSetDisplayName(),
 				new SubQuestSubDeleteMission(),
 				new SubQuestSubAddMission(),
-				new SubQuestSubWorlds(),
+				//new SubQuestSubWorlds(),
 				new SubQuestSubEditor()
 				);
 		this.setDescription(ChatColor.GOLD+"Edit/show info of the selected quest");
@@ -74,7 +73,7 @@ class SubQuest extends SubCmdManager {
 }
 class SubQuestSubEditor extends SubCmdManager {
 	SubQuestSubEditor() {
-		super("editor",Perms.ADMIN_QUEST_EDITOR);
+		super("editor",Perms.ADMIN_EDITOR);
 		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Quest");
 		this.setPlayersOnly(true);
 	}
@@ -88,6 +87,7 @@ class SubQuestSubEditor extends SubCmdManager {
 		q.openEditorGui((Player) sender);
 	}
 }
+/*
 class SubQuestSubWorlds extends SubCmdManager {
 	SubQuestSubWorlds() {
 		super("worlds",Perms.ADMIN_QUEST_WORLDS,
@@ -230,7 +230,7 @@ class SubQuestSubWorldsSubSetBlacklist extends SubCmdManager {
 		return super.onTab(params, sender, label, args);
 	}
 	
-}
+}*/
 //qa	quest	<questid>	addmission	<id>	[displayname]
 //		0		1			2			3		4+
 class SubQuestSubAddMission extends SubCmdManager {
@@ -342,7 +342,7 @@ class SubQuestSubInfo extends SubCmdManager {
 //		0		1		2				3+
 class SubQuestSubSetDisplayName extends SubCmdManager {
 	SubQuestSubSetDisplayName(){
-		super("setdisplayname",Perms.ADMIN_QUEST_SETDISPLAYNAME
+		super("setdisplayname",Perms.ADMIN_EDITOR
 				);
 		this.setDescription(ChatColor.GOLD+"Set a new display name for selected quest");
 		this.setParams("[display name]");
@@ -372,7 +372,7 @@ class SubQuestSubSetDisplayName extends SubCmdManager {
 			sender.sendMessage(ChatColor.RED+"Quest ["+q.getNameID()+"] has already '"+q.getDisplayName()
 					+ChatColor.RED+"' as display name");
 	}
-}
+}/*
 //qa 	quest 	<id> 	setrepeatable 	<true/false>
 //		0		1		2				3
 class SubQuestSubSetRepeatable extends SubCmdManager {
@@ -468,7 +468,7 @@ class SubQuestSubSetCooldown extends SubCmdManager {
 				
 	}
 }
-
+*/
 //qa 	quest 	<id> 	listmission
 //		0		1		2
 class SubQuestSubListMission extends SubCmdManager {

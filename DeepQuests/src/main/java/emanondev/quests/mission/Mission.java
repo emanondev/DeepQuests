@@ -15,6 +15,7 @@ import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
+import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.require.MissionRequire;
@@ -216,6 +217,7 @@ public class Mission extends YmlLoadableWithCooldown{
 		holders = setupHolders();
 		if (displayInfo.isDirty())
 			setDirty(true);
+		this.addToEditor(new SubExplorerFactory<Task>(getTasks()));
 		
 	}
 	public String[] getHolders(Player p,DisplayState state) {
@@ -393,7 +395,13 @@ public class Mission extends YmlLoadableWithCooldown{
 		return Defaults.MissionDef.shouldCooldownAutogen();
 	}
 	@Override
-	protected int getDefaultCooldownMinutes() {
+	protected long getDefaultCooldownMinutes() {
 		return Defaults.MissionDef.getDefaultCooldownMinutes();
+	}
+
+	public String getGuiTitle() {
+		return StringUtils.fixColorsAndHolders(
+				"&8"+StringUtils.withoutColor(getDisplayName())+
+				" <> "+StringUtils.withoutColor(parent.getDisplayName()));
 	}
 }

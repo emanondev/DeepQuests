@@ -7,6 +7,7 @@ import org.bukkit.configuration.MemorySection;
 import emanondev.quests.Defaults;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -91,6 +92,13 @@ public class VoidTaskType extends TaskType {
 		@Override
 		protected boolean shouldAutogenDisplayName() {
 			return Defaults.TaskDef.shouldAutogenDisplayName();
+		}
+
+		public String getGuiTitle() {
+			return StringUtils.fixColorsAndHolders(
+					"&8"+StringUtils.withoutColor(getDisplayName())+
+					" <> "+StringUtils.withoutColor(parent.getDisplayName())+
+					" <> "+StringUtils.withoutColor(parent.getParent().getDisplayName()));
 		}
 	}
 }

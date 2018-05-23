@@ -43,15 +43,16 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		pag = Math.max(1,pag);
 		if (pag==page)
 			return;
-		if (pag*(size()-9)>items.size())
+		if ((pag-1)*(size()-9)>=items.size())
 			return;
 		page = pag;
-		for (int i = 0; i < size()-9 ; i++)
+		/*for (int i = 0; i < size()-9 ; i++)
 			if ((getPageOffset()+size()) < items.size() )
 				getInventory().setItem(i,items.get(getPageOffset()+i).getItem());
 			else
-				getInventory().setItem(i,null);
+				getInventory().setItem(i,null);*/
 		currPageButton.update();
+		reloadInventory();
 	}
 	public void onSlotClick(Player clicker,int slot,ClickType click) {
 		if (slot == size()-this.fromEndPrevPageButtonPosition()) {
@@ -153,14 +154,14 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 	private static ItemStack loadPrevPageItem() {
 		ItemStack item = new ItemStack(Material.TRIPWIRE_HOOK);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(StringUtils.fixColorsAndHolders("&9&l<<<<<<<"));
+		meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&l<<<<<<<"));
 		item.setItemMeta(meta);
 		return item;
 	}
 	private static ItemStack loadNextPageItem() {
 		ItemStack item = new ItemStack(Material.TRIPWIRE_HOOK);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(StringUtils.fixColorsAndHolders("&9&l>>>>>>>"));
+		meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&l>>>>>>>"));
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -205,7 +206,7 @@ public abstract class CustomMultiPageGuiHolder<T extends CustomGuiItem> extends 
 		}
 		public void update() {
 			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(StringUtils.fixColorsAndHolders("&9&lPage <&5&l{page}&9&l>","{page}",""+page));
+			meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lPage &e&l{page}","{page}",""+page));
 			item.setItemMeta(meta);
 		}
 		@Override

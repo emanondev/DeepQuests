@@ -30,8 +30,8 @@ public class Defaults {
 	public static class QuestDef {
 		private static final String BASE_PATH = "quest.";
 	
-		public static int getDefaultCooldownMinutes() {
-			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);
+		public static long getDefaultCooldownMinutes() {
+			return data.getLong(BASE_PATH+"cooldown.minutes", 1440);
 		}
 	
 		public static boolean shouldCooldownAutogen() {
@@ -240,8 +240,8 @@ public class Defaults {
 	public static class MissionDef {
 		private static final String BASE_PATH = "mission.";
 	
-		public static int getDefaultCooldownMinutes() {
-			return data.getInt(BASE_PATH+"cooldown.minutes", 1440);
+		public static long getDefaultCooldownMinutes() {
+			return data.getLong(BASE_PATH+"cooldown.minutes", 1440);
 		}
 	
 		public static boolean shouldCooldownAutogen() {

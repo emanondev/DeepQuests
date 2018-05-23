@@ -8,9 +8,13 @@ import java.util.Set;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemorySection;
-
+import org.bukkit.entity.Player;
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
+import emanondev.quests.gui.CustomGuiHolder;
+import emanondev.quests.gui.CustomGuiItem;
+import emanondev.quests.gui.CustomMultiPageGuiHolder;
+import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.YmlLoadable;
 
@@ -124,4 +128,20 @@ public class QuestManager implements Savable {
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
+	public void openEditorGui(Player clicker, CustomGuiHolder prevGui) {
+		clicker.openInventory(new QuestsEditorGui(clicker,prevGui).getInventory());
+	}
+	public void openEditorGui(Player clicker) {
+		openEditorGui(clicker,null);
+	}
+	private class QuestsEditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
+		public QuestsEditorGui(Player p, CustomGuiHolder previusHolder) {
+			super(p,previusHolder, 6,1);
+			this.setFromEndCloseButtonPosition(8);
+			this.addButton(new SubExplorerFactory<Quest>(getQuests()).getCustomGuiItem(this));			
+			reloadInventory();
+		}
+		
+	}
+	
 }

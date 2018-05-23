@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.gui.CustomGuiItem;
 import emanondev.quests.gui.CustomLinkedGuiHolder;
 import emanondev.quests.gui.EditorGui;
@@ -18,9 +19,8 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 	protected final static String PATH_COOLDOWN_IS_ENABLED = "cooldown.enable";
 	protected final static String PATH_COOLDOWN_AMOUNT = "cooldown.minutes";
 	
-	private int minutes;
+	private long minutes;
 	private boolean repeatable;
-	@SuppressWarnings("rawtypes")
 	public YmlLoadableWithCooldown(MemorySection m) {
 		super(m);
 		repeatable = loadCooldownAllowed(m);
@@ -37,19 +37,19 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		return m.getBoolean(PATH_COOLDOWN_IS_ENABLED,getDefaultCooldownUse());
 	}
 	
-	private int loadCooldownMinutes(MemorySection m) {
+	private long loadCooldownMinutes(MemorySection m) {
 		if (m==null)
 			throw new NullPointerException();
-		if (!m.isInt(PATH_COOLDOWN_AMOUNT) && shouldCooldownAutogen()) {
+		if (!m.isLong(PATH_COOLDOWN_AMOUNT) && shouldCooldownAutogen()) {
 			m.set(PATH_COOLDOWN_AMOUNT, getDefaultCooldownMinutes());
 			dirty = true;
 		}
-		return m.getInt(PATH_COOLDOWN_AMOUNT, getDefaultCooldownMinutes());
+		return m.getLong(PATH_COOLDOWN_AMOUNT, getDefaultCooldownMinutes());
 	}
 	
 	protected abstract boolean getDefaultCooldownUse();
 	protected abstract boolean shouldCooldownAutogen();
-	protected abstract int getDefaultCooldownMinutes();
+	protected abstract long getDefaultCooldownMinutes();
 	
 	public boolean setRepeatable(boolean value) {
 		if (this.repeatable != value) {
@@ -61,7 +61,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		return false;
 	}
 	
-	public boolean setCooldownTime(int minutes){
+	public boolean setCooldownTime(long minutes){
 		minutes = Math.max(0,minutes);
 		if (this.minutes!= minutes) {
 			this.minutes = minutes;
@@ -90,10 +90,10 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		return repeatable;
 	}
 	public abstract DisplayStateInfo getDisplayInfo();
-	private class EditCooldownFactory<T extends YmlLoadable> implements EditorGuiItemFactory<T> {
+	private class EditCooldownFactory implements EditorGuiItemFactory {
 		private class EditCooldownButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.WATCH);
-			public EditCooldownButton(EditorGui<?> parent) {
+			public EditCooldownButton(CustomGuiHolder parent) {
 				super(parent);
 				update();
 			}
@@ -106,27 +106,30 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCooldown editor"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit cooldown"));
-				if (isRepetable())
+				if (isRepetable()) {
 					lore.add(StringUtils.fixColorsAndHolders("&aCooldown is &aEnabled"));
-				else
+					lore.add(StringUtils.fixColorsAndHolders("&aTime &e"+StringUtils.getStringCooldown(getCooldownTime())));
+				}
+				else {
 					lore.add(StringUtils.fixColorsAndHolders("&aCooldown is &cDisabled"));
-				lore.add(StringUtils.fixColorsAndHolders("&aTime &a"+StringUtils.getStringCooldown(getCooldownTime())));
+					lore.add(StringUtils.fixColorsAndHolders("&7Time &m"+StringUtils.getStringCooldown(getCooldownTime())));
+				}
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new CooldownEditorGui(clicker,
-						(EditorGui<?>) this.getParent()).getInventory());
+						(EditorGui) this.getParent()).getInventory());
 			}
 		}
 		@Override
-		public CustomGuiItem getCustomGuiItem(EditorGui<T> parent) {
+		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
 			return new EditCooldownButton(parent);
 		}
 	}
 	private class CooldownEditorGui extends CustomLinkedGuiHolder<CustomGuiItem> {
-		public CooldownEditorGui(Player p, EditorGui<?> previusHolder) {
+		public CooldownEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6);
 			items.put(2, new RepeatableButton());
 			items.put(6, new ClockButton());
@@ -162,7 +165,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&aTime: "+StringUtils.getStringCooldown(getCooldownTime())));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&7("+getCooldownTime()/1000+" min)"));
+				lore.add(StringUtils.fixColorsAndHolders("&7("+minutes+" min)"));
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			}
@@ -195,12 +198,13 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				setRepeatable(!isRepetable());
+				update();
 				getParent().reloadInventory();
 			}
 		}
 		private class TimerEditorButton extends CustomGuiItem {
-			private int minutes;
-			public TimerEditorButton(int min) {
+			private long minutes;
+			public TimerEditorButton(long min) {
 				super(CooldownEditorGui.this);
 				this.minutes = min;
 				
@@ -227,7 +231,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			public void update() {}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				if (setCooldownTime(((int) (getCooldownTime()/1000/60))+minutes))
+				if (setCooldownTime(getCooldownTime()/1000/60+minutes))
 					getParent().update();
 			}
 		}

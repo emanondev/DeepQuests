@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
 import emanondev.quests.SpawnReasonTracker;
+import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.gui.CustomGuiItem;
 import emanondev.quests.gui.CustomMultiPageGuiHolder;
 import emanondev.quests.gui.EditorGui;
@@ -164,14 +165,14 @@ public class EntityTaskInfo {
 		return checkEntityType(e)&&checkSpawnReason(e)&&checkEntityName(e)&&checkNPC(e);
 	}
 	@SuppressWarnings("rawtypes")
-	public EditorGuiItemFactory<?> getEntityTypeEditorButton(){
+	public EditorGuiItemFactory getEntityTypeEditorButton(){
 		return new EditEntityTypeFactory();
 	}
 	
-	private class EditEntityTypeFactory<T extends AbstractTask> implements EditorGuiItemFactory<T> {
+	private class EditEntityTypeFactory<T extends AbstractTask> implements EditorGuiItemFactory {
 		private class EditEntityTypeButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.SKULL_ITEM);
-			public EditEntityTypeButton(EditorGui<?> parent) {
+			public EditEntityTypeButton(CustomGuiHolder parent) {
 				super(parent);
 				update();
 			}
@@ -203,11 +204,11 @@ public class EntityTaskInfo {
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new EntityTypeEditorGui(clicker,(EditorGui<?>) getParent()).getInventory());
+				clicker.openInventory(new EntityTypeEditorGui(clicker,(EditorGui) getParent()).getInventory());
 			}
 		}
 		@Override
-		public EditEntityTypeButton getCustomGuiItem(EditorGui<T> parent) {
+		public EditEntityTypeButton getCustomGuiItem(CustomGuiHolder parent) {
 			return new EditEntityTypeButton(parent);
 		}
 	}
@@ -383,7 +384,7 @@ public class EntityTaskInfo {
 	}
 	
 	private class EntityTypeEditorGui extends CustomMultiPageGuiHolder<EntityTypeButton> {
-		public EntityTypeEditorGui(Player p, EditorGui<?> previusHolder) {
+		public EntityTypeEditorGui(Player p, EditorGui previusHolder) {
 			super(p,previusHolder, 6,1);
 			for (EntityType type : ALLOWED_ENTITY_TYPES) {
 				addButton(new EntityTypeButton(this,type));

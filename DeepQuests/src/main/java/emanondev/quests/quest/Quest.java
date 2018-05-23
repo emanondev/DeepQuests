@@ -12,9 +12,11 @@ import org.bukkit.configuration.MemorySection;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
+import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.utils.MemoryUtils;
+import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
@@ -79,6 +81,8 @@ public class Quest extends YmlLoadableWithCooldown{
 		displayInfo = loadDisplayInfo(m);
 		if (displayInfo.isDirty())
 			this.setDirty(true);
+		
+		this.addToEditor(new SubExplorerFactory<Mission>(getMissions()));
 	}
 	
 	private final QuestDisplayInfo displayInfo;
@@ -180,7 +184,7 @@ public class Quest extends YmlLoadableWithCooldown{
 		return Defaults.QuestDef.shouldCooldownAutogen();
 	}
 	@Override
-	protected int getDefaultCooldownMinutes() {
+	protected long getDefaultCooldownMinutes() {
 		return Defaults.QuestDef.getDefaultCooldownMinutes();
 	}
 	@Override
@@ -227,5 +231,10 @@ public class Quest extends YmlLoadableWithCooldown{
 		parent.reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
+	}
+
+	public String getGuiTitle() {
+		return StringUtils.fixColorsAndHolders(
+				"&8"+StringUtils.withoutColor(getDisplayName()));
 	}
 }

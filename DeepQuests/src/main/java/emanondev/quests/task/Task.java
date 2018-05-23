@@ -6,9 +6,10 @@ import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.Savable;
+import emanondev.quests.utils.WithGui;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public interface Task extends Savable {
+public interface Task extends Savable,WithGui {
 	public String getDisplayName();
 	public String getNameID();
 	/**
