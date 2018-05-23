@@ -1,5 +1,7 @@
 package emanondev.quests.task;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.bukkit.configuration.MemorySection;
@@ -81,6 +83,9 @@ public class TaskManager {
 		if (info == null)
 			throw new IllegalArgumentException("tasktype "+type+" do not exist");
 		return info.getTaskInstance(m,mission);
+	}
+	public Collection<TaskType> getTaskTypes() {
+		return Collections.unmodifiableCollection(types.values());
 	}
 	
 

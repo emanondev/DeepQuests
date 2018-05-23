@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.LoggerManager.Logger;
 import emanondev.quests.command.CmdManager;
+import emanondev.quests.command.CommandQuestText;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
 import emanondev.quests.gui.CustomGuiHandler;
@@ -141,6 +142,7 @@ public class Quests extends JavaPlugin {
 		//
 		new CommandQuests();
 		new CommandQuestsAdmin();
+		new CommandQuestText();
 		registerListener(new CustomGuiHandler());
 		guiManager = new GuiManager();
 		

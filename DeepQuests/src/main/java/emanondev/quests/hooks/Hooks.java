@@ -8,7 +8,10 @@ import emanondev.virginblock.VirginBlockAPI;
 public class Hooks {
 	
 	private static boolean papi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-	private static boolean virginBlock = Bukkit.getPluginManager().isPluginEnabled("VirginBlock");;
+	private static boolean virginBlock = Bukkit.getPluginManager().isPluginEnabled("VirginBlock");
+	private static boolean citizens = Bukkit.getPluginManager().isPluginEnabled("Citizens");
+	
+	
 	public static boolean isPAPIEnabled() {
 		return papi;
 	}
@@ -17,6 +20,9 @@ public class Hooks {
 			return true;
 		else
 			return VirginBlockAPI.isBlockVirgin(block);
+	}
+	public static boolean isCitizenEnabled() {
+		return citizens;
 	}
 
 }

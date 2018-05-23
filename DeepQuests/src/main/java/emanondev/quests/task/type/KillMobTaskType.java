@@ -55,6 +55,8 @@ public class KillMobTaskType extends TaskType {
 			entityInfo = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
 			this.addToEditor(entityInfo.getEntityTypeEditorButton());
+			this.addToEditor(entityInfo.getSpawnReasonEditorButton());
+			this.addToEditor(entityInfo.getIgnoreCitizenNPCEditorButton());
 		}
 	}
 	@Override

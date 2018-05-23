@@ -14,6 +14,9 @@ commands:
         description: reload the config
         usage: "§cUsage: /questadmin"
         aliases: [qa,questadmin,questsadmin,qadmin]
+    questtext:
+        description: when a string is requested
+        usage: "§cUsage: /questtext"
         
 permissions:
     quests.admin.help:

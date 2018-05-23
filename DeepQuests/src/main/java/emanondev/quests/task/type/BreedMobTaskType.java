@@ -53,6 +53,7 @@ public class BreedMobTaskType extends TaskType {
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
 			this.addToEditor(entity.getEntityTypeEditorButton());
+			this.addToEditor(entity.getIgnoreCitizenNPCEditorButton());
 		}
 		
 	}

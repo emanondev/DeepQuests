@@ -8,10 +8,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
+import emanondev.quests.gui.CustomGuiHolder;
+import emanondev.quests.gui.CustomGuiItem;
+import emanondev.quests.gui.EditorGuiItemFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
@@ -82,7 +90,64 @@ public class Quest extends YmlLoadableWithCooldown{
 		if (displayInfo.isDirty())
 			this.setDirty(true);
 		
-		this.addToEditor(new SubExplorerFactory<Mission>(getMissions()));
+		this.addToEditor(new SubExplorerFactory<Mission>(Mission.class,getMissions()));
+		this.addToEditor(new AddMissionFactory());
+	}
+	
+	private class AddMissionFactory implements EditorGuiItemFactory{
+		private class AddMissionGuiItem extends CustomGuiItem {
+
+			public AddMissionGuiItem(CustomGuiHolder parent) {
+				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Mission"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to add a new Mission"));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				String key = null;
+				boolean found = false;
+				int i = 1;
+				do {
+					key = "mission";
+					if (i<10)
+						key = key+"000"+i;
+					else if (i<100)
+						key = key+"00"+i;
+					else if (i<1000)
+						key = key+"0"+i;
+					else
+						key = key+i;
+					if (!missions.containsKey(key))
+						found = true;
+					i++;
+				}while (i<10000 && found == false);
+				if (found == false) {
+					//TODO
+					return;
+				}
+				if (!addMission(key,"New Mission")) {
+					//TODO
+					return;
+				}
+				clicker.performCommand("questadmin quest "+Quest.this.getNameID()+" mission "+key+" editor");
+			}
+			
+		}
+
+		@Override
+		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+			return new AddMissionGuiItem(parent);
+		}
 	}
 	
 	private final QuestDisplayInfo displayInfo;
@@ -237,4 +302,6 @@ public class Quest extends YmlLoadableWithCooldown{
 		return StringUtils.fixColorsAndHolders(
 				"&8"+StringUtils.withoutColor(getDisplayName()));
 	}
+	
+	
 }

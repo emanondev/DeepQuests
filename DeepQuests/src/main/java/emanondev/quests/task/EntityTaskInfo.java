@@ -26,6 +26,7 @@ import emanondev.quests.gui.CustomGuiItem;
 import emanondev.quests.gui.CustomMultiPageGuiHolder;
 import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.EditorGuiItemFactory;
+import emanondev.quests.hooks.Hooks;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 
@@ -96,6 +97,7 @@ public class EntityTaskInfo {
 		parent.setDirty(true);
 		return true;
 	}
+	
 	public Set<EntityType> getListedEntityType(){
 		return Collections.unmodifiableSet(entity);
 	}
@@ -164,12 +166,11 @@ public class EntityTaskInfo {
 	public boolean isValidEntity(Entity e) {
 		return checkEntityType(e)&&checkSpawnReason(e)&&checkEntityName(e)&&checkNPC(e);
 	}
-	@SuppressWarnings("rawtypes")
 	public EditorGuiItemFactory getEntityTypeEditorButton(){
 		return new EditEntityTypeFactory();
 	}
 	
-	private class EditEntityTypeFactory<T extends AbstractTask> implements EditorGuiItemFactory {
+	private class EditEntityTypeFactory implements EditorGuiItemFactory {
 		private class EditEntityTypeButton extends CustomGuiItem {
 			private ItemStack item = new ItemStack(Material.SKULL_ITEM);
 			public EditEntityTypeButton(CustomGuiHolder parent) {
@@ -185,17 +186,17 @@ public class EntityTaskInfo {
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lEntity Type editor"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to edit");
-				if (getListedEntityType().isEmpty())
+				if (entity.isEmpty())
 					lore.add("&aNo entity restrictions are set");
 				else {
 					if (!isEntityTypeListWhitelist()) {
 						lore.add("&6All listed entity are &cdisabled");
-						for (EntityType type : getListedEntityType())
+						for (EntityType type : entity)
 							lore.add(" &6- &c"+type.toString());
 					}
 					else {
 						lore.add("&6All listed entity are &aenabled");
-						for (EntityType type : getListedEntityType())
+						for (EntityType type : entity)
 							lore.add(" &6- &a"+type.toString());
 					}
 				}
@@ -503,6 +504,413 @@ public class EntityTaskInfo {
 			getParent().reloadInventory();
 		}
 		
+	}
+	public boolean setSpawnReasonListWhitelist(boolean value) {
+		if (value==spawnReasonsWhitelist)
+			return false;
+		spawnReasonsWhitelist = value;
+		section.set(PATH_ENTITY_SPAWNREASON_AS_WHITELIST,spawnReasonsWhitelist);
+		parent.setDirty(true);
+		return true;
+	}
+	public Set<SpawnReason> getListedSpawnReason(){
+		return Collections.unmodifiableSet(spawnReasons);
+	}
+	
+	private boolean isSpawnReasonListWhitelist() {
+		return spawnReasonsWhitelist;
+	}
+	public boolean addSpawnReasonToList(SpawnReason type) {
+		if (spawnReasons.contains(type))
+			return false;
+		spawnReasons.add(type);
+		ArrayList<String> list = new ArrayList<String>();
+		for (SpawnReason spawnType : spawnReasons) {
+			list.add(spawnType.toString());
+		}
+		section.set(PATH_ENTITY_SPAWNREASON,list);
+		parent.setDirty(true);
+		return true;
+	}
+	
+	public boolean removeSpawnReasonFromList(SpawnReason type) {
+		if (!spawnReasons.contains(type))
+			return false;
+		spawnReasons.remove(type);
+		ArrayList<String> list = new ArrayList<String>();
+		for (SpawnReason spawnType : spawnReasons) {
+			list.add(spawnType.toString());
+		}
+		section.set(PATH_ENTITY_SPAWNREASON,list);
+		parent.setDirty(true);
+		return true;
+	}
+	
+	public EditorGuiItemFactory getSpawnReasonEditorButton(){
+		return new EditSpawnReasonFactory();
+	}
+	
+	private class EditSpawnReasonFactory implements EditorGuiItemFactory {
+		private class EditSpawnReasonButton extends CustomGuiItem {
+			private ItemStack item = new ItemStack(Material.MONSTER_EGG);
+			public EditSpawnReasonButton(CustomGuiHolder parent) {
+				super(parent);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lEntity Type editor"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("&6Click to edit");
+				if (spawnReasons.isEmpty())
+					lore.add("&aNo entity restrictions are set");
+				else {
+					if (!isSpawnReasonListWhitelist()) {
+						lore.add("&6All listed entity are &cdisabled");
+						for (SpawnReason type : spawnReasons)
+							lore.add(" &6- &c"+type.toString());
+					}
+					else {
+						lore.add("&6All listed entity are &aenabled");
+						for (SpawnReason type : spawnReasons)
+							lore.add(" &6- &a"+type.toString());
+					}
+				}
+				meta.setLore(StringUtils.fixColorsAndHolders(lore));
+				item.setItemMeta(meta);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new SpawnReasonEditorGui(clicker,(EditorGui) getParent()).getInventory());
+			}
+		}
+		@Override
+		public EditSpawnReasonButton getCustomGuiItem(CustomGuiHolder parent) {
+			return new EditSpawnReasonButton(parent);
+		}
+	}
+	
+	private class SpawnReasonEditorGui extends CustomMultiPageGuiHolder<SpawnReasonButton> {
+		public SpawnReasonEditorGui(Player p, EditorGui previusHolder) {
+			super(p,previusHolder, 6,1);
+			for (SpawnReason type : SpawnReason.values()) {
+				addButton(new SpawnReasonButton(this,type));
+			}
+			this.setFromEndCloseButtonPosition(8);
+			reloadInventory();
+		}
+		public void reloadInventory() {
+			getInventory().setItem(size()-1,whitelistButton.getItem());
+			super.reloadInventory();
+		}
+		@Override
+		public void onSlotClick(Player clicker,int slot,ClickType click) {
+			if (slot==size()-1) {
+				whitelistButton.onClick(clicker,click);
+				return;
+			}
+			super.onSlotClick(clicker, slot, click);
+		}
+		private WhiteListButton whitelistButton = new WhiteListButton(this);
+		@Override
+		public void update() {
+			whitelistButton.update();
+			super.update();
+		}
+		private class WhiteListButton extends CustomGuiItem {
+			public WhiteListButton(SpawnReasonEditorGui parent) {
+				super(parent);
+				update();
+			}
+			@Override 
+			public void update() {
+				if (!isSpawnReasonListWhitelist()) {
+					this.item.setDurability((short) 15);
+					ItemMeta meta = item.getItemMeta();
+					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected SpawnReason are on a &lBlackList"));
+					item.setItemMeta(meta);
+				}
+				else {
+					this.item.setDurability((short) 0);
+					ItemMeta meta = item.getItemMeta();
+					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected SpawnReason are on a &lWhiteList"));
+					item.setItemMeta(meta);
+				}
+			}
+			private ItemStack item = new ItemStack(Material.WOOL);
+
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				setSpawnReasonListWhitelist(!isSpawnReasonListWhitelist());
+				update();
+				getParent().update();
+			}
+		}
+	}
+	
+	private static ArrayList<String> getDescription(SpawnReason reason){
+		ArrayList<String> desc = new ArrayList<String>();
+		desc.add("");
+		switch (reason) {
+		case BREEDING:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an animal breeds to create a child"));
+			break;
+		case BUILD_IRONGOLEM:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an iron golem is spawned by being built"));
+			break;
+		case BUILD_SNOWMAN:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a snowman is spawned by being built"));
+			break;
+		case BUILD_WITHER:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a wither boss is spawned by being built"));
+			break;
+		case CHUNK_GEN:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature spawns due to chunk generation"));
+			break;
+		case CURED:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a villager is cured from infection"));
+			break;
+		case CUSTOM:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature is spawned by plugins"));
+			break;
+		case DEFAULT:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity is missing a SpawnReason"));
+			break;
+		case DISPENSE_EGG:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature is spawned"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7by a dispenser dispensing an egg"));
+			break;
+		case EGG:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature spawns from an egg"));
+			break;
+		case ENDER_PEARL:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity is spawned as"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7a result of ender pearl usage"));
+			break;
+		case INFECTION:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a zombie infects a villager"));
+			break;
+		case JOCKEY:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity spawns as"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7a jockey of another entity"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7(mostly spider jockeys)"));
+			break;
+		case LIGHTNING:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature spawns because"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7of a lightning strike"));
+			break;
+		case MOUNT:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity spawns as"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7a mount of another entity"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7(mostly chicken jockeys)"));
+			break;
+		case NATURAL:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When something spawns from natural means"));
+			break;
+		case NETHER_PORTAL:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature is spawned by nether portal"));
+			break;
+		case OCELOT_BABY:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an ocelot has a baby"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7spawned along with them"));
+			break;
+		case REINFORCEMENTS:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity calls for reinforcements"));
+			break;
+		case SHOULDER_ENTITY:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity is spawned as a"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7result of the entity it is being"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7perched on jumping or being damaged"));
+			break;
+		case SILVERFISH_BLOCK:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a silverfish spawns from a block"));
+			break;
+		case SLIME_SPLIT:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a slime splits"));
+			break;
+		case SPAWNER:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature spawns from a spawner"));
+			break;
+		case SPAWNER_EGG:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a creature spawns from a Spawner Egg"));
+			break;
+		case TRAP:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an entity spawns as"));
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7a trap for players approaching"));
+			break;
+		case VILLAGE_DEFENSE:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When an iron golem is spawned to defend a village"));
+			break;
+		case VILLAGE_INVASION:
+			desc.add(StringUtils.fixColorsAndHolders(
+					"&7When a zombie is spawned to invade a village"));
+			break;
+		}
+		return desc;
+	}
+	
+	private class SpawnReasonButton extends CustomGuiItem {
+		private ItemStack item = new ItemStack(Material.WOOL);
+		private final SpawnReason type;
+		public SpawnReasonButton(SpawnReasonEditorGui parent,SpawnReason type) {
+			super(parent);
+			this.type = type;
+			//item.setDurability(getWoolColor(type));
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Entity Type: '&e&l"+type.toString()+"&6'"));
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			item.setItemMeta(meta);
+			update();
+		}
+		public void update() {
+			ItemMeta meta = this.item.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+			if (spawnReasons.contains(type)) {
+				if (!isSpawnReasonListWhitelist()) {
+					lore.add(StringUtils.fixColorsAndHolders("&6This type is &cBlackListed"));
+					meta.removeEnchant(Enchantment.DURABILITY);
+				}
+				else {
+					lore.add(StringUtils.fixColorsAndHolders("&6This type is &aWhiteListed"));
+					meta.addEnchant(Enchantment.DURABILITY, 1, true);
+				}
+				lore.add(StringUtils.fixColorsAndHolders("&7(list contains this type)"));
+			}
+			else {
+				if (isSpawnReasonListWhitelist()) {
+					lore.add(StringUtils.fixColorsAndHolders("&6This type is &cBlackListed"));
+					meta.removeEnchant(Enchantment.DURABILITY);
+				}
+				else {
+					lore.add(StringUtils.fixColorsAndHolders("&6This type is &aWhiteListed"));
+					meta.addEnchant(Enchantment.DURABILITY, 1, true);
+				}
+				lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this type)"));
+			}
+			lore.addAll(getDescription(type));
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+		}
+		
+		@Override
+		public ItemStack getItem() {
+			return item;
+		}
+
+		@Override
+		public void onClick(Player clicker, ClickType click) {
+			if (spawnReasons.contains(type))
+				removeSpawnReasonFromList(type);
+			else
+				addSpawnReasonToList(type);
+			update();
+			getParent().reloadInventory();
+		}
+		
+	}
+	
+	public boolean setIgnoreCitizenNpc(boolean value) {
+		if (value == ignoreNPC)
+			return false;
+		ignoreNPC = value;
+		section.set(PATH_IGNORE_NPC,ignoreNPC);
+		parent.setDirty(true);
+		return true;
+	}
+	
+	public EditorGuiItemFactory getIgnoreCitizenNPCEditorButton(){
+		return new EditIgnoreCitizenNPCFactory();
+	}
+	public boolean areCitizensNpcIgnored() {
+		return ignoreNPC;
+	}
+	
+	private class EditIgnoreCitizenNPCFactory implements EditorGuiItemFactory {
+		private class EditIgnoreCitizenNPCButton extends CustomGuiItem {
+			private ItemStack item = new ItemStack(Material.MONSTER_EGG);
+			public EditIgnoreCitizenNPCButton(CustomGuiHolder parent) {
+				super(parent);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lToggle Citizen Npc editor"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("&6Click to toggle");
+				if (!ignoreNPC) {
+					lore.add("&6Now Citizen NPC &cwon't count &6as valid Entity");
+					item.setDurability((short) 15); 
+				}
+				else {
+					lore.add("&6Now Citizen NPC &acount &6as valid Entity");
+					item.setDurability((short) 0); 
+				}
+				meta.setLore(StringUtils.fixColorsAndHolders(lore));
+				item.setItemMeta(meta);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				setIgnoreCitizenNpc(!areCitizensNpcIgnored());
+				update();
+				getParent().reloadInventory();
+			}
+		}
+		@Override
+		public EditIgnoreCitizenNPCButton getCustomGuiItem(CustomGuiHolder parent) {
+			if (Hooks.isCitizenEnabled())
+				return new EditIgnoreCitizenNPCButton(parent);
+			return null;
+		}
 	}
 	
 }

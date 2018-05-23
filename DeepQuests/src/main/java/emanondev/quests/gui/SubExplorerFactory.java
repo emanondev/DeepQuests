@@ -9,19 +9,42 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.mission.Mission;
+import emanondev.quests.quest.Quest;
+import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
 public class SubExplorerFactory<T extends WithGui> implements EditorGuiItemFactory {
-	public SubExplorerFactory(Collection<T> coll) {
+	public SubExplorerFactory(Class<T> type,Collection<T> coll) {
 		this.coll = coll;
+		this.type = type;
 	}
 	private Collection<T> coll;
+	private Class<T> type;
 
 	public class SubExplorer extends CustomGuiItem {
 		public SubExplorer(CustomGuiHolder parent) {
 			super(parent);
 			item.setAmount(Math.max(1,Math.min(127,coll.size())));
+			ItemMeta meta = item.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+			if (type.isAssignableFrom(Task.class)) {
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lTasks Menù"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a task to edit"));
+			}
+			else if (type.isAssignableFrom(Mission.class)) {
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMissions Menù"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a misssion to edit"));
+				
+			}
+			else if (type.isAssignableFrom(Quest.class)) {
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lQuests Menù"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a quest to edit"));
+				
+			}
+			meta.setLore(lore);
+			item.setItemMeta(meta);
 		}
 		private ItemStack item = new ItemStack(Material.PAINTING);
 		@Override

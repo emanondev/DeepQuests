@@ -78,6 +78,11 @@ public class StringUtils {
 	    s = fixColorsAndHolders(s);
 	    return ChatColor.stripColor(s);
 	}
+	public static String revertColors(String s){
+	    if (s == null) 
+	    	return null;
+	    return s.replace("§","&");
+	}
 	public static String getStringCooldown(long cooldown) {
 		cooldown = cooldown/1000;
 		StringBuilder result = new StringBuilder("");

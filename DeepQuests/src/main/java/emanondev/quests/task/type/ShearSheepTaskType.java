@@ -51,7 +51,8 @@ public class ShearSheepTaskType extends TaskType {
 			super(m, parent,ShearSheepTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m);
-			this.addToEditor(entity.getEntityTypeEditorButton());
+			this.addToEditor(entity.getSpawnReasonEditorButton());
+			this.addToEditor(entity.getIgnoreCitizenNPCEditorButton());
 		}
 		
 	}

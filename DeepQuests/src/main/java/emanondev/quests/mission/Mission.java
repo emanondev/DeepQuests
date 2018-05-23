@@ -8,13 +8,22 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
+import emanondev.quests.gui.CustomGuiHolder;
+import emanondev.quests.gui.CustomGuiItem;
+import emanondev.quests.gui.CustomLinkedGuiHolder;
+import emanondev.quests.gui.CustomMultiPageGuiHolder;
+import emanondev.quests.gui.EditorGuiItemFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
@@ -27,6 +36,7 @@ import emanondev.quests.task.VoidTaskType;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.YmlLoadable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -217,9 +227,185 @@ public class Mission extends YmlLoadableWithCooldown{
 		holders = setupHolders();
 		if (displayInfo.isDirty())
 			setDirty(true);
-		this.addToEditor(new SubExplorerFactory<Task>(getTasks()));
+		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks()));
+		this.addToEditor(new AddTaskFactory());
+	}
+	private class AddTaskFactory implements EditorGuiItemFactory {
+
+		private class AddTaskButton extends CustomGuiItem {
+
+			public AddTaskButton(CustomGuiHolder parent) {
+				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Task"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to add a new Task"));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new CreateTaskGui(clicker,this.getParent()).getInventory());
+			}
+			private class CreateTaskGui extends CustomLinkedGuiHolder<CustomGuiItem>{
+				private TaskType taskType = null;
+				public CreateTaskGui(Player p, CustomGuiHolder previusHolder) {
+					super(p, previusHolder, 6);
+					this.setFromEndCloseButtonPosition(8);
+					this.items.put(20, new SelectTaskTypeButton());
+					this.items.put(24, new CreateTaskButton());
+					reloadInventory();
+				}
+				private class CreateTaskButton extends CustomGuiItem {
+					private ItemStack item = new ItemStack(Material.WOOL);
+					public CreateTaskButton() {
+						super(CreateTaskGui.this);
+						update();
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ItemMeta meta = item.getItemMeta();
+						ArrayList<String> lore = new ArrayList<String>();
+						if (taskType==null) {
+							meta.setDisplayName(StringUtils.fixColorsAndHolders(
+									"&cYou need to Select a Task Type"));
+							item.setDurability((short) 14); 
+						}
+						else {
+							meta.setDisplayName(StringUtils.fixColorsAndHolders(
+									"&6&lClick to Create a new Task"));
+							lore.add(StringUtils.fixColorsAndHolders(
+									"&6Task Type: '&f"+taskType.getKey()));
+							item.setDurability((short) 5); 
+						}
+						meta.setLore(lore);
+						item.setItemMeta(meta);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (taskType == null)
+							return;
+						String key = null;
+						boolean found = false;
+						int i = 1;
+						do {
+							key = "mission";
+							if (i<10)
+								key = key+"000"+i;
+							else if (i<100)
+								key = key+"00"+i;
+							else if (i<1000)
+								key = key+"0"+i;
+							else
+								key = key+i;
+							if (!tasks.containsKey(key))
+								found = true;
+							i++;
+						}while (i<10000 && found == false);
+						if (found == false) {
+							//TODO
+							return;
+						}
+						if (!addTask(key,"New Task",taskType)) {
+							//TODO
+							return;
+						}
+						clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()
+								+" mission "+Mission.this.getNameID()+" task "+key+" editor");
+					}
+					
+				}
+				
+				private class SelectTaskTypeButton extends CustomGuiItem {
+					
+					public SelectTaskTypeButton() {
+						super(CreateTaskGui.this);
+						update();
+					}
+					public void update() {
+						ItemMeta meta = item.getItemMeta();
+						ArrayList<String> lore = new ArrayList<String>();
+						if (taskType==null) {
+							meta.setDisplayName(StringUtils.fixColorsAndHolders(
+									"&6Click to select Task Type"));
+						}
+						else {
+							meta.setDisplayName(StringUtils.fixColorsAndHolders(
+									"&6Click to change Task Type"));
+							lore.add(StringUtils.fixColorsAndHolders(
+									"&7(CurrentTask Type: '"+taskType.getKey()+"'"));
+						}
+						meta.setLore(lore);
+						item.setItemMeta(meta);
+					}
+					private ItemStack item = new ItemStack(Material.FIREBALL);
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new TaskTypeSelectorGui(clicker,this.getParent()).getInventory());
+					}
+					
+					private class TaskTypeSelectorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
+
+						public TaskTypeSelectorGui(Player p, CustomGuiHolder previusHolder) {
+							super(p, previusHolder, 6, 1);
+							for (TaskType type : Quests.getInstance().getTaskManager().getTaskTypes()) {
+								this.addButton(new TaskTypeButton(type));
+							}
+							reloadInventory();
+						}
+						private class TaskTypeButton extends CustomGuiItem {
+							private TaskType type;
+							public TaskTypeButton(TaskType type) {
+								super(TaskTypeSelectorGui.this);
+								this.type = type;
+								ItemMeta meta = item.getItemMeta();
+								meta.setDisplayName(StringUtils.fixColorsAndHolders(
+										"&6"+type.getKey()));
+								item.setItemMeta(meta);
+							}
+							private ItemStack item = new ItemStack(Material.FIREBALL);
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								CreateTaskGui.this.taskType = type;
+								CreateTaskGui.this.update();
+								clicker.openInventory(CreateTaskGui.this.getInventory());
+							}
+							
+						}
+						
+					}
+					
+				}
+			}
+		}
+		@Override
+		public CustomGuiItem getCustomGuiItem(CustomGuiHolder parent) {
+			return new AddTaskButton(parent);
+		}
+		
+		
 		
 	}
+	
 	public String[] getHolders(Player p,DisplayState state) {
 		String[] s;
 		if (state!=DisplayState.COOLDOWN)
@@ -404,4 +590,34 @@ public class Mission extends YmlLoadableWithCooldown{
 				"&8"+StringUtils.withoutColor(getDisplayName())+
 				" <> "+StringUtils.withoutColor(parent.getDisplayName()));
 	}
+	
+	public boolean addTask(String id,String displayName,TaskType taskType) {
+		if (taskType == null || id == null || id.isEmpty() || 
+				id.contains(" ")||id.contains(".")||id.contains(":"))
+			return false;
+		if (displayName == null)
+			displayName = id.replace("_"," ");
+		id = id.toLowerCase();
+		if (tasks.containsKey(id))
+			return false;
+		getSection().set(PATH_TASKS+"."+id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
+		getSection().set(PATH_TASKS+"."+id+"."+AbstractTask.PATH_TASK_TYPE,taskType.getKey());
+		Task t = Quests.getInstance().getTaskManager().readTask(taskType.getKey(), getSection(), this);
+		tasks.put(t.getNameID(), t);
+		parent.getParent().save();
+		parent.getParent().reload();
+		Quests.getInstance().getPlayerManager().reload();
+		return true;
+	}
+	public boolean deleteTask(Task task) {
+		if (task == null || !tasks.containsKey(task.getNameID()) )
+			return false;
+		getSection().set(PATH_TASKS+"."+task.getNameID(),null);
+		tasks.remove(task.getNameID());
+		parent.getParent().save();
+		parent.getParent().reload();
+		Quests.getInstance().getPlayerManager().reload();
+		return true;
+	}
+	
 }

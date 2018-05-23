@@ -1,5 +1,6 @@
 package emanondev.quests.quest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,8 +8,13 @@ import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
 import emanondev.quests.gui.CustomGuiHolder;
@@ -16,6 +22,7 @@ import emanondev.quests.gui.CustomGuiItem;
 import emanondev.quests.gui.CustomMultiPageGuiHolder;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.utils.Savable;
+import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 
 public class QuestManager implements Savable {
@@ -138,10 +145,61 @@ public class QuestManager implements Savable {
 		public QuestsEditorGui(Player p, CustomGuiHolder previusHolder) {
 			super(p,previusHolder, 6,1);
 			this.setFromEndCloseButtonPosition(8);
-			this.addButton(new SubExplorerFactory<Quest>(getQuests()).getCustomGuiItem(this));			
+			this.addButton(new SubExplorerFactory<Quest>(Quest.class,getQuests()).getCustomGuiItem(this));			
+			this.addButton(new AddQuestGuiItem(this));
 			reloadInventory();
 		}
 		
+		private class AddQuestGuiItem extends CustomGuiItem {
+
+			public AddQuestGuiItem(CustomGuiHolder parent) {
+				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Quest"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to add a new Quest"));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				String key = null;
+				boolean found = false;
+				int i = 1;
+				do {
+					key = "quest";
+					if (i<10)
+						key = key+"000"+i;
+					else if (i<100)
+						key = key+"00"+i;
+					else if (i<1000)
+						key = key+"0"+i;
+					else
+						key = key+i;
+					if (!quests.containsKey(key))
+						found = true;
+					i++;
+				}while (i<10000 && found == false);
+				if (found == false) {
+					//TODO
+					return;
+				}
+				if (!addQuest(key,"New Quest")) {
+					//TODO
+					return;
+				}
+				clicker.performCommand("questadmin quest "+key+" editor");
+			}
+			
+		}
+		
 	}
+	
 	
 }

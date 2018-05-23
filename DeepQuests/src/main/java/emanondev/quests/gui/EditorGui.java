@@ -12,23 +12,29 @@ import emanondev.quests.mission.Mission;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadable;
+import emanondev.quests.utils.WithGui;
 
 public class EditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
-	private final YmlLoadable loadable;
+	private final WithGui loadable;
 
-	public EditorGui(Player p, YmlLoadable loadable, CustomGuiHolder previusHolder,
+	public EditorGui(Player p, WithGui loadable, CustomGuiHolder previusHolder,
 			ArrayList<EditorGuiItemFactory> facts) {
 		super(p, previusHolder, 6, 1);
 		if (loadable==null)
 			throw new NullPointerException();
 		this.loadable = loadable;
-		for (EditorGuiItemFactory factory : facts)
-			this.addButton(factory.getCustomGuiItem(this));
+		for (EditorGuiItemFactory factory : facts) {
+			CustomGuiItem button = factory.getCustomGuiItem(this);
+			if (button!=null)
+				this.addButton(button);
+		}
 		this.setFromEndCloseButtonPosition(8);
 		parentButton = new ParentButton();
-		setTitle(null,loadable.getGuiTitle());
+		updateTitle();
 		reloadInventory();
+	}
+	public void updateTitle() {
+		setTitle(null,loadable.getGuiTitle());
 	}
 	@Override
 	public void onSlotClick(Player clicker,int slot,ClickType click) {
@@ -43,7 +49,7 @@ public class EditorGui extends CustomMultiPageGuiHolder<CustomGuiItem> {
 		getInventory().setItem(size()-parentButtonPos,parentButton.getItem());
 	}
 	
-	public YmlLoadable getLoadable() {
+	public WithGui getLoadable() {
 		return loadable;
 	}
 	private int parentButtonPos = 1;

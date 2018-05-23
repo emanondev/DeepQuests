@@ -19,8 +19,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.gui.CustomGuiHolder;
 import emanondev.quests.gui.CustomGuiItem;
+import emanondev.quests.gui.CustomGuiTextItem;
 import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.EditorGuiItemFactory;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import emanondev.quests.gui.CustomMultiPageGuiHolder;
 
 public abstract class YmlLoadable implements Savable,WithGui {
@@ -118,17 +121,14 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public boolean setDisplayName(String name) {
 		if (name==null)
 			return false;
+		name = StringUtils.fixColorsAndHolders(name);
 		if (name.equals(displayName))
 			return false;
 		this.displayName = name;
+		section.set(PATH_DISPLAY_NAME,StringUtils.revertColors(displayName));
 		setDirty(true);
 		return true;
 	}
-	
-	
-	
-	
-	
 	
 	private HashSet<String> loadWorlds(MemorySection m) {
 		HashSet<String> worlds = new HashSet<String>();
@@ -217,9 +217,14 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		if (item!=null)
 			tools.add(item);
 	}
-	
+
+	private final static BaseComponent[] changeTitleDesc = new ComponentBuilder(
+			ChatColor.GOLD+"Click suggest the command and the old display name\n\n"+
+			ChatColor.GOLD+"Change override old title writing new title\n"+
+			ChatColor.YELLOW+"/questtext <new display name>"
+			).create();
 	private class EditDisplayNameFactory implements EditorGuiItemFactory {
-		private class EditDisplayNameButton extends CustomGuiItem {
+		private class EditDisplayNameButton extends CustomGuiTextItem {
 			private ItemStack item = new ItemStack(Material.PAPER);
 			public EditDisplayNameButton(CustomGuiHolder parent) {
 				super(parent);
@@ -241,8 +246,21 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				// TODO Auto-generated method stub
-				clicker.closeInventory();
+				this.requestText(clicker, StringUtils.revertColors(getDisplayName()), changeTitleDesc);
+			}
+			@Override
+			public void onReicevedText(String text) {
+				if (text == null)
+					text = "";
+				if (setDisplayName(text)) {
+					update();
+					getParent().reloadInventory();
+					((EditorGui) getParent()).updateTitle();
+				}
+				else
+					getOwner().sendMessage(StringUtils.fixColorsAndHolders(
+							"&cSelected name was not a valid name"));
+				
 			}
 		}
 		@Override
@@ -407,5 +425,4 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		}
 	}
 
-	public abstract String getGuiTitle();
 }
