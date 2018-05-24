@@ -249,6 +249,9 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			public MaxProgressEditorButton(CustomGui parent) {
 				super(parent);
 				update();
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMax Progress Editor"));
+				item.setItemMeta(meta);
 			}
 			@Override
 			public ItemStack getItem() {
@@ -256,10 +259,9 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMax Progress Editor"));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit task max progress"));
-				lore.add(StringUtils.fixColorsAndHolders("&aMax progress is &e"+getMaxProgress()));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit"));
+				lore.add(StringUtils.fixColorsAndHolders("&7Max progress is &e"+getMaxProgress()));
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			}

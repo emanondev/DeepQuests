@@ -183,21 +183,21 @@ public class EntityTaskInfo {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lEntity Type editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lEntity Type Selector"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to edit");
 				if (entity.isEmpty())
-					lore.add("&aNo entity restrictions are set");
+					lore.add("&7No entity restrictions are set");
 				else {
 					if (!isEntityTypeListWhitelist()) {
-						lore.add("&6All listed entity are &cdisabled");
+						lore.add("&7All listed entity are &cdisabled");
 						for (EntityType type : entity)
-							lore.add(" &6- &c"+type.toString());
+							lore.add(" &7- &c"+type.toString());
 					}
 					else {
-						lore.add("&6All listed entity are &aenabled");
+						lore.add("&7All listed entity are &aenabled");
 						for (EntityType type : entity)
-							lore.add(" &6- &a"+type.toString());
+							lore.add(" &7- &a"+type.toString());
 					}
 				}
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
@@ -237,6 +237,9 @@ public class EntityTaskInfo {
 				private class WhitelistButton extends CustomButton {
 					public WhitelistButton(EntityTypeEditorGui parent) {
 						super(parent);
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Click to revert valid types"));
+						item.setItemMeta(meta);
 						update();
 					}
 					@Override 
@@ -244,13 +247,17 @@ public class EntityTaskInfo {
 						if (!isEntityTypeListWhitelist()) {
 							this.item.setDurability((short) 15);
 							ItemMeta meta = item.getItemMeta();
-							meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected EntityType are on a &lBlacklist"));
+							ArrayList<String> lore = new ArrayList<String>();
+							lore.add(StringUtils.fixColorsAndHolders("&7(Now Blacklist)"));
+							meta.setLore(lore);
 							item.setItemMeta(meta);
 						}
 						else {
 							this.item.setDurability((short) 0);
 							ItemMeta meta = item.getItemMeta();
-							meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Selected EntityType are on a &lWhitelist"));
+							ArrayList<String> lore = new ArrayList<String>();
+							lore.add(StringUtils.fixColorsAndHolders("&7(Now Whitelist)"));
+							meta.setLore(lore);
 							item.setItemMeta(meta);
 						}
 					}
@@ -276,7 +283,7 @@ public class EntityTaskInfo {
 						this.type = type;
 						item.setDurability(getWoolColor(type));
 						ItemMeta meta = item.getItemMeta();
-						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Entity Type: '&e&l"+type.toString()+"&6'"));
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Entity Type: '&e"+type.toString()+"&6'"));
 						meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 						item.setItemMeta(meta);
 						update();
@@ -286,25 +293,25 @@ public class EntityTaskInfo {
 						ArrayList<String> lore = new ArrayList<String>();
 						if (entity.contains(type)) {
 							if (!isEntityTypeListWhitelist()) {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &cUnallowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &cUnallowed"));
 								meta.removeEnchant(Enchantment.DURABILITY);
 							}
 							else {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &aAllowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &aAllowed"));
 								meta.addEnchant(Enchantment.DURABILITY, 1, true);
 							}
-							lore.add(StringUtils.fixColorsAndHolders("&7(list contains this type)"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(selected)"));
 						}
 						else {
 							if (isEntityTypeListWhitelist()) {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &cUnallowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &cUnallowed"));
 								meta.removeEnchant(Enchantment.DURABILITY);
 							}
 							else {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &aAllowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &aAllowed"));
 								meta.addEnchant(Enchantment.DURABILITY, 1, true);
 							}
-							lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this type)"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(unselected)"));
 						}
 						meta.setLore(lore);
 						item.setItemMeta(meta);
@@ -565,21 +572,21 @@ public class EntityTaskInfo {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lEntity Type editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lSpawn Reasons Selector"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to edit");
 				if (spawnReasons.isEmpty())
-					lore.add("&aNo entity restrictions are set");
+					lore.add("&7No Spawn Reasons restrictions are set");
 				else {
 					if (!isSpawnReasonListWhitelist()) {
-						lore.add("&6All listed entity are &cdisabled");
+						lore.add("&7All listed Spawn Reasons are &cdisabled");
 						for (SpawnReason type : spawnReasons)
-							lore.add(" &6- &c"+type.toString());
+							lore.add(" &7- &c"+type.toString());
 					}
 					else {
-						lore.add("&6All listed entity are &aenabled");
+						lore.add("&7All listed Spawn Reasons are &aenabled");
 						for (SpawnReason type : spawnReasons)
-							lore.add(" &6- &a"+type.toString());
+							lore.add(" &7- &a"+type.toString());
 					}
 				}
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
@@ -596,7 +603,7 @@ public class EntityTaskInfo {
 						addButton(new SpawnReasonButton(this,type));
 					}
 					this.setFromEndCloseButtonPosition(8);
-					this.setTitle(null,"&8Spawn Reason Selector");
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&8Spawn Reason Selector"));
 					reloadInventory();
 				}
 				public void reloadInventory() {
@@ -667,7 +674,7 @@ public class EntityTaskInfo {
 						this.type = type;
 						//item.setDurability(getWoolColor(type));
 						ItemMeta meta = item.getItemMeta();
-						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Spawn Reason: '&e&l"+type.toString()+"&6'"));
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Spawn Reason: '&e"+type.toString()+"&6'"));
 						meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 						item.setItemMeta(meta);
 						update();
@@ -677,25 +684,25 @@ public class EntityTaskInfo {
 						ArrayList<String> lore = new ArrayList<String>();
 						if (spawnReasons.contains(type)) {
 							if (!isSpawnReasonListWhitelist()) {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &cUnallowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &cUnallowed"));
 								meta.removeEnchant(Enchantment.DURABILITY);
 							}
 							else {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &aAllowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &aAllowed"));
 								meta.addEnchant(Enchantment.DURABILITY, 1, true);
 							}
-							lore.add(StringUtils.fixColorsAndHolders("&7(list contains this type)"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(select)"));
 						}
 						else {
 							if (isSpawnReasonListWhitelist()) {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &cUnallowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &cUnallowed"));
 								meta.removeEnchant(Enchantment.DURABILITY);
 							}
 							else {
-								lore.add(StringUtils.fixColorsAndHolders("&6This type is &aAllowed"));
+								lore.add(StringUtils.fixColorsAndHolders("&7This type is &aAllowed"));
 								meta.addEnchant(Enchantment.DURABILITY, 1, true);
 							}
-							lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this type)"));
+							lore.add(StringUtils.fixColorsAndHolders("&7(not selected)"));
 						}
 						lore.addAll(StringUtils.fixColorsAndHolders(getDescription(type)));
 						meta.setLore(lore);
@@ -859,16 +866,14 @@ public class EntityTaskInfo {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lToggle Citizen Npc editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCitizen Npc Flag"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to toggle");
 				if (!ignoreNPC) {
-					lore.add("&7Now Citizen NPC &cwon't count &7as valid Target");
-					item.setDurability((short) 15); 
+					lore.add("&7Now Citizen NPC &cwon't count &7as valid Targets");
 				}
 				else {
-					lore.add("&7Now Citizen NPC &acount &7as valid Target");
-					item.setDurability((short) 0); 
+					lore.add("&7Now Citizen NPC &acount &7as valid Targets");
 				}
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);

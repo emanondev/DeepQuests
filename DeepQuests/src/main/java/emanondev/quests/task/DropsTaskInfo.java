@@ -65,13 +65,15 @@ public class DropsTaskInfo {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders(
-						"&6&lDrop Editor"));
+						"&6&lDrop Flag"));
 				item.setItemMeta(meta);
 				update();
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
 				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders(
+						"&6Click to Toggle"));
 				if (removeDrops) {
 					item.setDurability((short) 14);
 					lore.add(StringUtils.fixColorsAndHolders(
@@ -108,13 +110,15 @@ public class DropsTaskInfo {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(StringUtils.fixColorsAndHolders(
-						"&6&lExp Drops Editor"));
+						"&6&lExp Drops Flag"));
 				item.setItemMeta(meta);
 				update();
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
 				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders(
+						"&6Click to Toggle"));
 				if (removeExp) {
 					item.setDurability((short) 14);
 					lore.add(StringUtils.fixColorsAndHolders(

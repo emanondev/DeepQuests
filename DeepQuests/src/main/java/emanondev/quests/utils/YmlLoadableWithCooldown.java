@@ -103,15 +103,15 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCooldown editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCooldown Editor"));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit cooldown"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit"));
 				if (isRepetable()) {
-					lore.add(StringUtils.fixColorsAndHolders("&aCooldown is &aEnabled"));
-					lore.add(StringUtils.fixColorsAndHolders("&aTime &e"+StringUtils.getStringCooldown(getCooldownTime())));
+					lore.add(StringUtils.fixColorsAndHolders("&eCooldown is &aEnabled"));
+					lore.add(StringUtils.fixColorsAndHolders("&eTime &a"+StringUtils.getStringCooldown(getCooldownTime())));
 				}
 				else {
-					lore.add(StringUtils.fixColorsAndHolders("&aCooldown is &cDisabled"));
+					lore.add(StringUtils.fixColorsAndHolders("&eCooldown is &cDisabled"));
 					lore.add(StringUtils.fixColorsAndHolders("&7Time &m"+StringUtils.getStringCooldown(getCooldownTime())));
 				}
 				meta.setLore(lore);
@@ -164,7 +164,7 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			@Override
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&aTime: "+StringUtils.getStringCooldown(getCooldownTime())));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&eTime: &a"+StringUtils.getStringCooldown(getCooldownTime())));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add(StringUtils.fixColorsAndHolders("&7("+minutes+" min)"));
 				meta.setLore(lore);

@@ -12,8 +12,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -228,6 +230,9 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			private ItemStack item = new ItemStack(Material.PAPER);
 			public DisplayNameEditorButton(CustomGui parent) {
 				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lDisplayName Editor"));
+				item.setItemMeta(meta);
 				update();
 			}
 			@Override
@@ -236,12 +241,10 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lDisplayName editor"));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit name"));
-				lore.add(StringUtils.fixColorsAndHolders("&aDisplayName &r'")
-							+getDisplayName()+StringUtils.fixColorsAndHolders("&r'"));
-				meta.setLore(lore);
+				lore.add("&6Click to edit");
+				lore.add("&7Current DisplayName '&r"+getDisplayName()+"&7'");
+				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);
 			}
 			@Override
@@ -281,21 +284,21 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			}
 			public void update() {
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorlds editor"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorlds Restrictions Selector"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to edit");
 				if (getWorldsList().isEmpty())
-					lore.add("&aNo worlds restrictions are set");
+					lore.add("&7No worlds restrictions are set");
 				else {
 					if (isWorldListBlacklist()) {
-						lore.add("&6All listed worlds are &cdisabled");
+						lore.add("&7All listed worlds are &cUnallowed");
 						for (String world : getWorldsList())
-							lore.add(" &6- &c"+world);
+							lore.add(" &7- &c"+world);
 					}
 					else {
-						lore.add("&6All listed worlds are &aenabled");
+						lore.add("&7All listed worlds are &aAllowed");
 						for (String world : getWorldsList())
-							lore.add(" &6- &a"+world);
+							lore.add(" &7- &a"+world);
 					}
 				}
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
@@ -316,7 +319,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 						addButton(new WorldButton(this,world));
 					}
 					this.setFromEndCloseButtonPosition(8);
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Restricted Worlds Editor"));
+					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Restricted Worlds Selector"));
 					reloadInventory();
 				}
 				public void reloadInventory() {
@@ -382,25 +385,36 @@ public abstract class YmlLoadable implements Savable,WithGui {
 					public WorldButton(WorldsEditorGui parent,String world) {
 						super(parent);
 						this.worldName = world;
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6World: '&e&l"+worldName+"'"));
+						meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+						item.setItemMeta(meta);
 						update();
 					}
 					public void update() {
 						ItemMeta meta = this.item.getItemMeta();
-						meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lWorld: '"+worldName+"'"));
 						ArrayList<String> lore = new ArrayList<String>();
 						if (getWorldsList().contains(worldName)) {
-							if (isWorldListBlacklist())
+							if (isWorldListBlacklist()) {
 								lore.add(StringUtils.fixColorsAndHolders("&6This world is &cUnallowed"));
-							else
+								meta.removeEnchant(Enchantment.DURABILITY);
+							}
+							else {
 								lore.add(StringUtils.fixColorsAndHolders("&6This world is &aAllowed"));
-							lore.add(StringUtils.fixColorsAndHolders("&7(list contains this world)"));
+								meta.addEnchant(Enchantment.DURABILITY, 1, true);
+							}
+							lore.add(StringUtils.fixColorsAndHolders("&7(selected)"));
 						}
 						else {
-							if (!isWorldListBlacklist())
+							if (!isWorldListBlacklist()){
 								lore.add(StringUtils.fixColorsAndHolders("&6This world is &cUnallowed"));
-							else
+								meta.removeEnchant(Enchantment.DURABILITY);
+							}
+							else{
 								lore.add(StringUtils.fixColorsAndHolders("&6This world is &aAllowed"));
-							lore.add(StringUtils.fixColorsAndHolders("&7(list don't contains this world)"));
+								meta.addEnchant(Enchantment.DURABILITY, 1, true);
+							}
+							lore.add(StringUtils.fixColorsAndHolders("&7(unselected)"));
 						}
 						meta.setLore(lore);
 						item.setItemMeta(meta);
@@ -428,9 +442,4 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			return new WorldsEditorButton(parent);
 		}
 	}
-	
-	
-	
-	
-
 }
