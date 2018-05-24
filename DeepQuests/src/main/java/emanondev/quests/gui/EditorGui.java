@@ -14,15 +14,17 @@ import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
-public class EditorGui extends CustomMultiPageGui<CustomButton> {
-	private final WithGui loadable;
+public class EditorGui<T extends WithGui> extends CustomMultiPageGui<CustomButton> {
+	private final T wg;
+	//private final Class<T> clazz;
 
-	public EditorGui(Player p, WithGui loadable, CustomGui previusHolder,
+	public EditorGui(Player p, T wg/*,Class<T> clazz*/, CustomGui previusHolder,
 			ArrayList<EditorButtonFactory> facts) {
 		super(p, previusHolder, 6, 1);
-		if (loadable==null)
+		if (wg == null /*|| clazz == null*/)
 			throw new NullPointerException();
-		this.loadable = loadable;
+		this.wg = wg;
+		//this.clazz = clazz;
 		for (EditorButtonFactory factory : facts) {
 			CustomButton button = factory.getCustomButton(this);
 			if (button!=null)
@@ -34,7 +36,16 @@ public class EditorGui extends CustomMultiPageGui<CustomButton> {
 		reloadInventory();
 	}
 	public void updateTitle() {
-		setTitle(null,loadable.getGuiTitle());
+		if (wg instanceof Task) {
+			setTitle(null,StringUtils.fixColorsAndHolders("&8Task: &9"+StringUtils.withoutColor(wg.getDisplayName())
+					+"&7 ("+((Task) wg).getTaskType().getKey()+")"));
+		}
+		else if (wg instanceof Mission) {
+			setTitle(null,StringUtils.fixColorsAndHolders("&8Mission: &9"+StringUtils.withoutColor(wg.getDisplayName())));
+		}
+		else if (wg instanceof Quest) {
+			setTitle(null,StringUtils.fixColorsAndHolders("&8Quest: &9"+StringUtils.withoutColor(wg.getDisplayName())));
+		}
 	}
 	@Override
 	public void onSlotClick(Player clicker,int slot,ClickType click) {
@@ -50,7 +61,7 @@ public class EditorGui extends CustomMultiPageGui<CustomButton> {
 	}
 	
 	public WithGui getLoadable() {
-		return loadable;
+		return wg;
 	}
 	private int parentButtonPos = 1;
 	protected boolean setFromEndParentButtonPosition(int i) {
@@ -76,29 +87,29 @@ public class EditorGui extends CustomMultiPageGui<CustomButton> {
 			super(EditorGui.this);
 			this.item = new ItemStack(Material.BOOK);
 			ItemMeta meta = item.getItemMeta();
-			if (loadable instanceof Task) {
+			if (wg instanceof Task) {
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lBack to Mission Editor"));
 			}
-			else if (loadable instanceof Mission) {
+			else if (wg instanceof Mission) {
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lBack to Quest Editor"));
 			}
-			else if (loadable instanceof Quest) {
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lBack to Quests Editor"));
+			else if (wg instanceof Quest) {
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lBack to Quests Manager"));
 			}
 			item.setItemMeta(meta);
 		}
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (loadable instanceof Task) {
-				((Task) loadable).getParent().openEditorGui(clicker, EditorGui.this);
+			if (wg instanceof Task) {
+				((Task) wg).getParent().openEditorGui(clicker, EditorGui.this);
 				return;
 			}
-			else if (loadable instanceof Mission) {
-				((Mission) loadable).getParent().openEditorGui(clicker, EditorGui.this);
+			else if (wg instanceof Mission) {
+				((Mission) wg).getParent().openEditorGui(clicker, EditorGui.this);
 				return;
 			}
-			else if (loadable instanceof Quest) {
-				((Quest) loadable).getParent().openEditorGui(clicker, EditorGui.this);
+			else if (wg instanceof Quest) {
+				((Quest) wg).getParent().openEditorGui(clicker, EditorGui.this);
 				return;
 			}
 		}

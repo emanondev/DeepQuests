@@ -102,21 +102,20 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 				return item;
 			}
 			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCooldown Editor"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit"));
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lCooldown Editor");
+				desc.add("&6Click to edit");
 				if (isRepetable()) {
-					lore.add(StringUtils.fixColorsAndHolders("&eCooldown is &aEnabled"));
-					lore.add(StringUtils.fixColorsAndHolders("&eTime &a"+StringUtils.getStringCooldown(getCooldownTime())));
+					desc.add("&eCooldown is &aEnabled");
+					desc.add("&eTime &a"+StringUtils.getStringCooldown(getCooldownTime()));
 				}
 				else {
-					lore.add(StringUtils.fixColorsAndHolders("&eCooldown is &cDisabled"));
-					lore.add(StringUtils.fixColorsAndHolders("&7Time &m"+StringUtils.getStringCooldown(getCooldownTime())));
+					desc.add("&eCooldown is &cDisabled");
+					desc.add("&7Time &m"+StringUtils.getStringCooldown(getCooldownTime()));
 				}
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				StringUtils.setDescription(item, desc);
 			}
+			@SuppressWarnings("rawtypes")
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new CooldownEditorGui(clicker,
@@ -129,24 +128,24 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		}
 	}
 	private class CooldownEditorGui extends CustomLinkedGui<CustomButton> {
-		public CooldownEditorGui(Player p, EditorGui previusHolder) {
+		public CooldownEditorGui(Player p, @SuppressWarnings("rawtypes") EditorGui previusHolder) {
 			super(p,previusHolder, 6);
-			items.put(2, new RepeatableButton());
-			items.put(6, new ClockButton());
-			items.put(19, new TimerEditorButton(1));//1 min
-			items.put(20, new TimerEditorButton(10));// 10 min
-			items.put(21, new TimerEditorButton(60));// 1 h
-			items.put(22, new TimerEditorButton(360));// 6 h
-			items.put(23, new TimerEditorButton(1440)); // 1 d
-			items.put(24, new TimerEditorButton(10080)); // 1 w
-			items.put(25, new TimerEditorButton(120960)); //12 w
-			items.put(28, new TimerEditorButton(-1));//1 min
-			items.put(29, new TimerEditorButton(-10));// 10 min
-			items.put(30, new TimerEditorButton(-60));// 1 h
-			items.put(31, new TimerEditorButton(-360));// 6 h
-			items.put(32, new TimerEditorButton(-1440)); // 1 d
-			items.put(33, new TimerEditorButton(-10080)); // 1 w
-			items.put(34, new TimerEditorButton(-120960)); //12 w
+			this.addButton(2, new RepeatableButton());
+			this.addButton(6, new ClockButton());
+			this.addButton(19, new TimerEditorButton(1));//1 min
+			this.addButton(20, new TimerEditorButton(10));// 10 min
+			this.addButton(21, new TimerEditorButton(60));// 1 h
+			this.addButton(22, new TimerEditorButton(360));// 6 h
+			this.addButton(23, new TimerEditorButton(1440)); // 1 d
+			this.addButton(24, new TimerEditorButton(10080)); // 1 w
+			this.addButton(25, new TimerEditorButton(120960)); //12 w
+			this.addButton(28, new TimerEditorButton(-1));//1 min
+			this.addButton(29, new TimerEditorButton(-10));// 10 min
+			this.addButton(30, new TimerEditorButton(-60));// 1 h
+			this.addButton(31, new TimerEditorButton(-360));// 6 h
+			this.addButton(32, new TimerEditorButton(-1440)); // 1 d
+			this.addButton(33, new TimerEditorButton(-10080)); // 1 w
+			this.addButton(34, new TimerEditorButton(-120960)); //12 w
 			this.setFromEndCloseButtonPosition(8);
 			this.setTitle(null,StringUtils.fixColorsAndHolders("&8Cooldown Editor"));
 			reloadInventory();
@@ -163,23 +162,20 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 			}
 			@Override
 			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&eTime: &a"+StringUtils.getStringCooldown(getCooldownTime())));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&7("+minutes+" min)"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&eTime: &a"+StringUtils.getStringCooldown(getCooldownTime()));
+				desc.add("&7("+minutes+" min)");
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {}
 		}
 		
 		private class RepeatableButton extends CustomButton {
+			private ItemStack item = new ItemStack(Material.WOOL);
 			public RepeatableButton() {
 				super(CooldownEditorGui.this);
 				update();
 			}
-			private ItemStack item = new ItemStack(Material.WOOL);
 			@Override
 			public ItemStack getItem() {
 				return item;
@@ -205,26 +201,23 @@ public abstract class YmlLoadableWithCooldown extends YmlLoadable{
 		}
 		private class TimerEditorButton extends CustomButton {
 			private long minutes;
+			private ItemStack item = new ItemStack(Material.WOOL);
 			public TimerEditorButton(long min) {
 				super(CooldownEditorGui.this);
 				this.minutes = min;
-				
-				ItemMeta meta = item.getItemMeta();
-				ArrayList<String> lore = new ArrayList<String>();
-				if (minutes>0) {
+				ArrayList<String> desc = new ArrayList<String>();
+				if (this.minutes>0) {
 					this.item.setDurability((short) 5);
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&aAdd "+StringUtils.getStringCooldown(((long) minutes)*1000*60)));
-					lore.add(StringUtils.fixColorsAndHolders("&7("+minutes+" min)"));
+					desc.add("&aAdd "+StringUtils.getStringCooldown(((long) minutes)*1000*60));
+					desc.add("&7("+minutes+" min)");
 				}
 				else {
 					this.item.setDurability((short) 14);
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&cRemove "+StringUtils.getStringCooldown(((long) -minutes)*1000*60)));
-					lore.add(StringUtils.fixColorsAndHolders("&7("+(-minutes)+" min)"));
+					desc.add("&cRemove "+StringUtils.getStringCooldown(((long) -minutes)*1000*60));
+					desc.add("&7("+(-minutes)+" min)");
 				}
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				StringUtils.setDescription(item, desc);
 			}
-			private ItemStack item = new ItemStack(Material.WOOL);
 			@Override
 			public ItemStack getItem() {
 				return item;

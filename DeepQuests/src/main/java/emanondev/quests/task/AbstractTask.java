@@ -139,8 +139,8 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		value = Math.max(1,value);
 		if (this.maxProgress == value)
 			return false;
-		
 		this.maxProgress = value;
+		getSection().set(PATH_TASK_MAX_PROGRESS, maxProgress);
 		this.setDirty(true);
 		return true;
 	}
@@ -249,47 +249,44 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			public MaxProgressEditorButton(CustomGui parent) {
 				super(parent);
 				update();
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMax Progress Editor"));
-				item.setItemMeta(meta);
 			}
 			@Override
 			public ItemStack getItem() {
 				return item;
 			}
 			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to edit"));
-				lore.add(StringUtils.fixColorsAndHolders("&7Max progress is &e"+getMaxProgress()));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lMax Progress Editor");
+				desc.add("&6Click to edit");
+				desc.add("&7Max progress is &e"+getMaxProgress());
+				StringUtils.setDescription(item, desc);
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new MaxProgressEditorGui(clicker,
-						(EditorGui) this.getParent()).getInventory());
+						(EditorGui<Task>) this.getParent()).getInventory());
 			}
 			
 
 			private class MaxProgressEditorGui extends CustomLinkedGui<CustomButton> {
-				public MaxProgressEditorGui(Player p, EditorGui previusHolder) {
+				public MaxProgressEditorGui(Player p, EditorGui<Task> previusHolder) {
 					super(p,previusHolder, 6);
-					items.put(4, new ShowMaxProgressButton());
-					items.put(19, new EditMaxProgressButton(1));
-					items.put(20, new EditMaxProgressButton(10));
-					items.put(21, new EditMaxProgressButton(100));
-					items.put(22, new EditMaxProgressButton(1000));
-					items.put(23, new EditMaxProgressButton(10000));
-					items.put(24, new EditMaxProgressButton(100000));
-					items.put(25, new EditMaxProgressButton(1000000));
-					items.put(28, new EditMaxProgressButton(-1));
-					items.put(29, new EditMaxProgressButton(-10));
-					items.put(30, new EditMaxProgressButton(-100));
-					items.put(31, new EditMaxProgressButton(-1000));
-					items.put(32, new EditMaxProgressButton(-10000));
-					items.put(33, new EditMaxProgressButton(-100000));
-					items.put(34, new EditMaxProgressButton(-1000000));
+					this.addButton(4, new ShowMaxProgressButton());
+					this.addButton(19, new EditMaxProgressButton(1));
+					this.addButton(20, new EditMaxProgressButton(10));
+					this.addButton(21, new EditMaxProgressButton(100));
+					this.addButton(22, new EditMaxProgressButton(1000));
+					this.addButton(23, new EditMaxProgressButton(10000));
+					this.addButton(24, new EditMaxProgressButton(100000));
+					this.addButton(25, new EditMaxProgressButton(1000000));
+					this.addButton(28, new EditMaxProgressButton(-1));
+					this.addButton(29, new EditMaxProgressButton(-10));
+					this.addButton(30, new EditMaxProgressButton(-100));
+					this.addButton(31, new EditMaxProgressButton(-1000));
+					this.addButton(32, new EditMaxProgressButton(-10000));
+					this.addButton(33, new EditMaxProgressButton(-100000));
+					this.addButton(34, new EditMaxProgressButton(-1000000));
 					this.setFromEndCloseButtonPosition(8);
 					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Task Max Progress Editor"));
 					reloadInventory();
@@ -351,12 +348,5 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new MaxProgressEditorButton(parent);
 		}
-	}
-	
-	public String getGuiTitle() {
-		return StringUtils.fixColorsAndHolders(
-				"&8"+StringUtils.withoutColor(getDisplayName())+
-				" <> "+StringUtils.withoutColor(parent.getDisplayName())+
-				" <> "+StringUtils.withoutColor(parent.getParent().getDisplayName()));
 	}
 }

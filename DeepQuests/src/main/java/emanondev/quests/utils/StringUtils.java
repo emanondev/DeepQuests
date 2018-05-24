@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Language;
 import emanondev.quests.hooks.Hooks;
@@ -17,7 +19,7 @@ public class StringUtils {
 			return null;
 	    return target.replace(holder, replacer);
 	}
-	public static List<String> applyHolder(List<String> target, String holder,String replacer){
+	public static ArrayList<String> applyHolder(List<String> target, String holder,String replacer){
 		if (target==null)
 			return null;
 		ArrayList<String> result = new ArrayList<String>(target);
@@ -44,13 +46,13 @@ public class StringUtils {
 			for (int i = 0 ; i< stuffs.length; i+=2) {
 				target = target.replace(stuffs[i],stuffs[i+1]);
 			}
-	    if ((Hooks.isPAPIEnabled()) && (target.contains("%"))) {
+	    if (p!=null && (Hooks.isPAPIEnabled()) && (target.contains("%"))) {
 	    	target = PlaceholderAPI.setPlaceholders(p, target);
 	    }
 	    return target;
 	}
 
-	public static List<String> fixColorsAndHolders(List<String> l,String... stuffs){
+	public static ArrayList<String> fixColorsAndHolders(List<String> l,String... stuffs){
 	    if (l == null)
 	    	return null;
 	    ArrayList<String> list = new ArrayList<String>();
@@ -164,5 +166,26 @@ public class StringUtils {
 			this.single = Language.getSingleTime(this.toString());
 		}
 		
+	}
+	
+	public static void setDescription(ItemStack item,ArrayList<String> desc,String... holders) {
+		if (item == null||desc == null)
+			throw new NullPointerException();
+		desc = fixColorsAndHolders(desc,holders);
+		setDescriptionNoColors(item,desc);
+	}
+	public static void setDescriptionNoColors(ItemStack item,ArrayList<String> desc,String... holders) {
+		if (item == null||desc == null)
+			throw new NullPointerException();
+		if (holders!=null)
+			convertList(null,desc,holders);
+		
+		ItemMeta meta = item.getItemMeta();
+		if (desc.size()>0)
+			meta.setDisplayName(desc.remove(0));
+		else
+			meta.setDisplayName("");
+		meta.setLore(desc);
+		item.setItemMeta(meta);
 	}
 }

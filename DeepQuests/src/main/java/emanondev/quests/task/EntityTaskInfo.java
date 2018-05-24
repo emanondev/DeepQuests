@@ -203,12 +203,13 @@ public class EntityTaskInfo {
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new EntityTypeEditorGui(clicker,(EditorGui) getParent()).getInventory());
+				clicker.openInventory(new EntityTypeEditorGui(clicker,(EditorGui<Task>) getParent()).getInventory());
 			}
 			private class EntityTypeEditorGui extends CustomMultiPageGui<CustomButton> {
-				public EntityTypeEditorGui(Player p, EditorGui previusHolder) {
+				public EntityTypeEditorGui(Player p, EditorGui<Task> previusHolder) {
 					super(p,previusHolder, 6,1);
 					for (EntityType type : ALLOWED_ENTITY_TYPES) {
 						addButton(new EntityTypeButton(this,type));
@@ -592,12 +593,13 @@ public class EntityTaskInfo {
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);
 			}
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new SpawnReasonEditorGui(clicker,(EditorGui) getParent()).getInventory());
+				clicker.openInventory(new SpawnReasonEditorGui(clicker,(EditorGui<Task>) getParent()).getInventory());
 			}
 			private class SpawnReasonEditorGui extends CustomMultiPageGui<CustomButton> {
-				public SpawnReasonEditorGui(Player p, EditorGui previusHolder) {
+				public SpawnReasonEditorGui(Player p, EditorGui<Task> previusHolder) {
 					super(p,previusHolder, 6,1);
 					for (SpawnReason type : SpawnReason.values()) {
 						addButton(new SpawnReasonButton(this,type));

@@ -212,6 +212,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public void openEditorGui(Player p){
 		openEditorGui(p,null);
 	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void openEditorGui(Player p,CustomGui previusHolder){
 		p.openInventory(new EditorGui(p,this,previusHolder,tools).getInventory());
 	}
@@ -251,6 +252,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			public void onClick(Player clicker, ClickType click) {
 				this.requestText(clicker, StringUtils.revertColors(getDisplayName()), changeTitleDesc);
 			}
+			@SuppressWarnings("rawtypes")
 			@Override
 			public void onReicevedText(String text) {
 				if (text == null)
@@ -304,12 +306,13 @@ public abstract class YmlLoadable implements Savable,WithGui {
 				meta.setLore(StringUtils.fixColorsAndHolders(lore));
 				item.setItemMeta(meta);
 			}
+			@SuppressWarnings("rawtypes")
 			@Override
 			public void onClick(Player clicker, ClickType click) {
 				clicker.openInventory(new WorldsEditorGui(clicker,(EditorGui) getParent()).getInventory());
 			}
 			private class WorldsEditorGui extends CustomMultiPageGui<CustomButton> {
-				public WorldsEditorGui(Player p, EditorGui previusHolder) {
+				public WorldsEditorGui(Player p, @SuppressWarnings("rawtypes") EditorGui previusHolder) {
 					super(p,previusHolder, 6,1);
 					HashSet<String> set = new HashSet<String>();
 					set.addAll(getWorldsList());

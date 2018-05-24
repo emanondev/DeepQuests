@@ -8,7 +8,4 @@ public interface WithGui {
 	public void openEditorGui(Player p) ;
 	public void openEditorGui(Player p,CustomGui previusHolder);
 	public String getDisplayName();
-	public abstract String getGuiTitle();
-	
-
 }

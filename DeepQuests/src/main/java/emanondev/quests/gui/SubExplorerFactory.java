@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.mission.Mission;
 import emanondev.quests.quest.Quest;
@@ -32,24 +31,20 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 		public SubExplorerButton(CustomGui parent) {
 			super(parent);
 			item.setAmount(Math.max(1,Math.min(127,coll.size())));
-			ItemMeta meta = item.getItemMeta();
-			ArrayList<String> lore = new ArrayList<String>();
+			ArrayList<String> desc = new ArrayList<String>();
 			if (type.isAssignableFrom(Task.class)) {
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lTasks Menù"));
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a task to edit"));
+				desc.add("&6&lTasks Menu");
+				desc.add("&6Click to Select a task to edit");
 			}
 			else if (type.isAssignableFrom(Mission.class)) {
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lMissions Menù"));
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a mission to edit"));
-				
+				desc.add("&6&lMissions Menu");
+				desc.add("&6Click to Select a mission to edit");
 			}
 			else if (type.isAssignableFrom(Quest.class)) {
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lQuests Menù"));
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to Select a quest to edit"));
-				
+				desc.add("&6&lQuests Menu");
+				desc.add("&6Click to Select a quest to edit");
 			}
-			meta.setLore(lore);
-			item.setItemMeta(meta);
+			StringUtils.setDescription(item,desc);
 		}
 		private ItemStack item = new ItemStack(Material.PAINTING);
 		@Override
@@ -80,18 +75,38 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 					this.ld = ld;
 					update();
 				}
-				private ItemStack item = new ItemStack(Material.PAPER);
+				private ItemStack item = new ItemStack(Material.BOOK);
 				@Override
 				public ItemStack getItem() {
 					return item;
 				}
 				public void update() {
-					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&e&l"+ld.getDisplayName()));
-					ArrayList<String> lore = new ArrayList<String>();
-					lore.add(StringUtils.fixColorsAndHolders("&6Click to open editor"));
-					meta.setLore(lore);
-					getItem().setItemMeta(meta);
+					ArrayList<String> desc = new ArrayList<String>();
+					if (type.isAssignableFrom(Task.class)) {
+						desc.add("&6Task: '&e"+ld.getDisplayName()+"&6'");
+						desc.add("&6Click to open editor");
+						desc.add("");
+						desc.add("&7("+((Task) ld).getTaskType().getKey()+")");
+					}
+					else if (type.isAssignableFrom(Mission.class)) {
+						desc.add("&6Mission: '&e"+ld.getDisplayName()+"&6'");
+						desc.add("&6Click to open editor");
+						desc.add("");
+						desc.add("&7 contains &e"+((Mission) ld).getTasks().size()+" &7tasks");
+						for (Task task : ((Mission) ld).getTasks()) {
+							desc.add("&7 - &e"+task.getDisplayName()+" &7("+task.getTaskType().getKey()+")");
+						}
+					}
+					else if (type.isAssignableFrom(Quest.class)) {
+						desc.add("&7Quest: '&e"+ld.getDisplayName()+"&6'");
+						desc.add("&6Click to open editor");
+						desc.add("");
+						desc.add("&7 contains &e"+((Quest) ld).getMissions().size()+" &7missions");
+						for (Mission mission : ((Quest) ld).getMissions()) {
+							desc.add("&7 - &e"+mission.getDisplayName());
+						}
+					}
+					StringUtils.setDescription(item,desc);
 				}
 				@Override
 				public void onClick(Player clicker, ClickType click) {

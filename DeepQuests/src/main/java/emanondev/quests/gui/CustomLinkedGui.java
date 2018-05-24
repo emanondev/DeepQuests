@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.ClickType;
 
 public abstract class CustomLinkedGui<T extends CustomButton> extends CustomGui{
 
-	protected final LinkedHashMap<Integer,T> items = new LinkedHashMap<Integer,T>();
+	private final LinkedHashMap<Integer,T> items = new LinkedHashMap<Integer,T>();
 	public CustomLinkedGui(Player p, CustomGui previusHolder, int rows) {
 		super(p, previusHolder, Math.max(2,rows));
 	}
@@ -19,8 +19,14 @@ public abstract class CustomLinkedGui<T extends CustomButton> extends CustomGui{
 				getInventory().setItem(i,null);
 		super.reloadInventory();
 	}
+	public void addButton(int slot,T button) {
+		items.put(slot,button);
+	}
+	public void removeButton(int slot) {
+		items.remove(slot);
+	}
 	public void onSlotClick(Player clicker,int slot,ClickType click) {
-		if (items.containsKey(slot)) {
+		if (items.containsKey(slot) && items.get(slot)!=null) {
 			items.get(slot).onClick(clicker,click);
 			return;
 		}

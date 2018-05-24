@@ -38,6 +38,7 @@ import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -230,6 +231,7 @@ public class Mission extends YmlLoadableWithCooldown{
 		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks(),
 				"&8Tasks List"));
 		this.addToEditor(new AddTaskFactory());
+		this.addToEditor(new DeleteTaskFactory());
 	}
 	private class AddTaskFactory implements EditorButtonFactory {
 
@@ -237,12 +239,10 @@ public class Mission extends YmlLoadableWithCooldown{
 
 			public AddTaskButton(CustomGui parent) {
 				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Task"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to add a new Task"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lAdd Task");
+				desc.add("&6Click to add a new Task");
+				StringUtils.setDescription(item,desc);
 			}
 			private ItemStack item = new ItemStack(Material.GLOWSTONE);
 			@Override
@@ -259,8 +259,8 @@ public class Mission extends YmlLoadableWithCooldown{
 				public CreateTaskGui(Player p, CustomGui previusHolder) {
 					super(p, previusHolder, 6);
 					this.setFromEndCloseButtonPosition(8);
-					this.items.put(20, new SelectTaskTypeButton());
-					this.items.put(24, new CreateTaskButton());
+					this.addButton(20, new SelectTaskTypeButton());
+					this.addButton(24, new CreateTaskButton());
 					reloadInventory();
 				}
 				private class CreateTaskButton extends CustomButton {
@@ -275,22 +275,17 @@ public class Mission extends YmlLoadableWithCooldown{
 						return item;
 					}
 					public void update() {
-						ItemMeta meta = item.getItemMeta();
-						ArrayList<String> lore = new ArrayList<String>();
+						ArrayList<String> desc = new ArrayList<String>();
 						if (taskType==null) {
-							meta.setDisplayName(StringUtils.fixColorsAndHolders(
-									"&cYou need to Select a Task Type"));
+							desc.add("&cYou need to Select a Task Type");
 							item.setDurability((short) 14); 
 						}
 						else {
-							meta.setDisplayName(StringUtils.fixColorsAndHolders(
-									"&6&lClick to Create a new Task"));
-							lore.add(StringUtils.fixColorsAndHolders(
-									"&6Task Type: '&f"+taskType.getKey()+"&6'"));
+							desc.add("&6&lClick to Create a new Task");
+							desc.add("&6Task Type: '&f"+taskType.getKey()+"&6'");
 							item.setDurability((short) 5); 
 						}
-						meta.setLore(lore);
-						item.setItemMeta(meta);
+						StringUtils.setDescription(item, desc);
 					}
 					@Override
 					public void onClick(Player clicker, ClickType click) {
@@ -324,9 +319,7 @@ public class Mission extends YmlLoadableWithCooldown{
 						clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()
 								+" mission "+Mission.this.getNameID()+" task "+key+" editor");
 					}
-					
 				}
-				
 				private class SelectTaskTypeButton extends CustomButton {
 					
 					public SelectTaskTypeButton() {
@@ -334,32 +327,25 @@ public class Mission extends YmlLoadableWithCooldown{
 						update();
 					}
 					public void update() {
-						ItemMeta meta = item.getItemMeta();
-						ArrayList<String> lore = new ArrayList<String>();
+						ArrayList<String> desc = new ArrayList<String>();
 						if (taskType==null) {
-							meta.setDisplayName(StringUtils.fixColorsAndHolders(
-									"&6Click to select Task Type"));
+							desc.add("&6Click to select Task Type");
 						}
 						else {
-							meta.setDisplayName(StringUtils.fixColorsAndHolders(
-									"&6Click to change Task Type"));
-							lore.add(StringUtils.fixColorsAndHolders(
-									"&7(CurrentTask Type: '"+taskType.getKey()+"')"));
+							desc.add("&6Click to change Task Type");
+							desc.add("&7(CurrentTask Type: '"+taskType.getKey()+"')");
 						}
-						meta.setLore(lore);
-						item.setItemMeta(meta);
+						StringUtils.setDescription(item, desc);
 					}
 					private ItemStack item = new ItemStack(Material.FIREBALL);
 					@Override
 					public ItemStack getItem() {
 						return item;
 					}
-
 					@Override
 					public void onClick(Player clicker, ClickType click) {
 						clicker.openInventory(new TaskTypeSelectorGui(clicker,this.getParent()).getInventory());
 					}
-					
 					private class TaskTypeSelectorGui extends CustomMultiPageGui<CustomButton> {
 
 						public TaskTypeSelectorGui(Player p, CustomGui previusHolder) {
@@ -390,11 +376,8 @@ public class Mission extends YmlLoadableWithCooldown{
 								CreateTaskGui.this.update();
 								clicker.openInventory(CreateTaskGui.this.getInventory());
 							}
-							
 						}
-						
 					}
-					
 				}
 			}
 		}
@@ -402,9 +385,100 @@ public class Mission extends YmlLoadableWithCooldown{
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new AddTaskButton(parent);
 		}
-		
-		
-		
+	}
+	private class DeleteTaskFactory implements EditorButtonFactory {
+		private class DeleteTaskButton extends CustomButton {
+			private ItemStack item = new ItemStack(Material.NETHERRACK);
+			public DeleteTaskButton(CustomGui parent) {
+				super(parent);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lDelete Task");
+				desc.add("&6Click to select a Task");
+				StringUtils.setDescription(item,desc);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new DeleteQuestSelectorGui(clicker,getParent()).getInventory());
+			}
+			private class DeleteQuestSelectorGui extends CustomMultiPageGui<CustomButton> {
+
+				public DeleteQuestSelectorGui(Player p,CustomGui previusHolder) {
+					super(p,previusHolder,6,1);
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Task to delete"));
+					for (Task task : getTasks()) {
+						this.addButton(new SelectQuestButton(task));
+					}
+					this.reloadInventory();
+				}
+				private class SelectQuestButton extends CustomButton{
+					private ItemStack item = new ItemStack(Material.BOOK);
+					private Task task;
+					
+					public SelectQuestButton(Task task) {
+						super(DeleteQuestSelectorGui.this);
+						this.task = task;
+						this.update();
+					}
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
+						desc.add("&7("+task.getTaskType().getKey()+")");
+						StringUtils.setDescription(item,desc);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
+					}
+					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
+
+						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
+							super(p, previusHolder, 6);
+							this.addButton(22,new ConfirmationButton());
+							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
+							reloadInventory();
+						}
+						
+						private class ConfirmationButton extends CustomButton {
+							private ItemStack item = new ItemStack(Material.WOOL);
+							public ConfirmationButton() {
+								super(DeleteConfirmationGui.this);
+								this.item.setDurability((short) 14);
+								ArrayList<String> desc = new ArrayList<String>();
+								desc.add("&cClick to Confirm quest Delete");
+								desc.add("&cQuest delete can't be undone");
+								desc.add("");
+								desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
+								desc.add("&7("+task.getTaskType().getKey()+")");
+								StringUtils.setDescription(item,desc);
+								
+							}
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								deleteTask(task);
+								clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()+" mission "+Mission.this.getNameID()+" editor");
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new DeleteTaskButton(parent);
+		}
 	}
 	
 	public String[] getHolders(Player p,DisplayState state) {
@@ -584,12 +658,6 @@ public class Mission extends YmlLoadableWithCooldown{
 	@Override
 	protected long getDefaultCooldownMinutes() {
 		return Defaults.MissionDef.getDefaultCooldownMinutes();
-	}
-
-	public String getGuiTitle() {
-		return StringUtils.fixColorsAndHolders(
-				"&8"+StringUtils.withoutColor(getDisplayName())+
-				" <> "+StringUtils.withoutColor(parent.getDisplayName()));
 	}
 	
 	public boolean addTask(String id,String displayName,TaskType taskType) {
