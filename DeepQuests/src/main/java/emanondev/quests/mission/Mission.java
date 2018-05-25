@@ -13,7 +13,6 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
@@ -27,13 +26,13 @@ import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.reward.MissionReward;
 import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 import emanondev.quests.task.VoidTaskType;
-import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
@@ -47,17 +46,16 @@ import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Mission extends YmlLoadableWithCooldown{
 	
-	
-	protected static final String PATH_TASKS = "tasks";
-	protected static final String PATH_REQUIRES = "requires";
-	protected static final String PATH_START_REWARDS = "start-rewards";
-	protected static final String PATH_COMPLETE_REWARDS = "complete-rewards";
-	protected static final String PATH_START_TEXT = "start-text";
-	protected static final String PATH_COMPLETE_TEXT = "complete-text";
-	protected static final String PATH_PAUSE_TEXT = "pause-text";
-	protected static final String PATH_UNPAUSE_TEXT = "unpause-text";
-	protected static final String PATH_FAIL_TEXT = "fail-text";
-	protected static final TaskType voidTaskType = new VoidTaskType();
+	private static final String PATH_TASKS = "tasks";
+	private static final String PATH_REQUIRES = "requires";
+	private static final String PATH_START_REWARDS = "start-rewards";
+	private static final String PATH_COMPLETE_REWARDS = "complete-rewards";
+	private static final String PATH_START_TEXT = "start-text";
+	private static final String PATH_COMPLETE_TEXT = "complete-text";
+	private static final String PATH_PAUSE_TEXT = "pause-text";
+	private static final String PATH_UNPAUSE_TEXT = "unpause-text";
+	private static final String PATH_FAIL_TEXT = "fail-text";
+	private static final TaskType voidTaskType = new VoidTaskType();
 
 	private final Quest parent;
 	
@@ -76,11 +74,11 @@ public class Mission extends YmlLoadableWithCooldown{
 		}
 	}
 
-	private final List<String> onStartText;
-	private final List<String> onCompleteText;
-	private final List<String> onPauseText;
-	private final List<String> onUnpauseText;
-	private final List<String> onFailText;
+	private ArrayList<String> onStartText;
+	private ArrayList<String> onCompleteText;
+	private ArrayList<String> onPauseText;
+	private ArrayList<String> onUnpauseText;
+	private ArrayList<String> onFailText;
 
 	public BaseComponent[] getStartMessage(QuestPlayer p) {
 		return YMLConfig.translateComponent(StringUtils
@@ -224,343 +222,17 @@ public class Mission extends YmlLoadableWithCooldown{
 		onFailText = loadFailText(m);
 		
 		this.displayInfo = loadDisplayInfo(m);
-		fixDisplays();
-		holders = setupHolders();
 		if (displayInfo.isDirty())
 			setDirty(true);
-		this.addToEditor(new SubExplorerFactory<Task>(Task.class,getTasks(),
-				"&8Tasks List"));
-		this.addToEditor(new AddTaskFactory());
-		this.addToEditor(new DeleteTaskFactory());
+		this.addToEditor(0,new SubExplorerFactory<Task>(Task.class,getTasks(),"&8Tasks List"));
+		this.addToEditor(1,new AddTaskFactory());
+		this.addToEditor(2,new DeleteTaskFactory());
 	}
-	private class AddTaskFactory implements EditorButtonFactory {
-
-		private class AddTaskButton extends CustomButton {
-
-			public AddTaskButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lAdd Task");
-				desc.add("&6Click to add a new Task");
-				StringUtils.setDescription(item,desc);
-			}
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new CreateTaskGui(clicker,this.getParent()).getInventory());
-			}
-			private class CreateTaskGui extends CustomLinkedGui<CustomButton>{
-				private TaskType taskType = null;
-				public CreateTaskGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6);
-					this.setFromEndCloseButtonPosition(8);
-					this.addButton(20, new SelectTaskTypeButton());
-					this.addButton(24, new CreateTaskButton());
-					reloadInventory();
-				}
-				private class CreateTaskButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.WOOL);
-					public CreateTaskButton() {
-						super(CreateTaskGui.this);
-						update();
-					}
-					
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						if (taskType==null) {
-							desc.add("&cYou need to Select a Task Type");
-							item.setDurability((short) 14); 
-						}
-						else {
-							desc.add("&6&lClick to Create a new Task");
-							desc.add("&6Task Type: '&f"+taskType.getKey()+"&6'");
-							item.setDurability((short) 5); 
-						}
-						StringUtils.setDescription(item, desc);
-					}
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						if (taskType == null)
-							return;
-						String key = null;
-						boolean found = false;
-						int i = 1;
-						do {
-							key = "mission";
-							if (i<10)
-								key = key+"000"+i;
-							else if (i<100)
-								key = key+"00"+i;
-							else if (i<1000)
-								key = key+"0"+i;
-							else
-								key = key+i;
-							if (!tasks.containsKey(key))
-								found = true;
-							i++;
-						}while (i<10000 && found == false);
-						if (found == false) {
-							//TODO
-							return;
-						}
-						if (!addTask(key,"New Task",taskType)) {
-							//TODO
-							return;
-						}
-						clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()
-								+" mission "+Mission.this.getNameID()+" task "+key+" editor");
-					}
-				}
-				private class SelectTaskTypeButton extends CustomButton {
-					
-					public SelectTaskTypeButton() {
-						super(CreateTaskGui.this);
-						update();
-					}
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						if (taskType==null) {
-							desc.add("&6Click to select Task Type");
-						}
-						else {
-							desc.add("&6Click to change Task Type");
-							desc.add("&7(CurrentTask Type: '"+taskType.getKey()+"')");
-						}
-						StringUtils.setDescription(item, desc);
-					}
-					private ItemStack item = new ItemStack(Material.FIREBALL);
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new TaskTypeSelectorGui(clicker,this.getParent()).getInventory());
-					}
-					private class TaskTypeSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-						public TaskTypeSelectorGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6, 1);
-							for (TaskType type : Quests.getInstance().getTaskManager().getTaskTypes()) {
-								this.addButton(new TaskTypeButton(type));
-							}
-							reloadInventory();
-						}
-						private class TaskTypeButton extends CustomButton {
-							private TaskType type;
-							public TaskTypeButton(TaskType type) {
-								super(TaskTypeSelectorGui.this);
-								this.type = type;
-								ItemMeta meta = item.getItemMeta();
-								meta.setDisplayName(StringUtils.fixColorsAndHolders(
-										"&6"+type.getKey()));
-								item.setItemMeta(meta);
-							}
-							private ItemStack item = new ItemStack(Material.FIREBALL);
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								CreateTaskGui.this.taskType = type;
-								CreateTaskGui.this.update();
-								clicker.openInventory(CreateTaskGui.this.getInventory());
-							}
-						}
-					}
-				}
-			}
-		}
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddTaskButton(parent);
-		}
-	}
-	private class DeleteTaskFactory implements EditorButtonFactory {
-		private class DeleteTaskButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-			public DeleteTaskButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lDelete Task");
-				desc.add("&6Click to select a Task");
-				StringUtils.setDescription(item,desc);
-			}
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new DeleteQuestSelectorGui(clicker,getParent()).getInventory());
-			}
-			private class DeleteQuestSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteQuestSelectorGui(Player p,CustomGui previusHolder) {
-					super(p,previusHolder,6,1);
-					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Task to delete"));
-					for (Task task : getTasks()) {
-						this.addButton(new SelectQuestButton(task));
-					}
-					this.reloadInventory();
-				}
-				private class SelectQuestButton extends CustomButton{
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private Task task;
-					
-					public SelectQuestButton(Task task) {
-						super(DeleteQuestSelectorGui.this);
-						this.task = task;
-						this.update();
-					}
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
-						desc.add("&7("+task.getTaskType().getKey()+")");
-						StringUtils.setDescription(item,desc);
-					}
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
-					}
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22,new ConfirmationButton());
-							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							reloadInventory();
-						}
-						
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cQuest delete can't be undone");
-								desc.add("");
-								desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
-								desc.add("&7("+task.getTaskType().getKey()+")");
-								StringUtils.setDescription(item,desc);
-								
-							}
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteTask(task);
-								clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()+" mission "+Mission.this.getNameID()+" editor");
-							}
-						}
-					}
-				}
-			}
-		}
-	
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new DeleteTaskButton(parent);
-		}
+	public void reloadDisplay() {
+		displayInfo.reloadDisplay();
 	}
 	
-	public String[] getHolders(Player p,DisplayState state) {
-		String[] s;
-		if (state!=DisplayState.COOLDOWN)
-			s = new String[holders.size()*2];
-		else {
-			s = new String[holders.size()*2+2];
-			s[s.length-2] = H.MISSION_COOLDOWN_LEFT;
-			s[s.length-1] = StringUtils.getStringCooldown(Quests.getInstance().getPlayerManager()
-					.getQuestPlayer(p).getCooldown(this));
-		}
-		for (int i =0; i < holders.size();i++) {
-			s[i*2] = holders.get(i).getHolder();
-			s[i*2+1] = holders.get(i).getReplacer(p);
-		}
-		
-		return s;
-	}
 	
-	protected ArrayList<ProgressHolder> setupHolders(){
-		ArrayList<ProgressHolder> holders = new ArrayList<ProgressHolder>();
-		ArrayList<Task> list = new ArrayList<Task>(tasks.values());
-		list.forEach((task)->{holders.add( new ProgressHolder(task)); });
-		return holders;
-	}
-	
-	private ArrayList<ProgressHolder> holders;
-	public class ProgressHolder {
-		Task t;
-		public ProgressHolder(Task task){
-			this.t = task;
-		}
-		public String getHolder() {
-			return H.MISSION_GENERIC_TASK_PROGRESS.replace("<task>", t.getNameID());
-		}
-		public String getReplacer(Player p) {
-			return ""+Quests.getInstance().getPlayerManager().getQuestPlayer(p)
-					.getTaskProgress(t);
-		}
-	}
-	private void fixDisplays() {
-		String[] holders = new String[tasks.size()*5*2+2];
-		ArrayList<Task> list = new ArrayList<Task>(tasks.values());
-		for (int i = 0; i < list.size(); i++) {
-			holders[i*10] = H.MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION.replace("<task>", list.get(i).getNameID());
-			holders[i*10+1] = list.get(i).getProgressDescription();
-			holders[i*10+2] = H.MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION.replace("<task>", list.get(i).getNameID());
-			holders[i*10+3] = list.get(i).getUnstartedDescription();
-			holders[i*10+4] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", list.get(i).getNameID());
-			holders[i*10+5] = list.get(i).getDisplayName();
-			holders[i*10+6] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", list.get(i).getNameID());
-			holders[i*10+7] = list.get(i).getTaskType().getKey();
-			holders[i*10+8] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", list.get(i).getNameID());
-			holders[i*10+9] = list.get(i).getMaxProgress()+"";
-		}
-		holders[holders.length-2] = H.MISSION_NAME;
-		holders[holders.length-1] = getDisplayName();
-		
-		
-		MissionDisplayInfo info = getDisplayInfo();
-		for (DisplayState state : DisplayState.values()) {
-			ArrayList<String> lore = new ArrayList<String>(info.getLore(state));
-			for (int i = 0; i < lore.size(); i++) {
-				if (lore.get(i).startsWith(H.MISSION_FOREACH_TASK)) {
-					String text = lore.get(i).replace(H.MISSION_FOREACH_TASK,"");
-					lore.remove(i);
-					int j = 0;
-					for (Task task:tasks.values()) {
-						lore.add(i+j,text.replace("<task>",task.getNameID()));
-						j++;
-					}
-					i = i+j-1;
-				}
-			}
-			
-			info.setLore(state, StringUtils.fixColorsAndHolders(
-					lore,holders));
-			info.setTitle(state, StringUtils.fixColorsAndHolders(
-					info.getTitle(state),holders));
-		}
-	}
 	
 	private LinkedHashMap<String, Task> loadTasks(MemorySection m) {
 		if (m==null)
@@ -585,31 +257,31 @@ public class Mission extends YmlLoadableWithCooldown{
 		});
 		return map;
 	}
-	private List<String> loadStartText(MemorySection m){
+	private ArrayList<String> loadStartText(MemorySection m){
 		List<String> list = m.getStringList(PATH_START_TEXT);
 		if (list==null||list.isEmpty())
 			list = Defaults.MissionDef.getDefaultStartText();
 		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
 	}
-	private List<String> loadCompleteText(MemorySection m){
+	private ArrayList<String> loadCompleteText(MemorySection m){
 		List<String> list = m.getStringList(PATH_COMPLETE_TEXT);
 		if (list==null||list.isEmpty())
 			list = Defaults.MissionDef.getDefaultCompleteText();
 		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
 	}
-	private List<String> loadPauseText(MemorySection m){
+	private ArrayList<String> loadPauseText(MemorySection m){
 		List<String> list = m.getStringList(PATH_PAUSE_TEXT);
 		if (list==null||list.isEmpty())
 			list = Defaults.MissionDef.getDefaultPauseText();
 		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
 	}
-	private List<String> loadUnpauseText(MemorySection m){
+	private ArrayList<String> loadUnpauseText(MemorySection m){
 		List<String> list = m.getStringList(PATH_UNPAUSE_TEXT);
 		if (list==null||list.isEmpty())
 			list = Defaults.MissionDef.getDefaultUnpauseText();
 		return StringUtils.fixColorsAndHolders(list,H.MISSION_NAME,getDisplayName());
 	}
-	private List<String> loadFailText(MemorySection m){
+	private ArrayList<String> loadFailText(MemorySection m){
 		List<String> list = m.getStringList(PATH_FAIL_TEXT);
 		if (list==null||list.isEmpty())
 			list = Defaults.MissionDef.getDefaultFailText();
@@ -688,6 +360,239 @@ public class Mission extends YmlLoadableWithCooldown{
 		parent.getParent().reload();
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
+	}
+	private class AddTaskFactory implements EditorButtonFactory {
+	
+		private class AddTaskButton extends CustomButton {
+	
+			public AddTaskButton(CustomGui parent) {
+				super(parent);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lAdd Task");
+				desc.add("&6Click to add a new Task");
+				StringUtils.setDescription(item,desc);
+			}
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+	
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new CreateTaskGui(clicker,this.getParent()).getInventory());
+			}
+			private class CreateTaskGui extends CustomLinkedGui<CustomButton>{
+				private TaskType taskType = null;
+				public CreateTaskGui(Player p, CustomGui previusHolder) {
+					super(p, previusHolder, 6);
+					this.setFromEndCloseButtonPosition(8);
+					this.addButton(20, new SelectTaskTypeButton());
+					this.addButton(24, new CreateTaskButton());
+					reloadInventory();
+				}
+				private class CreateTaskButton extends CustomButton {
+					private ItemStack item = new ItemStack(Material.WOOL);
+					public CreateTaskButton() {
+						super(CreateTaskGui.this);
+						update();
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						if (taskType==null) {
+							desc.add("&cYou need to Select a Task Type");
+							item.setDurability((short) 14); 
+						}
+						else {
+							desc.add("&6&lClick to Create a new Task");
+							desc.add("&6Task Type: '&f"+taskType.getKey()+"&6'");
+							item.setDurability((short) 5); 
+						}
+						StringUtils.setDescription(item, desc);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (taskType == null)
+							return;
+						String key = QuestManager.getNewTaskID(Mission.this);
+						if (!addTask(key,"New Task",taskType)) {
+							//TODO
+							return;
+						}
+						clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()
+								+" mission "+Mission.this.getNameID()+" task "+key+" editor");
+					}
+				}
+				private class SelectTaskTypeButton extends CustomButton {
+					
+					public SelectTaskTypeButton() {
+						super(CreateTaskGui.this);
+						update();
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						if (taskType==null) {
+							desc.add("&6Click to select Task Type");
+						}
+						else {
+							desc.add("&6Click to change Task Type");
+							desc.add("&7(CurrentTask Type: '"+taskType.getKey()+"')");
+						}
+						StringUtils.setDescription(item, desc);
+					}
+					private ItemStack item = new ItemStack(Material.FIREBALL);
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new TaskTypeSelectorGui(clicker,this.getParent()).getInventory());
+					}
+					private class TaskTypeSelectorGui extends CustomMultiPageGui<CustomButton> {
+	
+						public TaskTypeSelectorGui(Player p, CustomGui previusHolder) {
+							super(p, previusHolder, 6, 1);
+							for (TaskType type : Quests.getInstance().getTaskManager().getTaskTypes()) {
+								this.addButton(new TaskTypeButton(type));
+							}
+							reloadInventory();
+						}
+						private class TaskTypeButton extends CustomButton {
+							private TaskType type;
+							public TaskTypeButton(TaskType type) {
+								super(TaskTypeSelectorGui.this);
+								this.type = type;
+								item = new ItemStack(type.getGuiItemMaterial());
+								ArrayList<String> desc = new ArrayList<String>();
+								desc.add("&6"+type.getKey());
+								desc.add("");
+								desc.addAll(type.getDescription());
+								StringUtils.setDescription(item,desc);
+							}
+							private ItemStack item;
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								CreateTaskGui.this.taskType = type;
+								CreateTaskGui.this.update();
+								clicker.openInventory(CreateTaskGui.this.getInventory());
+							}
+						}
+					}
+				}
+			}
+		}
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new AddTaskButton(parent);
+		}
+	}
+	private class DeleteTaskFactory implements EditorButtonFactory {
+		private class DeleteTaskButton extends CustomButton {
+			private ItemStack item = new ItemStack(Material.NETHERRACK);
+			public DeleteTaskButton(CustomGui parent) {
+				super(parent);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lDelete Task");
+				desc.add("&6Click to select a Task");
+				StringUtils.setDescription(item,desc);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new DeleteQuestSelectorGui(clicker,getParent()).getInventory());
+			}
+			private class DeleteQuestSelectorGui extends CustomMultiPageGui<CustomButton> {
+	
+				public DeleteQuestSelectorGui(Player p,CustomGui previusHolder) {
+					super(p,previusHolder,6,1);
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Task to delete"));
+					for (Task task : getTasks()) {
+						this.addButton(new SelectQuestButton(task));
+					}
+					this.setFromEndCloseButtonPosition(8);
+					this.reloadInventory();
+				}
+				private class SelectQuestButton extends CustomButton{
+					private ItemStack item = new ItemStack(Material.BOOK);
+					private Task task;
+					
+					public SelectQuestButton(Task task) {
+						super(DeleteQuestSelectorGui.this);
+						this.task = task;
+						this.update();
+					}
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
+						desc.add("&7("+task.getTaskType().getKey()+")");
+						StringUtils.setDescription(item,desc);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
+					}
+					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
+	
+						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
+							super(p, previusHolder, 6);
+							this.addButton(22,new ConfirmationButton());
+							this.setFromEndCloseButtonPosition(8);
+							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
+							reloadInventory();
+						}
+						
+						private class ConfirmationButton extends CustomButton {
+							private ItemStack item = new ItemStack(Material.WOOL);
+							public ConfirmationButton() {
+								super(DeleteConfirmationGui.this);
+								this.item.setDurability((short) 14);
+								ArrayList<String> desc = new ArrayList<String>();
+								desc.add("&cClick to Confirm quest Delete");
+								desc.add("&cQuest delete can't be undone");
+								desc.add("");
+								desc.add("&6Task: '&e"+task.getDisplayName()+"&6'");
+								desc.add("&7("+task.getTaskType().getKey()+")");
+								StringUtils.setDescription(item,desc);
+								
+							}
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								deleteTask(task);
+								clicker.performCommand("questadmin quest "+Mission.this.getParent().getNameID()+" mission "+Mission.this.getNameID()+" editor");
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			if (tasks.size() >0 )
+				return new DeleteTaskButton(parent);
+			return null;
+		}
 	}
 	
 }

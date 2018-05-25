@@ -73,9 +73,15 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 				public WGButton(T ld) {
 					super(WGExplorerGui.this);
 					this.ld = ld;
+					if (ld instanceof Quest)
+						item = new ItemStack(Material.BOOK);
+					else if (ld instanceof Mission)
+						item = new ItemStack(Material.PAPER);
+					else if (ld instanceof Task)
+						item = new ItemStack(((Task) ld).getTaskType().getGuiItemMaterial());
 					update();
 				}
-				private ItemStack item = new ItemStack(Material.BOOK);
+				private ItemStack item;
 				@Override
 				public ItemStack getItem() {
 					return item;
@@ -110,7 +116,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 				}
 				@Override
 				public void onClick(Player clicker, ClickType click) {
-					ld.openEditorGui(clicker, WGExplorerGui.this);			
+					ld.openEditorGui(clicker, WGExplorerGui.this.getPreviusHolder());			
 				}
 			}
 		}

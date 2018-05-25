@@ -7,7 +7,6 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
@@ -60,32 +59,23 @@ public class DropsTaskInfo {
 	
 	private class RemoveDropsButtonFactory implements EditorButtonFactory {
 		private class RemoveDropsButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.WOOL);
+			private ItemStack item = new ItemStack(Material.GOLD_INGOT);
 			public RemoveDropsButton(CustomGui parent) {
 				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders(
-						"&6&lDrop Flag"));
-				item.setItemMeta(meta);
 				update();
 			}
 			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders(
-						"&6Click to Toggle"));
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lDrop Flag");
+				desc.add("&6Click to Toggle");
 				if (removeDrops) {
-					item.setDurability((short) 14);
-					lore.add(StringUtils.fixColorsAndHolders(
-							"&cDrops are removed"));
+					desc.add("&cDrops are removed");
 				}
 				else {
-					item.setDurability((short) 5);
-					lore.add(StringUtils.fixColorsAndHolders(
-							"&7Drops are not removed"));
+					desc.add("&7Drops are not removed");
+					desc.add("&7(Vanilla behavior)");
 				}
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				StringUtils.setDescription(item, desc);
 			}
 			@Override
 			public ItemStack getItem() {
@@ -105,32 +95,23 @@ public class DropsTaskInfo {
 	}
 	private class RemoveExpButtonFactory implements EditorButtonFactory {
 		private class RemoveExpButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.WOOL);
+			private ItemStack item = new ItemStack(Material.EXP_BOTTLE);
 			public RemoveExpButton(CustomGui parent) {
 				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders(
-						"&6&lExp Drops Flag"));
-				item.setItemMeta(meta);
 				update();
 			}
 			public void update() {
-				ItemMeta meta = item.getItemMeta();
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders(
-						"&6Click to Toggle"));
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lExp Drops Flag");
+				desc.add("&6Click to Toggle");
 				if (removeExp) {
-					item.setDurability((short) 14);
-					lore.add(StringUtils.fixColorsAndHolders(
-							"&cExp Drops are removed"));
+					desc.add("&cExp Drops are removed");
 				}
 				else {
-					item.setDurability((short) 5);
-					lore.add(StringUtils.fixColorsAndHolders(
-							"&7Exp Drops are not removed"));
+					desc.add("&7Exp Drops are not removed");
+					desc.add("&7(Vanilla behavior)");
 				}
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				StringUtils.setDescription(item, desc);
 			}
 			@Override
 			public ItemStack getItem() {

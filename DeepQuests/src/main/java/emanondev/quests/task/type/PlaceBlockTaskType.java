@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,7 +46,8 @@ public class PlaceBlockTaskType extends TaskType {
 
 		public PlaceBlockTask(MemorySection m, Mission parent) {
 			super(m, parent,PlaceBlockTaskType.this);
-			blocks = new BlocksTaskInfo(m);
+			blocks = new BlocksTaskInfo(m,this);
+			this.addToEditor(9,blocks.getBlocksSelectorButtonFactory());
 		}
 
 	}
@@ -52,5 +55,18 @@ public class PlaceBlockTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new PlaceBlockTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.SMOOTH_BRICK;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to place a specified number",
+			"&7of Blocks of the selected type"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

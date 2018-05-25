@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,9 +49,9 @@ public class TameMobTaskType extends TaskType {
 		public TameMobTask(MemorySection m, Mission parent) {
 			super(m, parent,TameMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
-			this.addToEditor(entity.getEntityTypeEditorButtonFactory());
-			this.addToEditor(entity.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(9,entity.getEntityTypeEditorButtonFactory());
+			this.addToEditor(10,entity.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(27,entity.getIgnoreCitizenNPCEditorButtonFactory());
 		}
 		
 	}
@@ -57,5 +59,18 @@ public class TameMobTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new TameMobTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.BONE;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to tame a specified number",
+			"&7of entity of the selected type"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -52,10 +54,21 @@ public class FishingTaskType extends TaskType {
 		public FishingTask(MemorySection m, Mission parent) {
 			super(m, parent,FishingTaskType.this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.FISHING_ROD;
+	}
 
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to fish some specified amount",
+			"&7of specified items");
+	@Override
+	public List<String> getDescription() {
+		return description;
+	}
 }

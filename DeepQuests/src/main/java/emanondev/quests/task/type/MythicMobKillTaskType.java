@@ -1,8 +1,10 @@
 package emanondev.quests.task.type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,8 +59,8 @@ public class MythicMobKillTaskType extends TaskType{
 			super(m, parent,MythicMobKillTaskType.this);
 			drops = new DropsTaskInfo(m,this);
 			mobName = m.getString(PATH_INTERNAL_NAME,null);
-			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
 		}
 		public boolean isValidMythicMob(String internalName) {
 			if (mobName==null || mobName.equalsIgnoreCase(internalName))
@@ -72,5 +74,17 @@ public class MythicMobKillTaskType extends TaskType{
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new MythicMobKillTask(m,parent);
 	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.GOLD_SWORD;
+	}
 
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to kill a specified number",
+			"&7of mithicmobs of selected type"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
+	}
 }

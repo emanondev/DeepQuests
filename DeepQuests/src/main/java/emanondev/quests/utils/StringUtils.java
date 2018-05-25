@@ -13,7 +13,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class StringUtils {
-
 	public static String applyHolder(String target, String holder,String replacer){
 		if (target==null)
 			return null;
@@ -28,7 +27,7 @@ public class StringUtils {
 	    return result;
 	}
 
-	public static List<String> convertList(Player p,List<String> target, String... stuffs){
+	public static ArrayList<String> convertList(Player p,List<String> target, String... stuffs){
 		if (target == null)
 			return null;
 		ArrayList<String> list = new ArrayList<String>();
@@ -168,12 +167,42 @@ public class StringUtils {
 		
 	}
 	
+	/*
 	public static void setDescription(ItemStack item,ArrayList<String> desc,String... holders) {
 		if (item == null||desc == null)
 			throw new NullPointerException();
 		desc = fixColorsAndHolders(desc,holders);
 		setDescriptionNoColors(item,desc);
+	}*/
+	public static void setDescription(ItemStack item,ArrayList<String> desc,String... holders) {
+		setDescription(item, null, desc, holders);
 	}
+	
+	public static void setDescription(ItemStack item,Player p,ArrayList<String> desc,String... holders) {
+		if (item == null||desc == null)
+			throw new NullPointerException();
+		setDescriptionNoColors(item, p, fixColorsAndHolders(desc,holders));
+	}
+	public static void setDescriptionNoColors(ItemStack item,ArrayList<String> desc,String... holders) {
+		setDescriptionNoColors(item, null, desc, holders);
+	}
+	public static void setDescriptionNoColors(ItemStack item,Player p,ArrayList<String> desc,String... holders) {
+		if (item == null||desc == null)
+			throw new NullPointerException();
+		if (holders!=null)
+			desc = convertList(p,desc,holders);
+		else
+			desc = convertList(p,desc);
+		
+		ItemMeta meta = item.getItemMeta();
+		if (desc.size()>0)
+			meta.setDisplayName(desc.remove(0));
+		else
+			meta.setDisplayName("");
+		meta.setLore(desc);
+		item.setItemMeta(meta);
+	}
+	/*
 	public static void setDescriptionNoColors(ItemStack item,ArrayList<String> desc,String... holders) {
 		if (item == null||desc == null)
 			throw new NullPointerException();
@@ -187,5 +216,23 @@ public class StringUtils {
 			meta.setDisplayName("");
 		meta.setLore(desc);
 		item.setItemMeta(meta);
+	}*/
+	public static ArrayList<String> getDescription(ItemStack item){
+		if (item == null)
+			throw new NullPointerException();
+		ArrayList<String> desc = new ArrayList<String>();
+		if (!item.hasItemMeta())
+			return desc;
+		ItemMeta meta = item.getItemMeta();
+		if (meta.hasDisplayName())
+			desc.add(meta.getDisplayName());
+		else
+			if (!meta.hasLore())
+				return desc;
+			else
+				desc.add("");
+		if (meta.hasLore())
+			desc.addAll(meta.getLore());
+		return desc;
 	}
 }

@@ -215,6 +215,7 @@ public class EntityTaskInfo {
 						addButton(new EntityTypeButton(this,type));
 					}
 					this.setFromEndCloseButtonPosition(8);
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&8Entity Type Selector"));
 					reloadInventory();
 				}
 				public void reloadInventory() {

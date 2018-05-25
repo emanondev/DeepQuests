@@ -37,9 +37,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Quest extends YmlLoadableWithCooldown{
-	public static final String HOLDER_MISSION_NUMBER = "{mission-number}";
-	public static final String HOLDER_QUEST_NAME = "{quest-name}";
-	public static final String HOLDER_COMPLETED_MISSION_NUMBER = "{completed-mission-number}";
 	public static final String PATH_MISSIONS = "missions";
 	public static final String PATH_REQUIRES = "requires";
 	
@@ -93,10 +90,10 @@ public class Quest extends YmlLoadableWithCooldown{
 		if (displayInfo.isDirty())
 			this.setDirty(true);
 		
-		this.addToEditor(new SubExplorerFactory<Mission>(Mission.class,getMissions(),
+		this.addToEditor(0, new SubExplorerFactory<Mission>(Mission.class,getMissions(),
 				"&8Missions List"));
-		this.addToEditor(new AddMissionFactory());
-		this.addToEditor(new DeleteMissionFactory());
+		this.addToEditor(1, new AddMissionFactory());
+		this.addToEditor(2, new DeleteMissionFactory());
 	}
 	
 	private class AddMissionFactory implements EditorButtonFactory{
@@ -106,9 +103,9 @@ public class Quest extends YmlLoadableWithCooldown{
 			public AddMissionGuiItem(CustomGui parent) {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lAdd Mission"));
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Mission"));
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to add a new Mission"));
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Mission"));
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			}
@@ -118,27 +115,7 @@ public class Quest extends YmlLoadableWithCooldown{
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				String key = null;
-				boolean found = false;
-				int i = 1;
-				do {
-					key = "mission";
-					if (i<10)
-						key = key+"000"+i;
-					else if (i<100)
-						key = key+"00"+i;
-					else if (i<1000)
-						key = key+"0"+i;
-					else
-						key = key+i;
-					if (!missions.containsKey(key))
-						found = true;
-					i++;
-				}while (i<10000 && found == false);
-				if (found == false) {
-					//TODO
-					return;
-				}
+				String key = QuestManager.getNewMissionID(Quest.this);
 				if (!addMission(key,"New Mission")) {
 					//TODO
 					return;
@@ -158,8 +135,8 @@ public class Quest extends YmlLoadableWithCooldown{
 			public DeleteMissionButton(CustomGui parent) {
 				super(parent);
 				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lDelete Mission");
-				desc.add("&6Click to select a Mission");
+				desc.add("&c&lDelete &6&lMission");
+				desc.add("&6Click to select and delete a Mission");
 				StringUtils.setDescription(item,desc);
 			}
 			@Override
@@ -178,6 +155,7 @@ public class Quest extends YmlLoadableWithCooldown{
 					for (Mission mission : getMissions()) {
 						this.addButton(new SelectMissionButton(mission));
 					}
+					this.setFromEndCloseButtonPosition(8);
 					this.reloadInventory();
 				}
 				private class SelectMissionButton extends CustomButton{
@@ -212,6 +190,7 @@ public class Quest extends YmlLoadableWithCooldown{
 							super(p, previusHolder, 6);
 							this.addButton(22,new ConfirmationButton());
 							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
+							this.setFromEndCloseButtonPosition(8);
 							reloadInventory();
 						}
 						
@@ -249,7 +228,9 @@ public class Quest extends YmlLoadableWithCooldown{
 	
 		@Override
 		public CustomButton getCustomButton(CustomGui parent) {
-			return new DeleteMissionButton(parent);
+			if (missions.size() >0)
+				return new DeleteMissionButton(parent);
+			return null;
 		}
 	}
 	private final QuestDisplayInfo displayInfo;

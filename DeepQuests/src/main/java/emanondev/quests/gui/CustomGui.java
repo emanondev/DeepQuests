@@ -123,8 +123,11 @@ public abstract class CustomGui implements InventoryHolder {
 	private final static ItemStack backButtonItem = loadBackItem();
 	public class BackButton extends CustomButton {
 		public ItemStack getItem() {
-			return backButtonItem;
+			if (getParent().getPreviusInventory()!=null)
+				return backButtonItem;
+			return null;
 		}
+		
 		
 		public BackButton() {
 			super(CustomGui.this);
@@ -132,9 +135,7 @@ public abstract class CustomGui implements InventoryHolder {
 
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (getParent().getPreviusHolder()==null)
-				clicker.closeInventory();
-			else {
+			if (getParent().getPreviusHolder()!=null) {
 				getParent().getPreviusHolder().update();
 				clicker.openInventory(getParent().getPreviusInventory());
 			}
@@ -164,9 +165,9 @@ public abstract class CustomGui implements InventoryHolder {
 	}
 	
 	public void reloadInventory() {
-		if (!backButton.getItem().equals(getInventory().getItem(size()-this.fromEndBackButtonPosition())))
+		if (backButton.getItem()!=null && !backButton.getItem().equals(getInventory().getItem(size()-this.fromEndBackButtonPosition())))
 			getInventory().setItem(size()-this.fromEndBackButtonPosition(),getBackButton().getItem());
-		if (!closeButton.getItem().equals(getInventory().getItem(size()-this.fromEndCloseButtonPosition())))
+		if (closeButton.getItem()!=null && !closeButton.getItem().equals(getInventory().getItem(size()-this.fromEndCloseButtonPosition())))
 			getInventory().setItem(size()-this.fromEndCloseButtonPosition(),getCloseButton().getItem());
 	}
 	

@@ -16,4 +16,7 @@ public class H {
 	public static final String QUEST_COOLDOWN_LEFT = "{quest-cooldownleft}";
 	public static final String MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION = "{<task>-progress-description}";
 	public static final String MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION = "{<task>-unstarted-description}";
+	public static final String QUEST_MISSION_AMOUNT = "{mission-amount}";
+	public static final String QUEST_NAME = "{quest-name}";
+	public static final String QUEST_COMPLETED_MISSION_AMOUNT = "{completed-mission-amount}";
 }

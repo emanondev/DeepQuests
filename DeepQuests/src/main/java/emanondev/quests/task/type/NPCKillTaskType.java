@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -60,8 +62,8 @@ public class NPCKillTaskType extends TaskType {
 			super(m, parent,NPCKillTaskType.this);
 			npc = new NPCTaskInfo(m);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}
@@ -69,5 +71,18 @@ public class NPCKillTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new NPCKillTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.DIAMOND_SWORD;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to kill a specified number",
+			"&7of npc with selected name/id"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

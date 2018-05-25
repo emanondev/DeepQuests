@@ -1,15 +1,19 @@
 package emanondev.quests.mission;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.H;
 import emanondev.quests.Quests;
+import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.DisplayStateInfo;
 import emanondev.quests.utils.StringUtils;
@@ -18,6 +22,8 @@ public class MissionDisplayInfo extends DisplayStateInfo{
 
 	public MissionDisplayInfo(MemorySection m, Mission mission) {
 		super(m, mission);
+		reloadDisplay();
+		progressHolders = setupHolders();
 	}
 	
 	public Mission getParent() {
@@ -35,13 +41,8 @@ public class MissionDisplayInfo extends DisplayStateInfo{
 	}
 
 	@Override
-	protected boolean shouldLoreAutogen(DisplayState state) {
-		return Defaults.MissionDef.shouldLoreAutogen(state);
-	}
-
-	@Override
-	protected boolean shouldTitleAutogen(DisplayState state) {
-		return Defaults.MissionDef.shouldTitleAutogen(state);
+	protected boolean shouldDescriptionAutogen(DisplayState state) {
+		return Defaults.MissionDef.shouldDescriptionAutogen(state);
 	}
 
 	@Override
@@ -50,35 +51,106 @@ public class MissionDisplayInfo extends DisplayStateInfo{
 	}
 
 	@Override
-	protected List<String> getDefaultLore(DisplayState state) {
-		List<String> lore = Defaults.MissionDef.getDefaultLore(state);
+	protected List<String> getDefaultDescription(DisplayState state) {
+		List<String> lore = Defaults.MissionDef.getDefaultDescription(state);
 		return lore;
 	}
 	
-
 	@Override
 	protected boolean getDefaultHide(DisplayState state) {
 		return Defaults.MissionDef.getDefaultHide(state);
 	}
 	@Override
-	protected String getDefaultTitle(DisplayState state) {
-		return Defaults.MissionDef.getDefaultTitle(state);
-	}
-	@Override
 	public ItemStack getGuiItem(Player p, DisplayState state) {
 		ItemStack item = getItem(state);
-		ItemMeta meta = item.getItemMeta();
+		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		StringUtils.setDescription(item,p,getDescription(state),getHolders(p,state));
 		
-		meta.setLore(StringUtils.convertList(p, getLore(state), 
-				getParent().getHolders(p,state) ));
-		meta.setDisplayName(StringUtils.convertText(p, getTitle(state), 
-				getParent().getHolders(p,state) ));
-		if (!Quests.getInstance().getPlayerManager().getQuestPlayer(p).getMissionData(getParent()).isPaused())
-			meta.addEnchant(Enchantment.DURABILITY, 1, true);
-		item.setItemMeta(meta);
+		if (!qPlayer.getMissionData(getParent()).isPaused())
+			item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
 		
 		return item;
 	}
+	public String[] getHolders(Player p,DisplayState state) {
+		String[] s;
+		if (state!=DisplayState.COOLDOWN)
+			s = new String[progressHolders.size()*2];
+		else {
+			s = new String[progressHolders.size()*2+2];
+			s[s.length-2] = H.MISSION_COOLDOWN_LEFT;
+			s[s.length-1] = StringUtils.getStringCooldown(Quests.getInstance().getPlayerManager()
+					.getQuestPlayer(p).getCooldown(getParent()));
+		}
+		for (int i =0; i < progressHolders.size();i++) {
+			s[i*2] = progressHolders.get(i).getHolder();
+			s[i*2+1] = progressHolders.get(i).getReplacer(p);
+		}
+		return s;
+	}
+	private EnumMap<DisplayState,ArrayList<String>> finalDescriptions = new EnumMap<DisplayState,ArrayList<String>>(DisplayState.class);
+	public ArrayList<String> getDescription(DisplayState state) {
+		return new ArrayList<String>(finalDescriptions.get(state));
+	}
+	public ArrayList<String> getRawDescription(DisplayState state) {
+		return super.getDescription(state);
+	}
 	
+	
+	public void reloadDisplay() {
+		String[] holders = new String[getParent().getTasks().size()*5*2+2];
+		int k=0;
+		for (Task task : getParent().getTasks()) {
+			holders[k*10] = H.MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION.replace("<task>", task.getNameID());
+			holders[k*10+1] = task.getProgressDescription();
+			holders[k*10+2] = H.MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION.replace("<task>", task.getNameID());
+			holders[k*10+3] = task.getUnstartedDescription();
+			holders[k*10+4] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", task.getNameID());
+			holders[k*10+5] = task.getDisplayName();
+			holders[k*10+6] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", task.getNameID());
+			holders[k*10+7] = task.getTaskType().getKey();
+			holders[k*10+8] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", task.getNameID());
+			holders[k*10+9] = task.getMaxProgress()+"";
+			k++;
+		}
+		holders[holders.length-2] = H.MISSION_NAME;
+		holders[holders.length-1] = getParent().getDisplayName();
+		for (DisplayState state : DisplayState.values()) {
+			ArrayList<String> desc = super.getDescription(state);
+			for (int i = 0; i < desc.size(); i++) {
+				if (desc.get(i).startsWith(H.MISSION_FOREACH_TASK)) {
+					String text = desc.get(i).replace(H.MISSION_FOREACH_TASK,"");
+					desc.remove(i);
+					int j = 0;
+					for (Task task: getParent().getTasks()) {
+						desc.add(i+j,text.replace("<task>",task.getNameID()));
+						j++;
+					}
+					i = i+j-1;
+				}
+			}
+			finalDescriptions.put(state,StringUtils.fixColorsAndHolders(
+					desc,holders));
+		}
+	}
+	protected ArrayList<ProgressHolder> setupHolders(){
+		ArrayList<ProgressHolder> holders = new ArrayList<ProgressHolder>();
+		for (Task task : getParent().getTasks())
+			holders.add( new ProgressHolder(task));
+		return holders;
+	}
+	private ArrayList<ProgressHolder> progressHolders;
+	public class ProgressHolder {
+		Task t;
+		public ProgressHolder(Task task){
+			this.t = task;
+		}
+		public String getHolder() {
+			return H.MISSION_GENERIC_TASK_PROGRESS.replace("<task>", t.getNameID());
+		}
+		public String getReplacer(Player p) {
+			return ""+Quests.getInstance().getPlayerManager().getQuestPlayer(p)
+					.getTaskProgress(t);
+		}
+	}
 
 }

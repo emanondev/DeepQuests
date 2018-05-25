@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -53,5 +55,18 @@ public class NPCTalkTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new NPCTalkTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.RED_ROSE;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to interact (right click) a specified",
+			"&7number of times with selected npc"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

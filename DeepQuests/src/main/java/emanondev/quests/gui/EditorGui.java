@@ -1,6 +1,6 @@
 package emanondev.quests.gui;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,21 +14,21 @@ import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.WithGui;
 
-public class EditorGui<T extends WithGui> extends CustomMultiPageGui<CustomButton> {
+public class EditorGui<T extends WithGui> extends CustomLinkedGui<CustomButton> {
 	private final T wg;
 	//private final Class<T> clazz;
 
 	public EditorGui(Player p, T wg/*,Class<T> clazz*/, CustomGui previusHolder,
-			ArrayList<EditorButtonFactory> facts) {
-		super(p, previusHolder, 6, 1);
+			HashMap<Integer,EditorButtonFactory> facts) {
+		super(p, previusHolder, 6);
 		if (wg == null /*|| clazz == null*/)
 			throw new NullPointerException();
 		this.wg = wg;
 		//this.clazz = clazz;
-		for (EditorButtonFactory factory : facts) {
-			CustomButton button = factory.getCustomButton(this);
+		for (Integer key : facts.keySet()) {
+			CustomButton button = facts.get(key).getCustomButton(this);
 			if (button!=null)
-				this.addButton(button);
+				this.addButton(key,button);
 		}
 		this.setFromEndCloseButtonPosition(8);
 		parentButton = new ParentButton();

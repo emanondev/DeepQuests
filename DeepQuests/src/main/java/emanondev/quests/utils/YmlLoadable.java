@@ -3,6 +3,7 @@ package emanondev.quests.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.task.Task;
 import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -61,8 +63,8 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		this.displayName = loadDisplayName(m);
 		this.worlds.addAll(loadWorlds(m));
 		this.useWorldsAsBlacklist = loadUseWorldsAsBlacklist(m);
-		addToEditor(new DisplayNameEditorButtonFactory());
-		addToEditor(new WorldsEditorButtonFactory());
+		addToEditor(6,new DisplayNameEditorButtonFactory());
+		addToEditor(7,new WorldsEditorButtonFactory());
 	}
 	public void setWorldsList(Collection<String> coll) {
 		if (coll == null) {
@@ -102,6 +104,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		if (this.useWorldsAsBlacklist == isBlacklist)
 			return false;
 		this.useWorldsAsBlacklist = isBlacklist;
+		section.set(PATH_WORLDS_IS_BLACKLIST,useWorldsAsBlacklist);
 		this.setDirty(true);
 		return true;
 	}
@@ -128,6 +131,8 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			return false;
 		this.displayName = name;
 		section.set(PATH_DISPLAY_NAME,StringUtils.revertColors(displayName));
+		if (this instanceof Task)
+			((Task) this).getParent().reloadDisplay();
 		setDirty(true);
 		return true;
 	}
@@ -170,9 +175,6 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		return m.getBoolean(PATH_WORLDS_IS_BLACKLIST,true);
 	}
 
-	
-	
-	
 	/**
 	 * @return the unique name
 	 */
@@ -199,16 +201,12 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		return ChatColor.translateAlternateColorCodes('&', tempDisplayName);
 	}
 	protected abstract boolean shouldAutogenDisplayName();
-	
-	
-	
-
 	protected abstract List<String> getWorldsListDefault();
 	protected abstract boolean shouldWorldsAutogen();
 	protected abstract boolean getUseWorldsAsBlacklistDefault();
 	
 	
-	private ArrayList<EditorButtonFactory> tools = new ArrayList<EditorButtonFactory>();
+	private HashMap<Integer,EditorButtonFactory> tools = new HashMap<Integer,EditorButtonFactory>();
 	public void openEditorGui(Player p){
 		openEditorGui(p,null);
 	}
@@ -216,9 +214,9 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public void openEditorGui(Player p,CustomGui previusHolder){
 		p.openInventory(new EditorGui(p,this,previusHolder,tools).getInventory());
 	}
-	public void addToEditor(EditorButtonFactory item) {
+	public void addToEditor(int slot,EditorButtonFactory item) {
 		if (item!=null)
-			tools.add(item);
+			tools.put(slot,item);
 	}
 
 	private final static BaseComponent[] changeTitleDesc = new ComponentBuilder(
@@ -228,7 +226,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 			).create();
 	private class DisplayNameEditorButtonFactory implements EditorButtonFactory {
 		private class DisplayNameEditorButton extends TextEditorButton {
-			private ItemStack item = new ItemStack(Material.PAPER);
+			private ItemStack item = new ItemStack(Material.NAME_TAG);
 			public DisplayNameEditorButton(CustomGui parent) {
 				super(parent);
 				ItemMeta meta = item.getItemMeta();

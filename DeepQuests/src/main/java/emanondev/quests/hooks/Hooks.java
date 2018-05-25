@@ -24,5 +24,8 @@ public class Hooks {
 	public static boolean isCitizenEnabled() {
 		return citizens;
 	}
+	public static boolean isVirginBlockPluginEnabled() {
+		return virginBlock;
+	}
 
 }

@@ -1,5 +1,6 @@
 package emanondev.quests;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,23 +65,23 @@ public class Defaults {
 			}
 		}
 
-		public static boolean shouldLoreAutogen(DisplayState state) {
+		public static boolean shouldDescriptionAutogen(DisplayState state) {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".desc"
 					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".desc"
 					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
 		}
-
+		/*
 		public static boolean shouldTitleAutogen(DisplayState state) {
 			return data.getBoolean(BASE_PATH+"display."+state.toString()+".title"
 					+".autogenerate",false);
@@ -88,8 +89,8 @@ public class Defaults {
 
 		public static String getDefaultTitle(DisplayState state) {
 			return data.getString(BASE_PATH+"display."+state.toString()+".title"+".value",
-					"&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---");
-		}
+					"&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---");
+		}*/
 
 		public static ItemStack getDefaultItem(DisplayState state) {
 			ItemStack item;
@@ -197,24 +198,24 @@ public class Defaults {
 			throw new IllegalArgumentException();
 		}
 
-		public static List<String> getDefaultLore(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".lore"
+		public static ArrayList<String> getDefaultDescription(DisplayState state) {
+			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".desc"
 				+".value");
 			if (list!=null)
-				return list;
+				return new ArrayList<String>(list);
 			switch (state) {
 			case ONPROGRESS:
-				return Arrays.asList("on progress lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			case UNSTARTED:
-				return Arrays.asList("unstarted lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			case COMPLETED:
-				return Arrays.asList("completed lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			case COOLDOWN:
-				return Arrays.asList("cooldown lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			case LOCKED:
-				return Arrays.asList("locked lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			case FAILED:
-				return Arrays.asList("failed lore default");
+				return new ArrayList<String>(Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{quest-name}&r &8*     &l&m--]&9&l&m---"));
 			default:
 				throw new IllegalArgumentException();
 			}
@@ -274,31 +275,31 @@ public class Defaults {
 			}
 		}
 
-		public static boolean shouldLoreAutogen(DisplayState state) {
+		public static boolean shouldDescriptionAutogen(DisplayState state) {
 			switch (state) {
 			case ONPROGRESS:
 			case UNSTARTED:
-				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".desc"
 					+".autogenerate",true);
 			case COMPLETED:
 			case COOLDOWN:
 			case LOCKED:
 			case FAILED:
-				return data.getBoolean(BASE_PATH+"display."+state.toString()+".lore"
+				return data.getBoolean(BASE_PATH+"display."+state.toString()+".desc"
 					+".autogenerate",false);
 			default:
 				throw new IllegalArgumentException();
 			}
 		}
-
+		/*
 		public static boolean shouldTitleAutogen(DisplayState state) {
 			return data.getBoolean(BASE_PATH+"display."+state.toString()+".title"
 					+".autogenerate",false);
 		}
 		public static String getDefaultTitle(DisplayState state) {
 			return data.getString(BASE_PATH+"display."+state.toString()+".title"
-			+".value","&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---");
-		}//TODO
+			+".value","&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
+		}*/
 
 		public static ItemStack getDefaultItem(DisplayState state) {
 			ItemStack item;
@@ -406,24 +407,24 @@ public class Defaults {
 			throw new IllegalArgumentException();
 		}
 
-		public static List<String> getDefaultLore(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".lore"
+		public static List<String> getDefaultDescription(DisplayState state) {
+			List<String> list = MemoryUtils.getStringList(data, BASE_PATH+"display."+state.toString()+".desc"
 				+".value");
 			if (list!=null)
 				return list;
 			switch (state) {
 			case ONPROGRESS:
-				return Arrays.asList("on progress lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			case UNSTARTED:
-				return Arrays.asList("unstarted lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			case COMPLETED:
-				return Arrays.asList("completed lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			case COOLDOWN:
-				return Arrays.asList("cooldown lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			case LOCKED:
-				return Arrays.asList("locked lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			case FAILED:
-				return Arrays.asList("locked lore default");
+				return Arrays.asList("&9&l&m---&8&l&m[--&8     * &9{mission-name}&r &8*     &l&m--]&9&l&m---");
 			default:
 				throw new IllegalArgumentException();
 			}

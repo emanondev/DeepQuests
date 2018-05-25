@@ -53,16 +53,14 @@ quest:
                 #ex: DIAMOND_SWORD:0:100:true (DIAMOND_SWORD:100:true)
                 #data and damage default values when not specified are both 0
                 value: "STAINED_GLASS_PANE:14"
-            title:
-                autogenerate: false
-                value: "&4&l&m---&r&8&l&m[--&r     &8* &4{quest-name}&r &8*&r     &8&l&m--]&4&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&4&l&m---&8&l&m[--&8     * &4{quest-name}&8 *     &l&m--]&4&l&m---"
                 - ""
                 - "&7➤ Quest Locked"
                 - ""
-                - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
         #when player meets requires to start a quest
         UNSTARTED:
             hide:
@@ -72,16 +70,14 @@ quest:
             item:
                 autogenerate: false
                 value: "BOOK"
-            title:
-                autogenerate: false
-                value: "&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&9&l&m---&8&l&m[--&8     * &9{quest-name}&8 *     &l&m--]&9&l&m---"
                 - ""
-                - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
+                - "&7➤ Missions: &e{completed-mission-amount}&9/{mission-amount}"
                 - ""
-                - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
         #when player has started the quest
         ONPROGRESS:
             hide:
@@ -90,16 +86,14 @@ quest:
             item:
                 autogenerate: false
                 value: "BOOK"
-            title:
-                autogenerate: false
-                value: "&9&l&m---&r&8&l&m[--&r     &8* &9{quest-name}&r &8*&r     &8&l&m--]&9&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&9&l&m---&8&l&m[--&8     * &9{quest-name}&8 *     &l&m--]&9&l&m---"
                 - ""
-                - "&7➤ Missions: &e{completed-mission-number}&9/{mission-number}"
+                - "&7➤ Missions: &e{completed-mission-amount}&9/{mission-amount}"
                 - ""
-                - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
         #when player has completed the quest but it"s still waiting to unlock it again
         COOLDOWN:
             hide:
@@ -108,16 +102,14 @@ quest:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:1"
-            title:
-                autogenerate: false
-                value: "&6&l&m---&r&8&l&m[--&r     &8* &6{quest-name}&r &8*&r     &8&l&m--]&6&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&6&l&m---&8&l&m[--&8     * &6{quest-name}&8 *     &l&m--]&6&l&m---"
                 - ""
                 - "&7➤ Quest On Cooldown for {quest-cooldownleft}"
                 - ""
-                - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+                - "&6&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&6&l&m---"
         #when player has completed and cannot do it again (cooldown = false)
         COMPLETED:
             hide:
@@ -126,16 +118,14 @@ quest:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:5"
-            title:
-                autogenerate: false
-                value: "&2&l&m---&r&8&l&m[--&r     &8* &2{quest-name}&r &8*&r     &8&l&m--]&2&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&2&l&m---&8&l&m[--&8     * &2{quest-name}&8 *     &l&m--]&2&l&m---"
                 - ""
                 - "&2➤ Quest Completed"
                 - ""
-                - "&2&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&2&l&m---"
+                - "&2&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&2&l&m---"
         #when player has failed and cannot do it again (cooldown = false)
         FAILED:
             hide:
@@ -144,16 +134,14 @@ quest:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:15"
-            title:
-                autogenerate: false
-                value: "&4&l&m---&r&8&l&m[--&r     &8* &4{quest-name}&r &8*&r     &8&l&m--]&4&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value:
+                - "&4&l&m---&8&l&m[--&8     * &4{quest-name}&8 *     &l&m--]&4&l&m---"
                 - ""
                 - "&7➤ Quest Failed!"
                 - ""
-                - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
     display-name:
         autogenerate: true
 #default missions configurations
@@ -190,16 +178,14 @@ mission:
                 #ex: DIAMOND_SWORD:0:100:true (DIAMOND_SWORD:100:true)
                 #data and damage default values when not specified are both 0
                 value: "STAINED_GLASS_PANE:14"
-            title:
-                autogenerate: false
-                value: "&4&l&m---&r&8&l&m[--&r     &8* &4{mission-name}&r &8*&r     &8&l&m--]&4&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&4&l&m---&8&l&m[--&8     * &4{mission-name}&8 *     &l&m--]&4&l&m---"
                 - ""
                 - "&7➤ Mission Locked"
                 - ""
-                - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
         #when player meets requires to start a mission
         UNSTARTED:
             hide:
@@ -209,16 +195,14 @@ mission:
             item:
                 autogenerate: false
                 value: "PAPER"
-            title:
-                autogenerate: false
-                value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&9&l&m---&8&l&m[--&8     * &9{mission-name}&8 *     &l&m--]&9&l&m---"
                 - ""
                 - "{foreach-task}&7➤ {<task>-unstarted-description}"
                 - ""
-                - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
         #when player has started the mission
         ONPROGRESS:
             hide:
@@ -227,16 +211,14 @@ mission:
             item:
                 autogenerate: false
                 value: "MAP"
-            title:
-                autogenerate: false
-                value: "&9&l&m---&r&8&l&m[--&r     &8* &9{mission-name}&r &8*&r     &8&l&m--]&9&l&m---"
-            lore:
+            desc:
                 autogenerate: false 
                 value: 
+                - "&9&l&m---&8&l&m[--&8     * &9{mission-name}&8 *     &l&m--]&9&l&m---"
                 - ""
                 - "{foreach-task}&7➤ {<task>-progress-description}"
                 - ""
-                - "&9&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
         #when player has completed the mission but it"s still waiting to unlock it again
         COOLDOWN:
             hide:
@@ -245,16 +227,14 @@ mission:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:1"
-            title:
-                autogenerate: false
-                value: "&6&l&m---&r&8&l&m[--&r     &8* &6{mission-name}&r &8*&r     &8&l&m--]&6&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&6&l&m---&8&l&m[--&8     * &6{mission-name}&8 *     &l&m--]&6&l&m---"
                 - ""
                 - "&7➤ Mission On Cooldown for {mission-cooldownleft}"
                 - ""
-                - "&6&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&6&l&m---"
+                - "&6&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&6&l&m---"
         #when player has completed and cannot do it again (cooldown = false)
         COMPLETED:
             hide:
@@ -263,16 +243,14 @@ mission:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:5"
-            title:
-                autogenerate: false
-                value: "&2&l&m---&r&8&l&m[--&r     &8* &2{mission-name}&r &8*&r     &8&l&m--]&2&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value: 
+                - "&2&l&m---&8&l&m[--&8     * &2{mission-name}&8 *     &l&m--]&2&l&m---"
                 - ""
                 - "&2➤ Mission Completed"
                 - ""
-                - "&2&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&2&l&m---"
+                - "&2&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&2&l&m---"
         #when player has failed and cannot do it again (cooldown = false)
         FAILED:
             hide:
@@ -281,16 +259,14 @@ mission:
             item:
                 autogenerate: false
                 value: "STAINED_GLASS_PANE:15"
-            title:
-                autogenerate: false
-                value: "&4&l&m---&r&8&l&m[--&r     &8* &4{mission-name}&r &8*&r     &8&l&m--]&4&l&m---"
-            lore:
+            desc:
                 autogenerate: false
                 value:
+                - "&4&l&m---&8&l&m[--&8     * &4{mission-name}&8 *     &l&m--]&4&l&m---"
                 - ""
                 - "&7➤ Mission Failed!"
                 - ""
-                - "&4&l&m---&r&8&l&m[--&r            &8&m*---------*&r            &8&l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
     
     display-name:
         autogenerate: true

@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,9 +54,9 @@ public class BreedMobTaskType extends TaskType {
 			super(m, parent,BreedMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(entity.getEntityTypeEditorButtonFactory());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(9,entity.getEntityTypeEditorButtonFactory());
+			this.addToEditor(10,entity.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveExpEditorButtonFactory());
 		}
 		
 	}
@@ -62,5 +64,20 @@ public class BreedMobTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new BreedMobTask(m,parent);
+	}
+	
+
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.FENCE;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to breeding a specified number",
+			"&7of Animals of the selected type"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

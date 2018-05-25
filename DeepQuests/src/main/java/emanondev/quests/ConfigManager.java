@@ -125,7 +125,7 @@ public class ConfigManager {
 			config.getString("gui.missions-menu.title", "&9Quest: {quest-name}"));
 	public String getMissionsMenuTitle(Player p,Quest q) {
 		return StringUtils.convertText(p, missionsMenuTitle, 
-				Quest.HOLDER_QUEST_NAME, q.getDisplayName());
+				H.QUEST_NAME, q.getDisplayName());
 	}
 	private ItemStack missionsMenuPageItem = 
 			readItem("gui.missions-menu.page.item","NAME_TAG");

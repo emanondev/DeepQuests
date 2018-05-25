@@ -16,6 +16,7 @@ import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.EditorGui;
+import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
@@ -69,8 +70,10 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			throw new IllegalArgumentException("task max progress must be always > 0");
 		this.descUnstarted = loadDescUnstarted(m);
 		this.descProgress = loadDescProgress(m);
-		
-		this.addToEditor(new MaxProgressButtonFactory());
+
+		this.addToEditor(8,new MaxProgressButtonFactory());
+		this.addToEditor(16,new UnstartedDescEditorButtonFactory());
+		this.addToEditor(17,new ProgressDescEditorButtonFactory());
 	}
 	private String loadDescUnstarted(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
@@ -86,15 +89,39 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	}
 	private String loadDescProgress(MemorySection m) {
 		if (!m.isString(PATH_TASK_DESCRIPTION_PROGRESS)) {
-			String val = Defaults.TaskDef.getProgressDescription()
-					.replace("<task>",this.getNameID());
+			String val = StringUtils.revertColors(Defaults.TaskDef.getProgressDescription()
+					.replace("<task>",this.getNameID()));
 			m.set(PATH_TASK_DESCRIPTION_PROGRESS, val);
 			dirty = true;
 			return val;
 		}
-		return m.getString(PATH_TASK_DESCRIPTION_PROGRESS, 
+		return StringUtils.revertColors(m.getString(PATH_TASK_DESCRIPTION_PROGRESS, 
 			Defaults.TaskDef.getProgressDescription()
-			.replace("<task>",this.getNameID()));
+			.replace("<task>",this.getNameID())));
+	}
+	public boolean setUnstartedDescription(String name) {
+		if (name==null)
+			return false;
+		name = StringUtils.revertColors(name.replace("<task>",this.getNameID()));
+		if (name.equals(descUnstarted))
+			return false;
+		this.descUnstarted = name;
+		getSection().set(PATH_TASK_DESCRIPTION_UNSTARTED,descUnstarted);
+		getParent().reloadDisplay();
+		setDirty(true);
+		return true;
+	}
+	public boolean setProgressDescription(String name) {
+		if (name==null)
+			return false;
+		name = StringUtils.revertColors(name.replace("<task>",this.getNameID()));
+		if (name.equals(descProgress))
+			return false;
+		this.descProgress = name;
+		getSection().set(PATH_TASK_DESCRIPTION_PROGRESS,descProgress);
+		getParent().reloadDisplay();
+		setDirty(true);
+		return true;
 	}
 	public String getUnstartedDescription() {
 		return this.descUnstarted;
@@ -102,8 +129,8 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	public String getProgressDescription() {
 		return this.descProgress;
 	}
-	private final String descUnstarted;
-	private final String descProgress;
+	private String descUnstarted;
+	private String descProgress;
 	private final TaskType type;
 	private int maxProgress;
 	private final Mission parent;
@@ -141,6 +168,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 			return false;
 		this.maxProgress = value;
 		getSection().set(PATH_TASK_MAX_PROGRESS, maxProgress);
+		getParent().reloadDisplay();
 		this.setDirty(true);
 		return true;
 	}
@@ -336,8 +364,10 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 					public void update() {}
 					@Override
 					public void onClick(Player clicker, ClickType click) {
-						if (setMaxProgress(getMaxProgress()+amount))
+						if (setMaxProgress(getMaxProgress()+amount)) {
+							//AbstractTask.this.getParent().reloadDisplay();
 							getParent().update();
+						}
 					}
 				}
 				
@@ -347,6 +377,112 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		@Override
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new MaxProgressEditorButton(parent);
+		}
+	}
+
+	private static final BaseComponent[] changeUnstartedDescDescription = new ComponentBuilder(
+			ChatColor.GOLD+"Click suggest the command and the old task description when unstarted\n\n"+
+			ChatColor.GOLD+"Change override old description with new description\n"+
+			ChatColor.YELLOW+"/questtext <new description>\n\n"+
+			ChatColor.GRAY+"Values between { } are placeholders"
+			).create();
+	private class UnstartedDescEditorButtonFactory implements EditorButtonFactory {
+		private class UnstartedDescEditorButton extends TextEditorButton {
+			private ItemStack item = new ItemStack(Material.NAME_TAG);
+			public UnstartedDescEditorButton(CustomGui parent) {
+				super(parent);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lUnstarted Task Description Editor");
+				desc.add("&6Click to edit");
+				desc.add("&7Current value:");
+				desc.add("&7'&f"+descUnstarted+"&7'");
+				desc.add("");
+				desc.add("&7Represent the description of the task");
+				desc.add("&7When the task is not started by the player");
+				StringUtils.setDescription(item, desc);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				this.requestText(clicker, StringUtils.revertColors(descUnstarted), changeUnstartedDescDescription);
+			}
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void onReicevedText(String text) {
+				if (text == null)
+					text = "";
+				if (setUnstartedDescription(text)) {
+					update();
+					getParent().reloadInventory();
+					((EditorGui) getParent()).updateTitle();
+				}
+				else
+					getOwner().sendMessage(StringUtils.fixColorsAndHolders(
+							"&cSelected description was not a valid description"));
+			}
+		}
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new UnstartedDescEditorButton(parent);
+		}
+	}
+	
+	private static final BaseComponent[] changeProgressDescDescription = new ComponentBuilder(
+			ChatColor.GOLD+"Click suggest the command and the old task description when in progress\n\n"+
+			ChatColor.GOLD+"Change override old description with new description\n"+
+			ChatColor.YELLOW+"/questtext <new description>\n\n"+
+			ChatColor.GRAY+"Values between { } are placeholders"
+			).create();
+	private class ProgressDescEditorButtonFactory implements EditorButtonFactory {
+		private class ProgressDescEditorButton extends TextEditorButton {
+			private ItemStack item = new ItemStack(Material.NAME_TAG);
+			public ProgressDescEditorButton(CustomGui parent) {
+				super(parent);
+				update();
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			public void update() {
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lOn progress Task Description Editor");
+				desc.add("&6Click to edit");
+				desc.add("&7Current value:");
+				desc.add("&7'&f"+descProgress+"&7'");
+				desc.add("");
+				desc.add("&7Represent the description of the task");
+				desc.add("&7When the task is started by the player");
+				StringUtils.setDescription(item, desc);
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				this.requestText(clicker, StringUtils.revertColors(descProgress), changeProgressDescDescription);
+			}
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void onReicevedText(String text) {
+				if (text == null)
+					text = "";
+				if (setProgressDescription(text)){
+					update();
+					getParent().reloadInventory();
+					((EditorGui) getParent()).updateTitle();
+				}
+				else
+					getOwner().sendMessage(StringUtils.fixColorsAndHolders(
+							"&cSelected description was not a valid description"));
+			}
+		}
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new ProgressDescEditorButton(parent);
 		}
 	}
 }

@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,6 +54,19 @@ public class EnterRegionTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new EnterRegionTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.COMPASS;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has enter a specified region",
+			"&7for a specified amount of times"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 
 }

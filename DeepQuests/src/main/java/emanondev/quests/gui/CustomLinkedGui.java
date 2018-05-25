@@ -13,8 +13,9 @@ public abstract class CustomLinkedGui<T extends CustomButton> extends CustomGui{
 	}
 	public void reloadInventory() {
 		for (int i = 0 ; i < size() ; i++)
-			if (items.containsKey(i))
+			if (items.containsKey(i) && items.get(i)!=null) {
 				getInventory().setItem(i,items.get(i).getItem());
+			}
 			else
 				getInventory().setItem(i,null);
 		super.reloadInventory();

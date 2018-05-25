@@ -11,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class DisplayStateInfo implements Savable {
 	
-	private final static String PATH_LORE = ".lore";
+	private final static String PATH_DESC = ".desc";
 	private final static String PATH_ITEM = ".item";//state.title
-	private final static String PATH_TITLE = ".title";
+	//private final static String PATH_TITLE = ".title";
 	private final static String PATH_HIDE = ".hide";
 	
 	private boolean dirty = false;//utility
@@ -49,13 +49,15 @@ public abstract class DisplayStateInfo implements Savable {
 		public Info(MemorySection m,DisplayState state) {
 			String basePath = state.toString();
 			craftDisplayItem(m,basePath+PATH_ITEM,getDefaultItem(state),shouldItemAutogen(state));
-			craftDisplayTitle(m,basePath+PATH_TITLE,getDefaultTitle(state),shouldTitleAutogen(state));
-			craftDisplayLore(m,basePath+PATH_LORE,getDefaultLore(state),shouldLoreAutogen(state));
+			craftDisplayDescription(m,basePath+PATH_DESC,getDefaultDescription(state),shouldDescriptionAutogen(state));
+			//craftDisplayTitle(m,basePath+PATH_TITLE,getDefaultTitle(state),shouldTitleAutogen(state));
+			//craftDisplayLore(m,basePath+PATH_LORE,getDefaultLore(state),shouldLoreAutogen(state));
 			craftDisplayHide(m,basePath+PATH_HIDE,getDefaultHide(state),shouldHideAutogen(state));
 		}
 		private ItemStack item;
-		private List<String> lore;
-		private String title;
+		private List<String> desc;
+		//private List<String> lore;
+		//private String title;
 		private boolean hide;
 		
 		private void craftDisplayItem(MemorySection m, String path, ItemStack defaults,boolean autosave) {
@@ -77,7 +79,18 @@ public abstract class DisplayStateInfo implements Savable {
 			}
 			item = tempStack;
 		}
-
+		private void craftDisplayDescription(MemorySection m, String path,List<String> defaults, boolean autosave) {
+			
+			List<String> tempList = MemoryUtils.getStringList(m,path);
+			if (tempList == null) {
+				tempList = defaults;
+				if (tempList!=null && autosave) {
+					m.set(path, tempList);
+					dirty = true;
+				}
+			}
+			desc = tempList;
+		}/*
 		private void craftDisplayLore(MemorySection m, String path,List<String> defaults, boolean autosave) {
 		
 			List<String> tempList = MemoryUtils.getStringList(m,path);
@@ -104,7 +117,7 @@ public abstract class DisplayStateInfo implements Savable {
 			}
 			title = tempText;
 		}
-
+		*/
 		private void craftDisplayHide(MemorySection m, String path, boolean defaults,boolean autosave) {
 			boolean tempBool;
 			if (m.isBoolean(path))
@@ -123,40 +136,49 @@ public abstract class DisplayStateInfo implements Savable {
 	
 	protected abstract boolean shouldHideAutogen(DisplayState state);
 	protected abstract boolean shouldItemAutogen(DisplayState state);
-	protected abstract boolean shouldLoreAutogen(DisplayState state);
-	protected abstract boolean shouldTitleAutogen(DisplayState state);
+	protected abstract boolean shouldDescriptionAutogen(DisplayState state);
+	//protected abstract boolean shouldLoreAutogen(DisplayState state);
+	//protected abstract boolean shouldTitleAutogen(DisplayState state);
 	protected abstract boolean getDefaultHide(DisplayState state);
 	
 	protected abstract ItemStack getDefaultItem(DisplayState state);
-	
-	protected abstract List<String> getDefaultLore(DisplayState state);
-	protected abstract String getDefaultTitle(DisplayState state);
+
+	protected abstract List<String> getDefaultDescription(DisplayState state);
+	//protected abstract List<String> getDefaultLore(DisplayState state);
+	//protected abstract String getDefaultTitle(DisplayState state);
 	public abstract ItemStack getGuiItem(Player p,DisplayState state);
 
 	public ItemStack getItem(DisplayState state) {
 		return new ItemStack(infos.get(state).item);
 	}
-	public List<String> getLore(DisplayState state){
-		return new ArrayList<String>(infos.get(state).lore);
+	public ArrayList<String> getDescription(DisplayState state){
+		return new ArrayList<String>(infos.get(state).desc);
 	}
+	/*public List<String> getLore(DisplayState state){
+		return new ArrayList<String>(infos.get(state).lore);
+	}*/
 	public boolean isHidden(DisplayState state) {
 		return infos.get(state).hide;
 	}
-	public String getTitle(DisplayState state) {
+	/*public String getTitle(DisplayState state) {
 		return infos.get(state).title;
-	}
+	}*/
 	
 	public void setItem(DisplayState state,ItemStack item) {
 		infos.get(state).item = item;
 	}
-	public void setLore(DisplayState state,List<String> lore) {
-		infos.get(state).lore = lore;
-	}
 	public void setHide(DisplayState state,boolean hide) {
 		infos.get(state).hide = hide;
 	}
+	public void setDescription(DisplayState state,List<String> desc) {
+		infos.get(state).desc = desc;
+	}
+	/*
+	public void setLore(DisplayState state,List<String> lore) {
+		infos.get(state).lore = lore;
+	}
 	public void setTitle(DisplayState state,String title) {
 		infos.get(state).title = title;
-	}
+	}*/
 
 }

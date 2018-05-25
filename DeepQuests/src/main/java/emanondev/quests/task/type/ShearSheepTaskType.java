@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
@@ -51,9 +53,9 @@ public class ShearSheepTaskType extends TaskType {
 			super(m, parent,ShearSheepTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(entity.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(entity.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(9,entity.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(28,entity.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
 		}
 		
 	}
@@ -61,5 +63,18 @@ public class ShearSheepTaskType extends TaskType {
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new ShearSheepTask(m,parent);
+	}
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.SHEARS;
+	}
+
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to shear a specified number",
+			"&7of times a sheep"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
 	}
 }

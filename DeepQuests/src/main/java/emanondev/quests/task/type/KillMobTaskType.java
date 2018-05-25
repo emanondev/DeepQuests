@@ -1,7 +1,9 @@
 package emanondev.quests.task.type;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,18 +56,28 @@ public class KillMobTaskType extends TaskType {
 			super(m, parent, KillMobTaskType.this);
 			entityInfo = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(entityInfo.getEntityTypeEditorButtonFactory());
-			this.addToEditor(entityInfo.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(entityInfo.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(9,entityInfo.getEntityTypeEditorButtonFactory());
+			this.addToEditor(10,entityInfo.getSpawnReasonEditorButtonFactory());
+			this.addToEditor(29,entityInfo.getIgnoreCitizenNPCEditorButtonFactory());
+			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
+			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
 		}
 	}
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
 		return new KillMobTask(m,parent);
 	}
-	
-	
+	@Override
+	public Material getGuiItemMaterial() {
+		return Material.IRON_SWORD;
+	}
 
+	private static final List<String> description = Arrays.asList(
+			"&7Player has to kill a specified number",
+			"&7of entity of the selected type"
+			);
+	@Override
+	public List<String> getDescription() {
+		return description;
+	}
 }
