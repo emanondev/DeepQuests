@@ -50,7 +50,6 @@ public class CommandQuestText extends CmdManager implements TabExecutor {
 		}
 		else
 			map.get(p).onReicevedText(null);
-		
 		p.openInventory(map.get(p).getParent().getInventory());
 		map.remove(p);
 		return true;

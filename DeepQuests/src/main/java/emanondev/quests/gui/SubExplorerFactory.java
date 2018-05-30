@@ -33,15 +33,15 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 			item.setAmount(Math.max(1,Math.min(127,coll.size())));
 			ArrayList<String> desc = new ArrayList<String>();
 			if (type.isAssignableFrom(Task.class)) {
-				desc.add("&6&lTasks Menu");
+				desc.add("&a&lSelect &6&la Task");
 				desc.add("&6Click to Select a task to edit");
 			}
 			else if (type.isAssignableFrom(Mission.class)) {
-				desc.add("&6&lMissions Menu");
+				desc.add("&a&lSelect &6&la Missions");
 				desc.add("&6Click to Select a mission to edit");
 			}
 			else if (type.isAssignableFrom(Quest.class)) {
-				desc.add("&6&lQuests Menu");
+				desc.add("&a&lSelect &6&la Quests");
 				desc.add("&6Click to Select a quest to edit");
 			}
 			StringUtils.setDescription(item,desc);
@@ -104,7 +104,7 @@ public class SubExplorerFactory<T extends WithGui> implements EditorButtonFactor
 						}
 					}
 					else if (type.isAssignableFrom(Quest.class)) {
-						desc.add("&7Quest: '&e"+ld.getDisplayName()+"&6'");
+						desc.add("&6Quest: '&e"+ld.getDisplayName()+"&6'");
 						desc.add("&6Click to open editor");
 						desc.add("");
 						desc.add("&7 contains &e"+((Quest) ld).getMissions().size()+" &7missions");

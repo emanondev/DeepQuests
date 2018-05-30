@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
@@ -22,11 +23,14 @@ import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.SubExplorerFactory;
+import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.inventory.GuiManager.GuiHolder;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class QuestManager implements Savable {
 	private final static String PATH_QUESTS = "quests";
@@ -248,10 +252,10 @@ public class QuestManager implements Savable {
 			super(p,previusHolder, 6);
 			this.setFromEndCloseButtonPosition(8);
 					
-			this.addButton(19,new AddQuestButton(this));
+			this.addButton(13,new AddQuestButton(this));
 			if (quests.size()>0) {
-				this.addButton(25,new DeleteQuestButton(this));
-				this.addButton(22,new SubExplorerFactory<Quest>(Quest.class,getQuests(),
+				this.addButton(16,new DeleteQuestButton(this));
+				this.addButton(10,new SubExplorerFactory<Quest>(Quest.class,getQuests(),
 						"&8Quests List").getCustomButton(this));	
 			}
 			this.setTitle(null, StringUtils.fixColorsAndHolders("&8Quests Manager Editor"));
@@ -275,12 +279,65 @@ public class QuestManager implements Savable {
 
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				String key = getNewQuestID(QuestManager.this);
-				if (!addQuest(key,"New Quest")) {
-					//TODO
-					return;
+				clicker.openInventory(new CreateQuestGui(clicker,this.getParent()).getInventory());
+			}
+			private class CreateQuestGui extends CustomLinkedGui<CustomButton>{
+				private String displayName = null;
+				public CreateQuestGui(Player p, CustomGui previusHolder) {
+					super(p, previusHolder, 6);
+					this.setFromEndCloseButtonPosition(8);
+					this.addButton(22, new CreateQuestButton());
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&8Create a New Quest"));
+					reloadInventory();
 				}
-				clicker.performCommand("questadmin quest "+key+" editor");
+				private class CreateQuestButton extends TextEditorButton {
+					private ItemStack item = new ItemStack(Material.NAME_TAG);
+					public CreateQuestButton() {
+						super(CreateQuestGui.this);
+						update();
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Click to select a display name");
+						StringUtils.setDescription(item, desc);
+					}
+					private String key = null;
+					@Override
+					public void onReicevedText(String text) {
+						if (text==null || text.isEmpty()) {
+							CreateQuestGui.this.getPlayer().sendMessage(
+									StringUtils.fixColorsAndHolders("&cInvalid Name"));
+							return;
+						}
+						displayName = text;
+						key = getNewQuestID(QuestManager.this);
+						if (!addQuest(key,displayName)) {
+							return;
+						}
+						Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
+							@Override
+							public void run() {
+								CreateQuestGui.this.getPlayer()
+									.performCommand("questadmin quest "+key+" editor");
+							}
+						}, 2);
+					}
+
+
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (displayName==null)
+							this.requestText(clicker, null, setDisplayNameDescription);
+						else
+							if (key!=null)
+								CreateQuestGui.this.getPlayer().performCommand("questadmin quest "+key+" editor");
+					}
+				}
 			}
 		}
 		private class DeleteQuestButton extends CustomButton {
@@ -381,4 +438,9 @@ public class QuestManager implements Savable {
 			}
 		}
 	}
+	private final static BaseComponent[] setDisplayNameDescription = new ComponentBuilder(
+			ChatColor.GOLD+"Click suggest the command\n\n"+
+			ChatColor.GOLD+"Set the display name for the quest\n"+
+			ChatColor.YELLOW+"/questtext <display name>"
+			).create();
 }

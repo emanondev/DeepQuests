@@ -35,6 +35,7 @@ public class EditorGui<T extends WithGui> extends CustomLinkedGui<CustomButton> 
 		updateTitle();
 		reloadInventory();
 	}
+	
 	public void updateTitle() {
 		if (wg instanceof Task) {
 			setTitle(null,StringUtils.fixColorsAndHolders("&8Task: &9"+StringUtils.withoutColor(wg.getDisplayName())

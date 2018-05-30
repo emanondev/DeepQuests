@@ -2,7 +2,9 @@ package emanondev.quests;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.LoggerManager.Logger;
@@ -10,8 +12,10 @@ import emanondev.quests.command.CmdManager;
 import emanondev.quests.command.CommandQuestText;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
+import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomGuiHandler;
 import emanondev.quests.inventory.GuiManager;
+import emanondev.quests.inventory.GuiManager.GuiHolder;
 import emanondev.quests.mission.MissionManager;
 import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
@@ -194,6 +198,12 @@ public class Quests extends JavaPlugin {
 		playerManager.reload();
 	}
 	public void onDisable() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Inventory inv = p.getOpenInventory().getTopInventory();
+			if (inv != null && inv.getHolder()!=null)
+				if (inv.getHolder() instanceof CustomGui || inv.getHolder() instanceof GuiHolder)
+					p.closeInventory();
+		}
 		playerManager.saveAll();
 	}
 	

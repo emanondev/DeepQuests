@@ -10,7 +10,7 @@ public abstract class AbstractRequireType {
 		this.key = key.toUpperCase();
 	}
 	
-	public final String getNameID() {
+	public final String getKey() {
 		return key;
 	}
 

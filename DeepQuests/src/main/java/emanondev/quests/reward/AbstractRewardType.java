@@ -1,6 +1,6 @@
 package emanondev.quests.reward;
 
-public abstract class AbstractRewardType {
+public abstract class AbstractRewardType{
 	private final String key;
 	public AbstractRewardType(String key) {
 		if (key == null)
@@ -9,8 +9,7 @@ public abstract class AbstractRewardType {
 			throw new IllegalArgumentException("invalid reward name '"+key+"'");
 		this.key = key.toUpperCase();
 	}
-	
-	public final String getNameID() {
+	public final String getKey() {
 		return key;
 	}
 }

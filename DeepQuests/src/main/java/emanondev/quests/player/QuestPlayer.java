@@ -86,13 +86,13 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	}
 	private boolean hasRequires(Mission m) {
 		for (MissionRequire req: m.getRequires())
-			if (!req.isAllowed(this, m))
+			if (!req.isAllowed(this))
 				return false;
 		return true;
 	}
 	private boolean hasRequires(Quest q) {
 		for (QuestRequire req: q.getRequires())
-			if (req.isAllowed(this, q))
+			if (req.isAllowed(this))
 				return false;
 		return true;
 	}

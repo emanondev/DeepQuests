@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
@@ -22,11 +23,13 @@ import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.EditorButtonFactory;
+import emanondev.quests.gui.QuestRequireExplorerFactory;
 import emanondev.quests.gui.SubExplorerFactory;
+import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
+import emanondev.quests.require.QuestRequireType;
 import emanondev.quests.task.Task;
-import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
@@ -41,33 +44,11 @@ public class Quest extends YmlLoadableWithCooldown{
 	public static final String PATH_REQUIRES = "requires";
 	
 	private final LinkedHashMap<String,Mission> missions = new LinkedHashMap<String,Mission>();
-	
-	@Override
-	public void setDirty(boolean value) {
-		super.setDirty(value);
-		if (this.isDirty()==false) {
-			for (Mission mission : missions.values())
-				mission.setDirty(false);
-			this.displayInfo.setDirty(false);
-		}
-		else {
-			getParent().setDirty(true);
-		}
-	}
 	private final QuestManager parent;
-	public QuestManager getParent(){
-		return parent;
-	}
-	private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
-	public List<QuestRequire> getRequires(){
-		return Collections.unmodifiableList(requires);
-	}
-	public Mission getMissionByNameID(String key) {
-		return missions.get(key);
-	}
-	public Collection<Mission> getMissions(){
-		return Collections.unmodifiableCollection(missions.values());
-	}
+	private final LinkedHashMap<String,QuestRequire> requires = new LinkedHashMap<String,QuestRequire>();
+	//private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
+	private final QuestDisplayInfo displayInfo;
+
 	public Quest(MemorySection m,QuestManager parent) {
 		super(m);
 		if (parent == null)
@@ -83,9 +64,9 @@ public class Quest extends YmlLoadableWithCooldown{
 				setDirty(true);
 		}
 			
-		List<QuestRequire> req= loadRequires(m);
+		LinkedHashMap<String,QuestRequire> req = loadRequires(m);
 		if (req!=null)
-			requires.addAll(req);		
+			requires.putAll(req);		
 		displayInfo = loadDisplayInfo(m);
 		if (displayInfo.isDirty())
 			this.setDirty(true);
@@ -94,146 +75,34 @@ public class Quest extends YmlLoadableWithCooldown{
 				"&8Missions List"));
 		this.addToEditor(1, new AddMissionFactory());
 		this.addToEditor(2, new DeleteMissionFactory());
+		this.addToEditor(18, new QuestRequireExplorerFactory(requires.values(),"&8Requires"));
+		this.addToEditor(19, new AddRequireFactory());
+		this.addToEditor(20, new DeleteRequireFactory());
 	}
-	
-	private class AddMissionFactory implements EditorButtonFactory{
-		private class AddMissionGuiItem extends CustomButton {
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
-
-			public AddMissionGuiItem(CustomGui parent) {
-				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Mission"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Mission"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
-			}
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				String key = QuestManager.getNewMissionID(Quest.this);
-				if (!addMission(key,"New Mission")) {
-					//TODO
-					return;
-				}
-				clicker.performCommand("questadmin quest "+Quest.this.getNameID()+" mission "+key+" editor");
-			}
+	@Override
+	public void setDirty(boolean value) {
+		super.setDirty(value);
+		if (this.isDirty()==false) {
+			for (Mission mission : missions.values())
+				mission.setDirty(false);
+			this.displayInfo.setDirty(false);
 		}
-
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddMissionGuiItem(parent);
+		else {
+			getParent().setDirty(true);
 		}
 	}
-	private class DeleteMissionFactory implements EditorButtonFactory {
-		private class DeleteMissionButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-			public DeleteMissionButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&c&lDelete &6&lMission");
-				desc.add("&6Click to select and delete a Mission");
-				StringUtils.setDescription(item,desc);
-			}
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new DeleteMissionSelectorGui(clicker,getParent()).getInventory());
-			}
-			private class DeleteMissionSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteMissionSelectorGui(Player p,CustomGui previusHolder) {
-					super(p,previusHolder,6,1);
-					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Mission to delete"));
-					for (Mission mission : getMissions()) {
-						this.addButton(new SelectMissionButton(mission));
-					}
-					this.setFromEndCloseButtonPosition(8);
-					this.reloadInventory();
-				}
-				private class SelectMissionButton extends CustomButton{
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private Mission mission;
-					
-					public SelectMissionButton(Mission mission) {
-						super(DeleteMissionSelectorGui.this);
-						this.mission = mission;
-						this.update();
-					}
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Mission: '&e"+mission.getDisplayName()+"&6'");
-						desc.add("&7 contains &e"+mission.getTasks().size()+" &7tasks");
-						for (Task task : mission.getTasks()) {
-							desc.add("&7 - &e"+task.getDisplayName()+" &7("+task.getTaskType().getKey()+")");
-						}
-						StringUtils.setDescription(item,desc);
-					}
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
-					}
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22,new ConfirmationButton());
-							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							this.setFromEndCloseButtonPosition(8);
-							reloadInventory();
-						}
-						
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cMission delete can't be undone");
-								desc.add("");
-								desc.add("&6Mission: '&e"+mission.getDisplayName()+"&6'");
-								desc.add("&7 contains &e"+mission.getTasks().size()+" &7tasks");
-								for (Task task : mission.getTasks()) {
-									desc.add("&7 - &e"+task.getDisplayName()+" &7("+task.getTaskType().getKey()+")");
-								}
-								StringUtils.setDescription(item,desc);
-								
-							}
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteMission(mission);
-								clicker.performCommand("questadmin quest "+Quest.this.getNameID()+" editor");
-							}
-						}
-					}
-				}
-			}
-		}
-	
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			if (missions.size() >0)
-				return new DeleteMissionButton(parent);
-			return null;
-		}
+	public QuestManager getParent(){
+		return parent;
 	}
-	private final QuestDisplayInfo displayInfo;
+	public Collection<QuestRequire> getRequires(){
+		return Collections.unmodifiableCollection(requires.values());
+	}
+	public Mission getMissionByNameID(String key) {
+		return missions.get(key);
+	}
+	public Collection<Mission> getMissions(){
+		return Collections.unmodifiableCollection(missions.values());
+	}
 	@Override
 	public QuestDisplayInfo getDisplayInfo() {
 		return displayInfo;
@@ -282,8 +151,8 @@ public class Quest extends YmlLoadableWithCooldown{
 		}
 		if (requires.size() > 0) {
 			comp.append("\n"+ChatColor.DARK_AQUA+"Requires:");
-			for (QuestRequire require : requires) {
-				comp.append("\n"+ChatColor.AQUA+" - "+require.toText());
+			for (QuestRequire require : requires.values()) {
+				comp.append("\n"+ChatColor.AQUA+" - "+require.getDescription());
 				
 			}
 		}
@@ -298,9 +167,9 @@ public class Quest extends YmlLoadableWithCooldown{
 		return new QuestDisplayInfo(m,this);
 	}
 	
-	private List<QuestRequire> loadRequires(MemorySection m) {
-		List<String> l = MemoryUtils.getStringList(m, PATH_REQUIRES);
-		return Quests.getInstance().getRequireManager().convertQuestRequires(l);
+	private LinkedHashMap<String,QuestRequire> loadRequires(MemorySection m) {
+		return Quests.getInstance().getRequireManager().loadRequires(
+				this,(MemorySection) getSection().get(PATH_REQUIRES));
 	}
 	private LinkedHashMap<String, Mission> loadMissions(MemorySection m) {
 		if (m == null)
@@ -379,4 +248,387 @@ public class Quest extends YmlLoadableWithCooldown{
 		Quests.getInstance().getPlayerManager().reload();
 		return true;
 	}
+	private final static String PATH_REQUIRE_TYPE = "type";
+	public QuestRequire addRequire(QuestRequireType type) {
+		if (type==null)
+			return null;
+		String key = null;
+		int i = 0;
+		do {
+			key = "rq"+i;
+			i++;
+		} while (requires.containsKey(key));
+		getSection().set(PATH_REQUIRES+"."+key+"."+PATH_REQUIRE_TYPE,type.getKey());
+		QuestRequire req = type.getRequireInstance((MemorySection) getSection().get(PATH_REQUIRES+"."+key), this);
+		setDirty(true);
+		return req;
+	}
+	public boolean deleteRequire(QuestRequire req) {
+		if (req == null)
+			return false;
+		getSection().set(PATH_REQUIRES+"."+req.getNameID(),null);
+		setDirty(true);
+		return true;
+	}
+
+	private class AddMissionFactory implements EditorButtonFactory{
+		private class AddMissionGuiItem extends CustomButton {
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+	
+			public AddMissionGuiItem(CustomGui parent) {
+				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Mission"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Mission"));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new CreateMissionGui(clicker,this.getParent()).getInventory());
+			}
+			private class CreateMissionGui extends CustomLinkedGui<CustomButton>{
+				private String displayName = null;
+				public CreateMissionGui(Player p, CustomGui previusHolder) {
+					super(p, previusHolder, 6);
+					this.setFromEndCloseButtonPosition(8);
+					this.addButton(22, new CreateQuestButton());
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&8Create a New Mission"));
+					reloadInventory();
+				}
+				private class CreateQuestButton extends TextEditorButton {
+					private ItemStack item = new ItemStack(Material.NAME_TAG);
+					public CreateQuestButton() {
+						super(CreateMissionGui.this);
+						update();
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Click to select a display name");
+						StringUtils.setDescription(item, desc);
+					}
+					private String key = null;
+					@Override
+					public void onReicevedText(String text) {
+						if (text==null || text.isEmpty()) {
+							CreateMissionGui.this.getPlayer().sendMessage(
+									StringUtils.fixColorsAndHolders("&cInvalid Name"));
+							return;
+						}
+						displayName = text;
+						key = QuestManager.getNewMissionID(Quest.this);
+						if (!addMission(key,displayName)) {
+							return;
+						}
+						Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
+							@Override
+							public void run() {
+								CreateMissionGui.this.getPlayer().performCommand("questadmin quest "+
+											Quest.this.getNameID()+" mission "+key+" editor");
+							}
+						}, 2);
+					}
+	
+	
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						if (displayName==null)
+							this.requestText(clicker, null, setDisplayNameDescription);
+						else
+							if (key!=null)
+								clicker.performCommand("questadmin quest "+
+										Quest.this.getNameID()+" mission "+key+" editor");
+					}
+				}
+			}
+		}
+	
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new AddMissionGuiItem(parent);
+		}
+	}
+	private class DeleteMissionFactory implements EditorButtonFactory {
+		private class DeleteMissionButton extends CustomButton {
+			private ItemStack item = new ItemStack(Material.NETHERRACK);
+			public DeleteMissionButton(CustomGui parent) {
+				super(parent);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&c&lDelete &6&lMission");
+				desc.add("&6Click to select and delete a Mission");
+				StringUtils.setDescription(item,desc);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new DeleteMissionSelectorGui(clicker,getParent()).getInventory());
+			}
+			private class DeleteMissionSelectorGui extends CustomMultiPageGui<CustomButton> {
+	
+				public DeleteMissionSelectorGui(Player p,CustomGui previusHolder) {
+					super(p,previusHolder,6,1);
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Mission to delete"));
+					for (Mission mission : getMissions()) {
+						this.addButton(new SelectMissionButton(mission));
+					}
+					this.setFromEndCloseButtonPosition(8);
+					this.reloadInventory();
+				}
+				private class SelectMissionButton extends CustomButton{
+					private ItemStack item = new ItemStack(Material.BOOK);
+					private Mission mission;
+					
+					public SelectMissionButton(Mission mission) {
+						super(DeleteMissionSelectorGui.this);
+						this.mission = mission;
+						this.update();
+					}
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Mission: '&e"+mission.getDisplayName()+"&6'");
+						desc.add("&7 contains &e"+mission.getTasks().size()+" &7tasks");
+						for (Task task : mission.getTasks()) {
+							desc.add("&7 - &e"+task.getDisplayName()+" &7("+task.getTaskType().getKey()+")");
+						}
+						StringUtils.setDescription(item,desc);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
+					}
+					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
+	
+						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
+							super(p, previusHolder, 6);
+							this.addButton(22,new ConfirmationButton());
+							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
+							this.setFromEndCloseButtonPosition(8);
+							reloadInventory();
+						}
+						
+						private class ConfirmationButton extends CustomButton {
+							private ItemStack item = new ItemStack(Material.WOOL);
+							public ConfirmationButton() {
+								super(DeleteConfirmationGui.this);
+								this.item.setDurability((short) 14);
+								ArrayList<String> desc = new ArrayList<String>();
+								desc.add("&cClick to Confirm quest Delete");
+								desc.add("&cMission delete can't be undone");
+								desc.add("");
+								desc.add("&6Mission: '&e"+mission.getDisplayName()+"&6'");
+								desc.add("&7 contains &e"+mission.getTasks().size()+" &7tasks");
+								for (Task task : mission.getTasks()) {
+									desc.add("&7 - &e"+task.getDisplayName()+" &7("+task.getTaskType().getKey()+")");
+								}
+								StringUtils.setDescription(item,desc);
+								
+							}
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								deleteMission(mission);
+								clicker.performCommand("questadmin quest "+Quest.this.getNameID()+" editor");
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			if (missions.size() >0)
+				return new DeleteMissionButton(parent);
+			return null;
+		}
+	}
+
+	private class AddRequireFactory implements EditorButtonFactory{
+		private class AddRequireGuiItem extends CustomButton {
+			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+	
+			public AddRequireGuiItem(CustomGui parent) {
+				super(parent);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Require"));
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Require"));
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new CreateRequireGui(clicker,this.getParent()).getInventory());
+			}
+			private class CreateRequireGui extends CustomMultiPageGui<CustomButton>{
+				public CreateRequireGui(Player p, CustomGui previusHolder) {
+					super(p, previusHolder, 6,1);
+					this.setFromEndCloseButtonPosition(8);
+					for (QuestRequireType type : Quests.getInstance().getRequireManager().getQuestRequiresTypes())
+						this.addButton(new QuestRequireTypeButton(type));
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&8Select a Require Type"));
+					reloadInventory();
+				}
+				private class QuestRequireTypeButton extends CustomButton {
+					private final ItemStack item;
+					private final QuestRequireType type;
+					public QuestRequireTypeButton(QuestRequireType type) {
+						super(CreateRequireGui.this.getPreviusHolder());
+						item = new ItemStack(type.getGuiItemMaterial());
+						this.type = type;
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Click to add a require of type:");
+						desc.add("&e"+type.getKey());
+						desc.addAll(type.getDescription());
+						StringUtils.setDescription(item, desc);
+					}
+					
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						QuestRequire req = Quest.this.addRequire(type);
+						if (req==null) {
+							//TODO
+							return;
+						}
+						req.openEditorGui(clicker, AddRequireGuiItem.this.getParent());
+					}
+				}
+			}
+		}
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			return new AddRequireGuiItem(parent);
+		}
+	}
+	private class DeleteRequireFactory implements EditorButtonFactory {
+		private class DeleteRequireButton extends CustomButton {
+			private ItemStack item = new ItemStack(Material.NETHERRACK);
+			public DeleteRequireButton(CustomGui parent) {
+				super(parent);
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&c&lDelete &6&lRequire");
+				desc.add("&6Click to select and delete a Require");
+				StringUtils.setDescription(item,desc);
+			}
+			@Override
+			public ItemStack getItem() {
+				return item;
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				clicker.openInventory(new DeleteRequireSelectorGui(clicker,getParent()).getInventory());
+			}
+			private class DeleteRequireSelectorGui extends CustomMultiPageGui<CustomButton> {
+	
+				public DeleteRequireSelectorGui(Player p,CustomGui previusHolder) {
+					super(p,previusHolder,6,1);
+					this.setTitle(null,StringUtils.fixColorsAndHolders("&cSelect Require to delete"));
+					for (QuestRequire req : getRequires()) {
+						this.addButton(new SelectRequireButton(req));
+					}
+					this.setFromEndCloseButtonPosition(8);
+					this.reloadInventory();
+				}
+				private class SelectRequireButton extends CustomButton{
+					private ItemStack item = new ItemStack(Material.BOOK);
+					private QuestRequire req;
+					
+					public SelectRequireButton(QuestRequire req) {
+						super(DeleteRequireSelectorGui.this);
+						this.req = req;
+						this.update();
+					}
+					@Override
+					public ItemStack getItem() {
+						return item;
+					}
+					public void update() {
+						ArrayList<String> desc = new ArrayList<String>();
+						desc.add("&6Require:");
+						desc.add("&6"+req.getDescription());
+						StringUtils.setDescription(item,desc);
+					}
+					@Override
+					public void onClick(Player clicker, ClickType click) {
+						clicker.openInventory(new DeleteConfirmationGui(clicker,getParent()).getInventory());
+					}
+					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
+	
+						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
+							super(p, previusHolder, 6);
+							this.addButton(22,new ConfirmationButton());
+							this.setTitle(null,StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
+							this.setFromEndCloseButtonPosition(8);
+							reloadInventory();
+						}
+						
+						private class ConfirmationButton extends CustomButton {
+							private ItemStack item = new ItemStack(Material.WOOL);
+							public ConfirmationButton() {
+								super(DeleteConfirmationGui.this);
+								this.item.setDurability((short) 14);
+								ArrayList<String> desc = new ArrayList<String>();
+								desc.add("&cClick to Confirm quest Delete");
+								desc.add("&cRequire delete can't be undone");
+								desc.add("");
+								desc.add("&6Require:");
+								desc.add("&6"+req.getDescription());
+								StringUtils.setDescription(item,desc);
+							}
+							@Override
+							public ItemStack getItem() {
+								return item;
+							}
+							@Override
+							public void onClick(Player clicker, ClickType click) {
+								deleteRequire(req);
+								clicker.openInventory(DeleteRequireButton.this.getParent().getInventory());
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		@Override
+		public CustomButton getCustomButton(CustomGui parent) {
+			if (requires.size() >0)
+				return new DeleteRequireButton(parent);
+			return null;
+		}
+	}
+	private final static BaseComponent[] setDisplayNameDescription = new ComponentBuilder(
+			ChatColor.GOLD+"Click suggest the command\n\n"+
+			ChatColor.GOLD+"Set the display name for the mission\n"+
+			ChatColor.YELLOW+"/questtext <display name>"
+			).create();
 }

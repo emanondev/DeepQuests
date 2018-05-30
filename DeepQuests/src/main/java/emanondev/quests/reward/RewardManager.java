@@ -3,115 +3,102 @@ package emanondev.quests.reward;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.configuration.MemorySection;
 
-import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.utils.WithGui;
 
 public class RewardManager {
-	private final static HashMap<String,RewardType> rewards = 
+	private final static HashMap<String,RewardType> rewardsType = 
 			new HashMap<String,RewardType>();
-	private final static HashMap<String,MissionRewardType> missionRewards =
+	private final static HashMap<String,MissionRewardType> missionRewardsType =
 			new HashMap<String,MissionRewardType>();
-	private final static HashMap<String,QuestRewardType> questRewards =
+	private final static HashMap<String,QuestRewardType> questRewardsType =
 			new HashMap<String,QuestRewardType>();
 			
 
 	public void registerRewardType(RewardType type) {
-		rewards.put(type.getNameID(),type);
-		missionRewards.put(type.getNameID(),type);
-		questRewards.put(type.getNameID(),type);
+		rewardsType.put(type.getKey(),type);
+		missionRewardsType.put(type.getKey(),type);
+		questRewardsType.put(type.getKey(),type);
 	}
 	public void registerRewardType(MissionRewardType type) {
-		missionRewards.put(type.getNameID(),type);
+		missionRewardsType.put(type.getKey(),type);
 	}
 	public void registerRewardType(QuestRewardType type) {
-		questRewards.put(type.getNameID(),type);
+		questRewardsType.put(type.getKey(),type);
 	}
 
-	public List<Reward> convertRewards(List<String> list) {
-		ArrayList<Reward> rews = new ArrayList<Reward>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawReward : list) {
-			try {
-				int index = rawReward.indexOf(":");
-				String key;
-				String trueReward;
-				if (index == -1) {
-					key = rawReward;
-					trueReward = "";
-				}
-				else {
-					key = rawReward.substring(0,index);
-					trueReward = rawReward.substring(index+1);
-				}
-				rews.add(rewards.get(key.toUpperCase()).getRewardInstance(trueReward));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
-			
+	/*
+	 * something: <-
+	 * 		id:
+	 * 			type:
+	 * 			additional info
+	 */
+	public List<MissionReward> loadRewards(Mission m,MemorySection section){
+		ArrayList<MissionReward> rewards = new ArrayList<MissionReward>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !missionRewardsType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						MissionReward rew = missionRewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), m);
+						if (rew!=null)
+							rewards.add(rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return rewards;
 	}
-
-	public List<MissionReward> convertMissionRewards(List<String> list) {
-		ArrayList<MissionReward> rews = new ArrayList<MissionReward>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawReward : list) {
-			try {
-				int index = rawReward.indexOf(":");
-				String key;
-				String trueReward;
-				if (index == -1) {
-					key = rawReward;
-					trueReward = "";
-				}
-				else {
-					key = rawReward.substring(0,index);
-					trueReward = rawReward.substring(index+1);
-				}
-				rews.add(missionRewards.get(key.toUpperCase()).getRewardInstance(trueReward));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
-			
+	public List<QuestReward> loadRewards(Quest q,MemorySection section){
+		ArrayList<QuestReward> rewards = new ArrayList<QuestReward>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !questRewardsType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						QuestReward rew = questRewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), q);
+						if (rew!=null)
+							rewards.add(rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return rewards;
 	}
-
-	public List<QuestReward> convertQuestReward(List<String> list) {
-		ArrayList<QuestReward> rews = new ArrayList<QuestReward>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawReward : list) {
-			try {
-				int index = rawReward.indexOf(":");
-				String key;
-				String trueReward;
-				if (index == -1) {
-					key = rawReward;
-					trueReward = "";
-				}
-				else {
-					key = rawReward.substring(0,index);
-					trueReward = rawReward.substring(index+1);
-				}
-				rews.add(questRewards.get(key.toUpperCase()).getRewardInstance(trueReward));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating reward: '"+rawReward+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
+	public List<Reward> loadRewards(WithGui gui,MemorySection section){
+		ArrayList<Reward> rewards  = new ArrayList<Reward>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !rewardsType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						Reward rew = rewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), gui);
+						if (rew!=null)
+							rewards.add(rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return rewards;
 	}
-
 	public void giveRewards(QuestPlayer p, List<Reward> list) {
 		if (list==null || list.isEmpty())
 			return;

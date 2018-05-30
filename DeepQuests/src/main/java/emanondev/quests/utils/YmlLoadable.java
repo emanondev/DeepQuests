@@ -54,7 +54,6 @@ public abstract class YmlLoadable implements Savable,WithGui {
 		dirty = b;
 	}
 	
-	
 	public YmlLoadable(MemorySection m) {
 		if (m==null)
 			throw new NullPointerException();
@@ -206,7 +205,7 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	protected abstract boolean getUseWorldsAsBlacklistDefault();
 	
 	
-	private HashMap<Integer,EditorButtonFactory> tools = new HashMap<Integer,EditorButtonFactory>();
+	private final HashMap<Integer,EditorButtonFactory> tools = new HashMap<Integer,EditorButtonFactory>();
 	public void openEditorGui(Player p){
 		openEditorGui(p,null);
 	}

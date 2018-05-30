@@ -56,7 +56,8 @@ quest:
             desc:
                 autogenerate: false
                 value: 
-                - "&4&l&m---&8&l&m[--&8     * &4{quest-name}&8 *     &l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
+                - "&4➤ {quest-name}"
                 - ""
                 - "&7➤ Quest Locked"
                 - ""
@@ -73,7 +74,8 @@ quest:
             desc:
                 autogenerate: false
                 value: 
-                - "&9&l&m---&8&l&m[--&8     * &9{quest-name}&8 *     &l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
+                - "&9➤ {quest-name}"
                 - ""
                 - "&7➤ Missions: &e{completed-mission-amount}&9/{mission-amount}"
                 - ""
@@ -89,7 +91,8 @@ quest:
             desc:
                 autogenerate: false
                 value: 
-                - "&9&l&m---&8&l&m[--&8     * &9{quest-name}&8 *     &l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
+                - "&9➤ {quest-name}"
                 - ""
                 - "&7➤ Missions: &e{completed-mission-amount}&9/{mission-amount}"
                 - ""
@@ -105,7 +108,8 @@ quest:
             desc:
                 autogenerate: false
                 value: 
-                - "&6&l&m---&8&l&m[--&8     * &6{quest-name}&8 *     &l&m--]&6&l&m---"
+                - "&6&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&6&l&m---"
+                - "&6➤ {quest-name}"
                 - ""
                 - "&7➤ Quest On Cooldown for {quest-cooldownleft}"
                 - ""
@@ -121,7 +125,8 @@ quest:
             desc:
                 autogenerate: false
                 value: 
-                - "&2&l&m---&8&l&m[--&8     * &2{quest-name}&8 *     &l&m--]&2&l&m---"
+                - "&2&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&2&l&m---"
+                - "&2➤ {quest-name}"
                 - ""
                 - "&2➤ Quest Completed"
                 - ""
@@ -137,7 +142,8 @@ quest:
             desc:
                 autogenerate: false
                 value:
-                - "&4&l&m---&8&l&m[--&8     * &4{quest-name}&8 *     &l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
+                - "&4➤ {quest-name}"
                 - ""
                 - "&7➤ Quest Failed!"
                 - ""
@@ -181,7 +187,8 @@ mission:
             desc:
                 autogenerate: false
                 value: 
-                - "&4&l&m---&8&l&m[--&8     * &4{mission-name}&8 *     &l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
+                - "&4{mission-name}"
                 - ""
                 - "&7➤ Mission Locked"
                 - ""
@@ -198,7 +205,8 @@ mission:
             desc:
                 autogenerate: false
                 value: 
-                - "&9&l&m---&8&l&m[--&8     * &9{mission-name}&8 *     &l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
+                - "&9{mission-name}"
                 - ""
                 - "{foreach-task}&7➤ {<task>-unstarted-description}"
                 - ""
@@ -214,7 +222,8 @@ mission:
             desc:
                 autogenerate: false 
                 value: 
-                - "&9&l&m---&8&l&m[--&8     * &9{mission-name}&8 *     &l&m--]&9&l&m---"
+                - "&9&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&9&l&m---"
+                - "&9{mission-name}"
                 - ""
                 - "{foreach-task}&7➤ {<task>-progress-description}"
                 - ""
@@ -230,7 +239,8 @@ mission:
             desc:
                 autogenerate: false
                 value: 
-                - "&6&l&m---&8&l&m[--&8     * &6{mission-name}&8 *     &l&m--]&6&l&m---"
+                - "&6&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&6&l&m---"
+                - "&6{mission-name}"
                 - ""
                 - "&7➤ Mission On Cooldown for {mission-cooldownleft}"
                 - ""
@@ -246,7 +256,8 @@ mission:
             desc:
                 autogenerate: false
                 value: 
-                - "&2&l&m---&8&l&m[--&8     * &2{mission-name}&8 *     &l&m--]&2&l&m---"
+                - "&2&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&2&l&m---"
+                - "&2{mission-name}"
                 - ""
                 - "&2➤ Mission Completed"
                 - ""
@@ -262,7 +273,8 @@ mission:
             desc:
                 autogenerate: false
                 value:
-                - "&4&l&m---&8&l&m[--&8     * &4{mission-name}&8 *     &l&m--]&4&l&m---"
+                - "&4&l&m---&8&l&m[--&8            &m*---------*&8            &l&m--]&4&l&m---"
+                - "&4{mission-name}"
                 - ""
                 - "&7➤ Mission Failed!"
                 - ""

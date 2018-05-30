@@ -1,16 +1,18 @@
 package emanondev.quests.require;
 
-import emanondev.quests.mission.Mission;
+import org.bukkit.entity.Player;
+
+import emanondev.quests.gui.CustomGui;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
+import emanondev.quests.utils.WithGui;
 
 public interface Require extends QuestRequire,MissionRequire {
-	public default boolean isAllowed(QuestPlayer p,Quest q) {
-		return isAllowed(p);
-	}
-	public default boolean isAllowed(QuestPlayer p,Mission m) {
-		return isAllowed(p);
-	}
 
 	public boolean isAllowed(QuestPlayer p);
+	public String getDescription();
+	public WithGui getParent();
+	public RequireType getRequireType();
+	public void openEditorGui(Player p);
+	public void openEditorGui(Player p,CustomGui previusHolder);
+	public String getNameID();
 }

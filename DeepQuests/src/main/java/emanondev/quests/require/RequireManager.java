@@ -1,114 +1,98 @@
 package emanondev.quests.require;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-import emanondev.quests.Quests;
+import org.bukkit.configuration.MemorySection;
+
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.utils.WithGui;
 
 public class RequireManager {
-	private final static HashMap<String,RequireType> requires = 
+	private final static HashMap<String,RequireType> requiresType = 
 			new HashMap<String,RequireType>();
-	private final static HashMap<String,MissionRequireType> missionRequires =
+	private final static HashMap<String,MissionRequireType> missionRequiresType =
 			new HashMap<String,MissionRequireType>();
-	private final static HashMap<String,QuestRequireType> questRequires =
+	private final static HashMap<String,QuestRequireType> questRequiresType =
 			new HashMap<String,QuestRequireType>();
 			
 
 	public void registerRequireType(RequireType type) {
-		requires.put(type.getNameID(),type);
-		missionRequires.put(type.getNameID(),type);
-		questRequires.put(type.getNameID(),type);
+		requiresType.put(type.getKey(),type);
+		missionRequiresType.put(type.getKey(),type);
+		questRequiresType.put(type.getKey(),type);
 	}
 	public void registerMissionRequireType(MissionRequireType type) {
-		missionRequires.put(type.getNameID(),type);
+		missionRequiresType.put(type.getKey(),type);
 	}
 	public void registerQuestRequireType(QuestRequireType type) {
-		questRequires.put(type.getNameID(),type);
+		questRequiresType.put(type.getKey(),type);
 	}
-
-	public List<Require> convertRequires(List<String> list) {
-		ArrayList<Require> rews = new ArrayList<Require>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawRequire : list) {
-			try {
-				int index = rawRequire.indexOf(":");
-				String key;
-				String trueRequire;
-				if (index == -1) {
-					key = rawRequire;
-					trueRequire = "";
-				}
-				else {
-					key = rawRequire.substring(0,index);
-					trueRequire = rawRequire.substring(index+1);
-				}
-				rews.add(requires.get(key.toUpperCase()).getRequireInstance(trueRequire));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
-			
+	public LinkedHashMap<String,MissionRequire> loadRequires(Mission m,MemorySection section){
+		LinkedHashMap<String,MissionRequire> requires = new LinkedHashMap<String,MissionRequire>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !missionRequiresType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						MissionRequire rew = missionRequiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), m);
+						if (rew!=null)
+							requires.put(rew.getNameID(),rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return requires;
 	}
-
-	public List<MissionRequire> convertMissionRequires(List<String> list) {
-		ArrayList<MissionRequire> rews = new ArrayList<MissionRequire>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawRequire : list) {
-			try {
-				int index = rawRequire.indexOf(":");
-				String key;
-				String trueRequire;
-				if (index == -1) {
-					key = rawRequire;
-					trueRequire = "";
-				}
-				else {
-					key = rawRequire.substring(0,index);
-					trueRequire = rawRequire.substring(index+1);
-				}
-				rews.add(missionRequires.get(key.toUpperCase()).getRequireInstance(trueRequire));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
-			
+	public LinkedHashMap<String,QuestRequire> loadRequires(Quest q,MemorySection section){
+		LinkedHashMap<String,QuestRequire> requires = new LinkedHashMap<String,QuestRequire>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !questRequiresType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						QuestRequire rew = questRequiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), q);
+						if (rew!=null)
+							requires.put(rew.getNameID(),rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return requires;
 	}
-
-	public List<QuestRequire> convertQuestRequires(List<String> list) {
-		ArrayList<QuestRequire> rews = new ArrayList<QuestRequire>();
-		if (list==null||list.isEmpty())
-			return rews;
-		for (String rawRequire : list) {
-			try {
-				int index = rawRequire.indexOf(":");
-				String key;
-				String trueRequire;
-				if (index == -1) {
-					key = rawRequire;
-					trueRequire = "";
-				}
-				else {
-					key = rawRequire.substring(0,index);
-					trueRequire = rawRequire.substring(index+1);
-				}
-				rews.add(questRequires.get(key.toUpperCase()).getRequireInstance(trueRequire));
-			} catch (Exception e) {
-				Quests.getLogger("errors").log("Error while creating require: '"+rawRequire+"'");
-				Quests.getLogger("errors").log(ExceptionUtils.getStackTrace(e));
-			}
+	public LinkedHashMap<String,Require> loadRequires(WithGui gui,MemorySection section){
+		LinkedHashMap<String,Require> requires  = new LinkedHashMap<String,Require>();
+		if (section!=null) {
+			Set<String> keys = section.getKeys(false);
+			if (keys!=null)
+				keys.forEach((id)->{
+					try {
+						String key = section.getString(id+".type");
+						if (key== null || !requiresType.containsKey(key.toUpperCase()))
+							throw new NullPointerException();
+						Require rew = requiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), gui);
+						if (rew!=null)
+							requires.put(rew.getNameID(),rew);
+					} catch (Exception e) {
+						
+					}
+				});
 		}
-		return rews;
+		return requires;
 	}
 	public boolean isAllowed(QuestPlayer p,List<Require> list) {
 		if (list == null || list.isEmpty())
@@ -119,23 +103,10 @@ public class RequireManager {
 		}
 		return true;
 	}
-	public boolean isAllowed(QuestPlayer p,List<MissionRequire> list,Mission m) {
-		if (list == null || list.isEmpty())
-			return true;
-		for (MissionRequire req : list) {
-			if (!req.isAllowed(p,m))
-				return false;
-		}
-		return true;
+	public Collection<QuestRequireType> getQuestRequiresTypes() {
+		return Collections.unmodifiableCollection(questRequiresType.values());
 	}
-	public boolean isAllowed(QuestPlayer p,List<QuestRequire> list,Quest q) {
-		if (list == null || list.isEmpty())
-			return true;
-		for (QuestRequire req : list) {
-			if (!req.isAllowed(p,q))
-				return false;
-		}
-		return true;
+	public Collection<MissionRequireType> getMissionRequiresTypes() {
+		return Collections.unmodifiableCollection(missionRequiresType.values());
 	}
-
 }

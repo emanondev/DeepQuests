@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 
 import emanondev.quests.Perms;
 import emanondev.quests.Quests;
+import emanondev.quests.mission.Mission;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.task.Task;
 import emanondev.quests.utils.Completer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -21,8 +23,6 @@ public class CommandQuestsAdmin extends CmdManager {
 				new SubReload(),
 				new SubListQuest(),
 				new SubQuest(),
-				new SubAddQuest(),
-				new SubDeleteQuest(),
 				new SubEditor()
 				
 				);
@@ -31,25 +31,6 @@ public class CommandQuestsAdmin extends CmdManager {
 	
 	/* TODO
 	 * qa
-	 * 		quest <-- in sviluppo
-	 * 			<quest>
-	 * 				require
-	 * 				reward
-	 *				mission
-	 * 					<mission> <- in sviluppo
-	 * 						require
-	 * 						reward
-	 * 						task
-	 * 							<task>
-	 * 								setdisplayname
-	 * 								worlds
-	 * 									add
-	 * 									remove
-	 * 									setblacklist
-	 * 						listtask
-	 * 						addtask <taskid> <tasktype> <maxprogress> <displayname>
-	 * 						deletetask
-	 * 							<task>
 	 * 		player
 	 * 			<player>
 	 * 				reset
@@ -84,79 +65,6 @@ class SubReload extends SubCmdManager {
 	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
 		Quests.getInstance().reload();
 		sender.sendMessage(ChatColor.GREEN+"Plugin Reloaded");
-	}
-}
-//qa	addquest	<id>	[name...]
-//		0			1		2+
-class SubAddQuest extends SubCmdManager {
-	SubAddQuest() {
-		super("addquest",Perms.ADMIN_ADDQUEST);
-		this.setDescription(ChatColor.GOLD+"Create a new quest with given id and name");
-		this.setParams("<questID> [display name]");
-	}
-	@Override
-	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
-		if (params.size()==0) {
-			onHelp(params,sender,label,args);
-			return;
-		}
-		String id = params.get(0).toLowerCase();
-		if (id.contains (":") || id.contains(".")){
-			sender.sendMessage(ChatColor.RED+"Invalid quest ID '"+id+"'");
-			return;
-		}
-		if (Quests.getInstance().getQuestManager().getQuestByNameID(id)!=null) {
-			sender.sendMessage(ChatColor.RED+"Quest with ID '"+id+"' already exist");
-			return;
-		}
-		String displayName = null;
-		if (params.size()>1) {
-			params.remove(0);
-			StringBuilder text = new StringBuilder("");
-			for (String word : params)
-				text.append(" "+word);
-			displayName = text.toString().replaceFirst(" ","");
-		}
-		if (Quests.getInstance().getQuestManager().addQuest(id, displayName))
-			sender.sendMessage(ChatColor.GREEN+"Quest added");
-		else
-			sender.sendMessage(ChatColor.RED+"Can't create quest");
-	}
-	
-}
-//qa	addquest	<id>
-//		0			1
-class SubDeleteQuest extends SubCmdManager {
-	SubDeleteQuest() {
-		super("deletequest",Perms.ADMIN_DELETEQUEST);
-		this.setDescription(ChatColor.GOLD+"Delete selected quest\n"
-				+ChatColor.RED+"Deleting a quest erase it forever\n"
-				+ChatColor.RED+"Deleting can't be undone\n"
-				+ChatColor.RED+"Also delete quest's missions and tasks");
-		this.setParams("<questID>");
-	}
-	@Override
-	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
-		if (params.size()!=1) {
-			onHelp(params,sender,label,args);
-			return;
-		}
-		
-		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(params.get(0));
-		if (q == null) {
-			sender.sendMessage(ChatColor.RED+"Quest with ID '"+params.get(0)+"' do not exist");
-			return;
-		}
-		Quests.getInstance().getQuestManager().deleteQuest(q);
-		sender.sendMessage(ChatColor.GREEN+"Quest '"+q.getNameID()+"' deleted");
-	}
-	@Override
-	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
-		ArrayList<String> list = new ArrayList<String>();
-		if (params.size()==1) {
-			Completer.completeQuests(list, params.get(0), Quests.getInstance().getQuestManager().getQuests());
-		}
-		return list;
 	}
 }
 class SubListQuest extends SubCmdManager {
@@ -208,5 +116,303 @@ class SubEditor extends SubCmdManager {
 
 //qa 	quest 	<id> 	mission		<id>
 //		0		1		2			(3)
+class SubQuest extends SubCmdManager {
+	SubQuest() {
+		super("quest",Perms.ADMIN_QUEST,
+				new SubQuestSubInfo(),
+				new SubMission(),
+				new SubQuestSubEditor()
+				);
+		this.setDescription(ChatColor.GOLD+"Edit/show info of the selected quest");
+		this.setParams("<questID>");
+	}
 
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.isEmpty()) {
+			String[] args2 = new String[args.length+1];
+			for (int i = 0; i< args.length;i++)
+				args2[i]= args[i];
+			args2[args2.length-1]= "<questID>";
+				
+			onHelp( params, sender, label, args2);
+			return;
+		}
+		params.remove(0);
+		if (params.size()>0) {
+			super.onCmd(params,sender,label,args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		onHelp( params, sender, label, args);
+		return;
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Completer.completeQuests(list, params.get(0), Quests.getInstance().getQuestManager().getQuests());
+			return list;
+		}
+		
+		params.remove(0);
+		return super.onTab(params, sender, label, args);	
+	}
+}
+class SubQuestSubEditor extends SubCmdManager {
+	SubQuestSubEditor() {
+		super("editor",Perms.ADMIN_EDITOR);
+		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Quest");
+		this.setPlayersOnly(true);
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		q.openEditorGui((Player) sender);
+	}
+}
+//qa 	quest 	<id> 	info
+//		0		1		2
+class SubQuestSubInfo extends SubCmdManager {
+	SubQuestSubInfo(){
+		super("info",Perms.ADMIN_QUEST_INFO
+				
+				);
+		this.setDescription(ChatColor.GOLD+"Shows selected quest info");
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		sender.spigot().sendMessage(q.toComponent());
+	}
+}
+class SubMission extends SubCmdManager {
+	SubMission() {
+		super("mission",Perms.ADMIN_QUEST_MISSION,
+				new SubMissionSubEditor(),
+				new SubMissionSubInfo(),
+				new SubTask()
+				);
+		this.setDescription(ChatColor.GOLD+"Shows quest's missions menu");
+	}
+	
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.isEmpty()) {
+			String[] args2 = new String[args.length+1];
+			for (int i = 0; i< args.length;i++)
+				args2[i]= args[i];
+			args2[args2.length-1]= "<missionID>";
+				
+			onHelp( params, sender, label, args2);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		params.remove(0);
+		if (params.size()>0) {
+			super.onCmd(params,sender,label,args);
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		onHelp( params, sender, label, args);
+		return;
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+			if (q==null) {
+				return list;
+			}
+			Completer.completeMissions(list, params.get(0), q.getMissions());
+			return list;
+		}
+		params.remove(0);
+		return super.onTab(params, sender, label, args);	
+	}
+}
+class SubMissionSubEditor extends SubCmdManager {
+	SubMissionSubEditor() {
+		super("editor",Perms.ADMIN_EDITOR);
+		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Mission");
+		this.setPlayersOnly(true);
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		m.openEditorGui((Player) sender);
+	}
+}
+//qa 	quest 	<id> 	mission		<id>	info
+//		0		1		2			3		4
+class SubMissionSubInfo extends SubCmdManager {
+	SubMissionSubInfo() {
+		super("info",Perms.ADMIN_QUEST_MISSION_INFO);
+		this.setDescription(ChatColor.GOLD+"Shows mission info");
+	}
 
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		sender.spigot().sendMessage(m.toComponent());
+	}
+}
+class SubTask extends SubCmdManager {
+	SubTask() {
+		super("task",Perms.ADMIN_QUEST_MISSION_TASK,
+				new SubTaskSubEditor(),
+				new SubTaskSubInfo()
+				);
+		this.setDescription(ChatColor.GOLD+"Shows quest's missions menu");
+	}
+	
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.isEmpty()) {
+			String[] args2 = new String[args.length+1];
+			for (int i = 0; i< args.length;i++)
+				args2[i]= args[i];
+			args2[args2.length-1]= "<taskID>";
+				
+			onHelp( params, sender, label, args2);
+			return;
+		}
+		params.remove(0);
+		if (params.size()>0) {
+			super.onCmd(params,sender,label,args);
+			return;
+		}
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		onHelp( params, sender, label, args);
+		return;
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+			if (q==null) {
+				return list;
+			}
+			Mission m = q.getMissionByNameID(args[3]);
+			if (m==null) {
+				return list;
+			}
+			Completer.completeTasks(list, params.get(0), m.getTasks());
+			return list;
+		}
+		params.remove(0);
+		return super.onTab(params, sender, label, args);	
+	}
+}
+class SubTaskSubEditor extends SubCmdManager {
+	SubTaskSubEditor() {
+		super("editor",Perms.ADMIN_EDITOR);
+		this.setDescription(ChatColor.GOLD+"Open Gui Editor for Task");
+		this.setPlayersOnly(true);
+	}
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		t.openEditorGui((Player) sender);
+	}
+}
+class SubTaskSubInfo extends SubCmdManager {
+	SubTaskSubInfo() {
+		super("info",Perms.ADMIN_QUEST_MISSION_TASK_INFO);
+		this.setDescription(ChatColor.GOLD+"Shows mission info");
+	}
+
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Quest q = Quests.getInstance().getQuestManager().getQuestByNameID(args[1]);
+		if (q==null) {
+			sender.sendMessage(ChatColor.RED+"Quest with ID '"+args[1]+"' not found");
+			return;
+		}
+		Mission m = q.getMissionByNameID(args[3]);
+		if (m==null) {
+			sender.sendMessage(ChatColor.RED+"Mission with ID '"+args[3]+"' not found inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		Task t = m.getTaskByNameID(args[5]);
+		if (t==null) {
+			sender.sendMessage(ChatColor.RED+"Task with ID '"+args[5]+"' not found inside mission '"+q.getNameID()+"' inside quest '"+q.getNameID()+"'");
+			return;
+		}
+		sender.spigot().sendMessage(t.toComponent());
+	}
+}
