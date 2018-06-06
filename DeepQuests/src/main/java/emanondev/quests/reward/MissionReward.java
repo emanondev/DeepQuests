@@ -23,6 +23,7 @@ public interface MissionReward {
 	public default String getKey() {
 		return getRewardType().getKey();
 	}
+	public String getInfo();
 
 	public void openEditorGui(Player clicker, CustomGui parent);
 

@@ -69,7 +69,7 @@ public class MissionRewardExplorerFactory implements EditorButtonFactory {
 					this.rew = reward;
 					this.item = new ItemStack(rew.getRewardType().getGuiItemMaterial());
 					ArrayList<String> desc = new ArrayList<String>();
-					desc.add("&6"+rew.getDescription());
+					desc.add("&6"+rew.getInfo());
 					StringUtils.setDescription(item, desc);
 				}
 

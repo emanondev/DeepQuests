@@ -37,6 +37,11 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 			this.targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID,null);
 			this.addToEditor(9,new ForceStartMissionRewardEditorButtonFactory());
 		}
+		public String getInfo() {
+			if (targetMissionID==null || getParent().getParent().getMissionByNameID(targetMissionID)==null)
+				return "Mission ("+targetMissionID+")";
+			return "Mission "+getParent().getParent().getMissionByNameID(targetMissionID).getDisplayName()+"("+targetMissionID+")";
+		}
 		public Mission getParent() {
 			return (Mission) super.getParent();
 		}

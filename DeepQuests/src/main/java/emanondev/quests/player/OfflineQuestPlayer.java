@@ -361,7 +361,9 @@ public class OfflineQuestPlayer {
 					data.set(baseTaskPath+"."+PATH_PROGRESS, this.progress);
 					shouldSave = true;
 				}
-				
+				public Task getTask() {
+					return task;
+				}
 			}
 		}
 	}

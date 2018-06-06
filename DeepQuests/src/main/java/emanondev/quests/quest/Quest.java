@@ -346,7 +346,7 @@ public class Quest extends YmlLoadableWithCooldown {
 							return;
 						}
 						displayName = text;
-						key = QuestManager.getNewMissionID(Quest.this);
+						key = Quest.this.getParent().getNewMissionID(Quest.this);
 						if (!addMission(key, displayName)) {
 							return;
 						}

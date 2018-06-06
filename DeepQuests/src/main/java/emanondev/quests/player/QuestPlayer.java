@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.Perms;
+import emanondev.quests.Quests;
 import emanondev.quests.events.PlayerCompleteMissionEvent;
 import emanondev.quests.events.PlayerCompleteTaskEvent;
 import emanondev.quests.events.PlayerFailMissionEvent;
@@ -179,6 +180,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		if (event.isCancelled() || event.getProgressAmount() <=0)
 			return false;
 		taskData.setProgress(taskData.getProgress()+event.getProgressAmount());
+		Quests.getInstance().getBossBarManager().onProgress(this,task);
 		for (Reward rew : event.getRewards())
 			for (int i = 0 ; i < event.getProgressAmount() ; i++)
 				rew.applyReward(this);

@@ -8,6 +8,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.LoggerManager.Logger;
+import emanondev.quests.bossbar.BossBarManager;
 import emanondev.quests.citizenbinds.CitizenBindManager;
 import emanondev.quests.command.CmdManager;
 import emanondev.quests.command.CommandQuestItem;
@@ -141,8 +142,8 @@ public class Quests extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		questManager = new QuestManager(this,"quests");
 		new SpawnReasonTracker();
-		new YMLConfig(this,"quests-example");
 		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config = new YMLConfig(this,"config");
@@ -154,7 +155,7 @@ public class Quests extends JavaPlugin {
 		new CommandQuestItem();
 		registerListener(new CustomGuiHandler());
 		guiManager = new QuestPlayerGuiManager();
-		
+		bossBarManager = new BossBarManager();
 		requireManager = new RequireManager();
 		
 		rewardManager = new RewardManager();
@@ -190,16 +191,14 @@ public class Quests extends JavaPlugin {
 			taskManager.registerType(new MythicMobKillTaskType());
 		}
 		//TODO implement a way to activate listeners only if required
-		
-		questManager = new QuestManager();
-		
+		questManager.reload();
 		playerManager = new PlayerManager();
+		bossBarManager.reload();
 		if (citizenBindManager!=null)
 			citizenBindManager.reload();
 	}
 	
 	public void reload(){
-		
 		Language.reload();
 		Defaults.reload();
 		loggerManager.reload();
@@ -207,6 +206,7 @@ public class Quests extends JavaPlugin {
 		
 		questManager.reload();
 		playerManager.reload();
+		bossBarManager.reload();
 		if (citizenBindManager!=null)
 			citizenBindManager.reload();
 	}
@@ -222,6 +222,10 @@ public class Quests extends JavaPlugin {
 	private CitizenBindManager citizenBindManager = null;
 	public CitizenBindManager getCitizenBindManager() {
 		return citizenBindManager;
+	}
+	private BossBarManager bossBarManager;
+	public BossBarManager getBossBarManager() {
+		return bossBarManager;
 	}
 	
 	

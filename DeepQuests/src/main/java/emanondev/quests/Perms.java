@@ -5,8 +5,6 @@ public class Perms {
 	/**
 	 * use GUI_SEE_ALL
 	 */
-	@Deprecated 
-	public final static String BYPASS_ITEM_INVISIBILITY = 			"quests.gui.seeall";
 	
 	
 	public final static String GUI_SEE_ALL = 			"quests.gui.seeall";
@@ -26,4 +24,7 @@ public class Perms {
 	public static final String ADMIN_QUEST_MISSION_TASK = 			"quests.admin.quest.mission.task";
 	public static final String ADMIN_QUEST_MISSION_TASK_INFO = 		"quests.admin.quest.mission.task.info";
 	public static final String ADMIN_EDITOR = 						"quests.admin.editor";
+
+
+	public static final String SEE_TASK_BOSSBAR = "quests.bossbar.seetask";
 }

@@ -70,12 +70,12 @@ public class PlayerManager implements Listener {
 	}
 	
 	@EventHandler (priority=EventPriority.MONITOR,ignoreCancelled=true)
-	private static void onJoin(PlayerLoginEvent e) {
+	private void onJoin(PlayerLoginEvent e) {
 		if (e.getResult()==PlayerLoginEvent.Result.ALLOWED)
 			players.put(e.getPlayer(), new QuestPlayer(e.getPlayer()));
 	}
 	@EventHandler (priority=EventPriority.MONITOR)
-	private static void onQuit(PlayerQuitEvent e) {
+	private void onQuit(PlayerQuitEvent e) {
 		QuestPlayer p = players.remove(e.getPlayer());
 		if (p.shouldSave())
 			p.save();

@@ -20,5 +20,6 @@ public interface QuestReward {
 	public default String getKey() {
 		return getRewardType().getKey();
 	}
+	public String getInfo();
 
 }

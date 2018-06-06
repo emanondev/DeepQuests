@@ -41,6 +41,12 @@ public class CompleteQuestRewardType extends AbstractRewardType implements Missi
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public String getInfo() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 

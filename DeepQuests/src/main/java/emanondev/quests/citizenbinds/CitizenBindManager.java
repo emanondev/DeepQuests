@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,6 +73,7 @@ public class CitizenBindManager implements Listener {
 		if (map.containsKey(evt.getNPC())) {
 			evt.getClicker().openInventory(Quests.getInstance().getGuiManager()
 					.getMissionsInventory(evt.getClicker(), map.get(evt.getNPC()), false, false) );
+			evt.getClicker().playSound(evt.getClicker().getLocation(), Sound.ENTITY_VILLAGER_TRADING, 1, 1);
 		}
 	}
 	

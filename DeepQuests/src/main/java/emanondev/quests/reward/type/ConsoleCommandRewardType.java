@@ -116,6 +116,10 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 		public String getKey() {
 			return getRewardType().getKey();
 		}
+		@Override
+		public String getInfo() {
+			return "'"+command+"'";
+		}
 		
 		
 	}

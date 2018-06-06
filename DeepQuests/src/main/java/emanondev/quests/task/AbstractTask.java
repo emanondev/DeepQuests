@@ -9,12 +9,10 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import emanondev.quests.Defaults;
 import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.AmountEditorButtonFactory;
 import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -29,8 +27,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
 /**
- * Any implementations of Task require to implement a Constructor like<br>
- * [YourSubTaskClass](MemorySection m,Mission parent)
  * 
  * @author emanon <br>
  *
@@ -271,7 +267,34 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		return comp.create();
 	}
 	
-	private class MaxProgressButtonFactory implements EditorButtonFactory {
+	private class MaxProgressButtonFactory extends AmountEditorButtonFactory {
+
+		public MaxProgressButtonFactory() {
+			super("&8Task Max Progress Editor", Material.DIODE);
+		}
+
+		@Override
+		protected boolean onChange(int amount) {
+			return setMaxProgress(amount);
+		}
+
+		@Override
+		protected int getAmount() {
+			return maxProgress;
+		}
+
+		@Override
+		protected ArrayList<String> getButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lMax Progress Editor");
+			desc.add("&6Click to edit");
+			desc.add("&7Max progress is &e"+getMaxProgress());
+			return desc;
+		}
+	}
+	
+	
+	/*implements EditorButtonFactory {
 		private class MaxProgressEditorButton extends CustomButton {
 			private ItemStack item = new ItemStack(Material.DIODE);
 			public MaxProgressEditorButton(CustomGui parent) {
@@ -378,7 +401,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new MaxProgressEditorButton(parent);
 		}
-	}
+	}*/
 
 	private static final BaseComponent[] changeUnstartedDescDescription = new ComponentBuilder(
 			ChatColor.GOLD+"Click suggest the command and the old task description when unstarted\n\n"+

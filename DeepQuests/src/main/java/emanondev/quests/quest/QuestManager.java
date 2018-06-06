@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
@@ -37,8 +38,8 @@ public class QuestManager implements Savable {
 	private final static String PATH_MISSION_COUNTER = "mission-counter";
 	private final static String PATH_TASK_COUNTER = "task-counter";
 	
-	private final static YMLConfig data = new YMLConfig(Quests.getInstance(),"quests");
-	public static String getNewTaskID(Mission m) {
+	private final YMLConfig data;
+	public String getNewTaskID(Mission m) {
 		long i = data.getLong(PATH_TASK_COUNTER,0);
 		String key = null;
 		boolean found = false;
@@ -66,7 +67,7 @@ public class QuestManager implements Savable {
 		data.set(PATH_TASK_COUNTER,i);
 		return key;
 	}
-	public static String getNewMissionID(Quest q) {
+	public String getNewMissionID(Quest q) {
 		long i = data.getLong(PATH_MISSION_COUNTER,0);
 		String key;
 		boolean found = false;
@@ -94,7 +95,7 @@ public class QuestManager implements Savable {
 		data.set(PATH_MISSION_COUNTER,i);
 		return key;
 	}
-	public static String getNewQuestID(QuestManager qm) {
+	public String getNewQuestID() {
 		long i = data.getLong(PATH_QUEST_COUNTER,0);
 		String key;
 		boolean found = false;
@@ -107,14 +108,14 @@ public class QuestManager implements Savable {
 				key = "q0"+i;
 			else
 				key = "q"+i;
-			if (qm.getQuestByNameID(key)==null)
+			if (getQuestByNameID(key)==null)
 				found = true;
 			i++;
 		}while (i<10000 && found == false);
 		if (found == false) {
 			do {
 				key = "q"+i;
-				if (qm.getQuestByNameID(key)==null)
+				if (getQuestByNameID(key)==null)
 					found = true;
 				i++;
 			}while (found == false);
@@ -126,8 +127,8 @@ public class QuestManager implements Savable {
 	
 	private static final HashMap<String,Quest> quests = new HashMap<String,Quest>();
 	
-	public QuestManager() {
-		reload();
+	public QuestManager(JavaPlugin plugin,String filename) {
+		data = new YMLConfig(plugin,filename);
 	}
 	public void save() {
 		data.save();
@@ -314,7 +315,7 @@ public class QuestManager implements Savable {
 							return;
 						}
 						displayName = text;
-						key = getNewQuestID(QuestManager.this);
+						key = getNewQuestID();
 						if (!addQuest(key,displayName)) {
 							return;
 						}

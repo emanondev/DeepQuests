@@ -52,7 +52,8 @@ permissions:
         default: op
     quests.admin.editor:
         default: op
-        
+    quests.bossbar.seetask:
+        default: true
     quests.commands.quests:
         default: true
     quests.gui.seeall:

@@ -12,9 +12,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.AmountEditorButtonFactory;
 import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.ItemEditorButton;
 import emanondev.quests.inventory.InventoryUtils;
@@ -37,33 +36,41 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 	public ItemStackRewardType() {
 		super("ITEMREWARD");
 	}
-	
+
 	public class ItemStackReward extends AbstractReward implements Reward {
 		private final static String PATH_ITEMSTACK = "itemstack";
 		private final static String PATH_AMOUNT = "amount";
 		private ItemStack item;
 		private int amount;
+
 		public ItemStackReward(MemorySection section, YmlLoadable parent) {
 			super(section, parent);
-			this.item = section.getItemStack(PATH_ITEMSTACK,null);
-			this.amount = section.getInt(PATH_AMOUNT,1);
-			this.addToEditor(9,new ItemEditorButtonFactory());
-			this.addToEditor(10,new AmountButtonFactory());
+			this.item = section.getItemStack(PATH_ITEMSTACK, null);
+			this.amount = section.getInt(PATH_AMOUNT, 1);
+			this.addToEditor(9, new ItemEditorButtonFactory());
+			this.addToEditor(10, new ItemStackAmountButtonFactory());
+		}
+		public String getInfo() {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+				return item.getItemMeta().getDisplayName()+" ("+item.getType()+") &ex"+amount;
+			return item.getType()+" &ex"+amount;
 		}
 
 		public String getKey() {
 			return getRewardType().getKey();
 		}
+
 		@Override
 		public void applyReward(QuestPlayer p) {
-			if (item!=null && amount > 0)
-				InventoryUtils.giveAmount(p.getPlayer(),item,amount,ExcessManage.DROP_EXCESS);
+			if (item != null && amount > 0)
+				InventoryUtils.giveAmount(p.getPlayer(), item, amount, ExcessManage.DROP_EXCESS);
 		}
 
 		@Override
 		public RewardType getRewardType() {
 			return ItemStackRewardType.this;
 		}
+
 		public boolean setItem(ItemStack item) {
 			if (this.item == null)
 				if (item == null)
@@ -124,9 +131,9 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 								desc.add(meta.getDisplayName());
 							else
 								desc.add("");
-							
+
 							if (meta.hasLore())
-								desc.addAll(desc.size(),meta.getLore());
+								desc.addAll(desc.size(), meta.getLore());
 						}
 					}
 					StringUtils.setDescription(item, desc);
@@ -153,120 +160,39 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 				return new EditEntityTypeButton(parent);
 			}
 		}
-		private class AmountButtonFactory implements EditorButtonFactory {
-			private class AmountEditorButton extends CustomButton {
-				private ItemStack item = new ItemStack(Material.DIODE);
-				public AmountEditorButton(CustomGui parent) {
-					super(parent);
-					update();
-				}
-				@Override
-				public ItemStack getItem() {
-					return item;
-				}
-				public void update() {
-					ArrayList<String> desc = new ArrayList<String>();
-					desc.add("&6&lAmount Editor");
-					desc.add("&6Click to edit");
-					desc.add("&7Amount is &e"+getAmount());
-					StringUtils.setDescription(item, desc);
-				}
-				@Override
-				public void onClick(Player clicker, ClickType click) {
-					clicker.openInventory(new AmountEditorGui(clicker,
-							this.getParent()).getInventory());
-				}
-				
 
-				private class AmountEditorGui extends CustomLinkedGui<CustomButton> {
-					public AmountEditorGui(Player p, CustomGui previusHolder) {
-						super(p,previusHolder, 6);
-						this.addButton(4, new ShowAmountButton());
-						this.addButton(19, new EditAmountButton(1));
-						this.addButton(20, new EditAmountButton(10));
-						this.addButton(21, new EditAmountButton(100));
-						this.addButton(22, new EditAmountButton(1000));
-						this.addButton(23, new EditAmountButton(10000));
-						this.addButton(24, new EditAmountButton(100000));
-						this.addButton(25, new EditAmountButton(1000000));
-						this.addButton(28, new EditAmountButton(-1));
-						this.addButton(29, new EditAmountButton(-10));
-						this.addButton(30, new EditAmountButton(-100));
-						this.addButton(31, new EditAmountButton(-1000));
-						this.addButton(32, new EditAmountButton(-10000));
-						this.addButton(33, new EditAmountButton(-100000));
-						this.addButton(34, new EditAmountButton(-1000000));
-						this.setFromEndCloseButtonPosition(8);
-						this.setTitle(null, StringUtils.fixColorsAndHolders("&8Amount Editor"));
-						reloadInventory();
-					}
-					private class ShowAmountButton extends CustomButton {
-						private ItemStack item = new ItemStack(Material.DIODE);
-						public ShowAmountButton() {
-							super(AmountEditorGui.this);
-							update();
-						}
-						@Override
-						public ItemStack getItem() {
-							return item;
-						}
-						@Override
-						public void update() {
-							ItemMeta meta = item.getItemMeta();
-							meta.setDisplayName(StringUtils.fixColorsAndHolders("&6Amount: &e"+getAmount()));
-							item.setItemMeta(meta);
-						}
-						@Override
-						public void onClick(Player clicker, ClickType click) {}
-					}
-					
-					private class EditAmountButton extends CustomButton {
-						private int amount;
-						public EditAmountButton(int amount) {
-							super(AmountEditorGui.this);
-							this.amount = amount;
-							
-							ItemMeta meta = item.getItemMeta();
-							if (this.amount>0) {
-								this.item.setDurability((short) 5);
-								meta.setDisplayName(StringUtils.fixColorsAndHolders("&aAdd "+this.amount));
-							}
-							else {
-								this.item.setDurability((short) 14);
-								meta.setDisplayName(StringUtils.fixColorsAndHolders("&cRemove "+(-this.amount)));
-							}
-							item.setItemMeta(meta);
-						}
-						private ItemStack item = new ItemStack(Material.WOOL);
-						@Override
-						public ItemStack getItem() {
-							return item;
-						}
-						public void update() {}
-						@Override
-						public void onClick(Player clicker, ClickType click) {
-							if (setAmount(getAmount()+amount)) {
-								//AbstractTask.this.getParent().reloadDisplay();
-								getParent().update();
-							}
-						}
-					}
-					
-				}
-				
+		private class ItemStackAmountButtonFactory extends AmountEditorButtonFactory {
+
+			public ItemStackAmountButtonFactory() {
+				super("&8Amount Editor", Material.DIODE);
 			}
+
 			@Override
-			public CustomButton getCustomButton(CustomGui parent) {
-				return new AmountEditorButton(parent);
+			protected boolean onChange(int amount) {
+				return setAmount(amount);
+			}
+
+			@Override
+			protected int getAmount() {
+				return amount;
+			}
+
+			@Override
+			protected ArrayList<String> getButtonDescription() {
+				ArrayList<String> desc = new ArrayList<String>();
+				desc.add("&6&lAmount Editor");
+				desc.add("&6Click to edit");
+				desc.add("&7Amount is &e" + getAmount());
+				return desc;
 			}
 		}
-		
+
 		public int getAmount() {
 			return amount;
 		}
-		
+
 		public boolean setAmount(int value) {
-			value = Math.max(1,value);
+			value = Math.max(1, value);
 			if (this.amount == value)
 				return false;
 			this.amount = value;
@@ -281,17 +207,17 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 
 	@Override
 	public MissionReward getRewardInstance(MemorySection m, Mission mission) {
-		return new ItemStackReward(m,mission);
+		return new ItemStackReward(m, mission);
 	}
 
 	@Override
 	public Reward getRewardInstance(MemorySection m, Quest q) {
-		return new ItemStackReward(m,q);
+		return new ItemStackReward(m, q);
 	}
 
 	@Override
 	public Reward getRewardInstance(MemorySection m, YmlLoadable parent) {
-		return new ItemStackReward(m,parent);
+		return new ItemStackReward(m, parent);
 	}
 
 	@Override
@@ -301,7 +227,7 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 
 	@Override
 	public List<String> getDescription() {
-		return Arrays.asList("Give the selected item with selected amount");
+		return Arrays.asList("&7Give the selected item with selected amount");
 	}
 
 }

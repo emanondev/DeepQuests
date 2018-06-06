@@ -31,7 +31,6 @@ import emanondev.quests.gui.MissionRewardExplorerFactory;
 import emanondev.quests.gui.StringListEditorButtonFactory;
 import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
 import emanondev.quests.reward.MissionReward;
@@ -485,7 +484,7 @@ public class Mission extends YmlLoadableWithCooldown {
 							return;
 						}
 						displayName = text;
-						key = QuestManager.getNewTaskID(Mission.this);
+						key = Mission.this.getParent().getParent().getNewTaskID(Mission.this);
 						if (!addTask(key, displayName, taskType)) {
 							return;
 						}
@@ -1047,11 +1046,11 @@ public class Mission extends YmlLoadableWithCooldown {
 
 				private class SelectCompleteRewardButton extends CustomButton {
 					private ItemStack item = new ItemStack(Material.BOOK);
-					private MissionReward req;
+					private MissionReward rew;
 
-					public SelectCompleteRewardButton(MissionReward req) {
+					public SelectCompleteRewardButton(MissionReward rew) {
 						super(DeleteCompleteRewardSelectorGui.this);
-						this.req = req;
+						this.rew = rew;
 						this.update();
 					}
 
@@ -1062,8 +1061,8 @@ public class Mission extends YmlLoadableWithCooldown {
 
 					public void update() {
 						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Reward:");
-						desc.add("&6" + req.getDescription());
+						desc.add("&6Reward: "+rew.getRewardType().getKey());
+						desc.add("&6" + rew.getInfo());
 						StringUtils.setDescription(item, desc);
 					}
 
@@ -1092,8 +1091,8 @@ public class Mission extends YmlLoadableWithCooldown {
 								desc.add("&cClick to Confirm quest Delete");
 								desc.add("&cReward delete can't be undone");
 								desc.add("");
-								desc.add("&6Reward:");
-								desc.add("&6" + req.getDescription());
+								desc.add("&6Reward: "+rew.getRewardType().getKey());
+								desc.add("&6" + rew.getInfo());
 								StringUtils.setDescription(item, desc);
 							}
 
@@ -1104,7 +1103,7 @@ public class Mission extends YmlLoadableWithCooldown {
 
 							@Override
 							public void onClick(Player clicker, ClickType click) {
-								deleteCompleteReward(req);
+								deleteCompleteReward(rew);
 								clicker.openInventory(DeleteCompleteRewardButton.this.getParent().getInventory());
 							}
 						}
