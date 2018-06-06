@@ -22,48 +22,46 @@ public class LeaveRegionTaskType extends TaskType {
 	public LeaveRegionTaskType() {
 		super("LeaveRegion");
 	}
-	
-	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	private void onRegionLeave(RegionLeaveEvent event) {
 		Player p = event.getPlayer();
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
-				.getQuestPlayer(p);
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
-				.getTaskType(key));
-		if (tasks ==null||tasks.isEmpty())
+		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager().getTaskType(key));
+		if (tasks == null || tasks.isEmpty())
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
 			LeaveRegionTask task = (LeaveRegionTask) tasks.get(i);
-			if (task.isWorldAllowed(p.getWorld()) 
-					 && task.regionInfo.isValidRegion(event.getRegion())) {
+			if (task.isWorldAllowed(p.getWorld()) && task.regionInfo.isValidRegion(event.getRegion())) {
 				task.onProgress(qPlayer);
 			}
 		}
 	}
-	
+
 	public class LeaveRegionTask extends AbstractTask {
 		private final RegionTaskInfo regionInfo;
-		
+
 		public LeaveRegionTask(MemorySection m, Mission parent) {
-			super(m, parent,LeaveRegionTaskType.this);
-			regionInfo = new RegionTaskInfo(m);
+			super(m, parent, LeaveRegionTaskType.this);
+			regionInfo = new RegionTaskInfo(m, this);
+			this.addToEditor(9,regionInfo.getRegionNameEditorButtonFactory());
 		}
-		
+
 	}
 
 	@Override
 	public Task getTaskInstance(MemorySection m, Mission parent) {
-		return new LeaveRegionTask(m,parent);
+		return new LeaveRegionTask(m, parent);
 	}
+
 	@Override
 	public Material getGuiItemMaterial() {
 		return Material.COMPASS;
 	}
 
-	private static final List<String> description = Arrays.asList(
-			"&7Player has leave a specified region",
-			"&7for a specified amount of times"
-			);
+	private static final List<String> description = Arrays.asList("&7Player has leave a specified region",
+			"&7for a specified amount of times");
+
 	@Override
 	public List<String> getDescription() {
 		return description;

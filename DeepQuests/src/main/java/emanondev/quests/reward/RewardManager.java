@@ -1,7 +1,9 @@
 package emanondev.quests.reward;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +12,7 @@ import org.bukkit.configuration.MemorySection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadable;
 
 public class RewardManager {
 	private final static HashMap<String,RewardType> rewardsType = 
@@ -26,10 +28,10 @@ public class RewardManager {
 		missionRewardsType.put(type.getKey(),type);
 		questRewardsType.put(type.getKey(),type);
 	}
-	public void registerRewardType(MissionRewardType type) {
+	public void registerMissionRewardType(MissionRewardType type) {
 		missionRewardsType.put(type.getKey(),type);
 	}
-	public void registerRewardType(QuestRewardType type) {
+	public void registerQuestRewardType(QuestRewardType type) {
 		questRewardsType.put(type.getKey(),type);
 	}
 
@@ -39,8 +41,8 @@ public class RewardManager {
 	 * 			type:
 	 * 			additional info
 	 */
-	public List<MissionReward> loadRewards(Mission m,MemorySection section){
-		ArrayList<MissionReward> rewards = new ArrayList<MissionReward>();
+	public LinkedHashMap<String,MissionReward> loadRewards(Mission m,MemorySection section){
+		LinkedHashMap<String,MissionReward> rewards = new LinkedHashMap<String,MissionReward>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
 			if (keys!=null)
@@ -51,7 +53,7 @@ public class RewardManager {
 							throw new NullPointerException();
 						MissionReward rew = missionRewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), m);
 						if (rew!=null)
-							rewards.add(rew);
+							rewards.put(rew.getNameID(),rew);
 					} catch (Exception e) {
 						
 					}
@@ -59,8 +61,8 @@ public class RewardManager {
 		}
 		return rewards;
 	}
-	public List<QuestReward> loadRewards(Quest q,MemorySection section){
-		ArrayList<QuestReward> rewards = new ArrayList<QuestReward>();
+	public LinkedHashMap<String,QuestReward> loadRewards(Quest q,MemorySection section){
+		LinkedHashMap<String,QuestReward> rewards = new LinkedHashMap<String,QuestReward>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
 			if (keys!=null)
@@ -71,7 +73,7 @@ public class RewardManager {
 							throw new NullPointerException();
 						QuestReward rew = questRewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), q);
 						if (rew!=null)
-							rewards.add(rew);
+							rewards.put(rew.getNameID(),rew);
 					} catch (Exception e) {
 						
 					}
@@ -79,8 +81,8 @@ public class RewardManager {
 		}
 		return rewards;
 	}
-	public List<Reward> loadRewards(WithGui gui,MemorySection section){
-		ArrayList<Reward> rewards  = new ArrayList<Reward>();
+	public LinkedHashMap<String,Reward> loadRewards(YmlLoadable gui,MemorySection section){
+		LinkedHashMap<String,Reward> rewards  = new LinkedHashMap<String,Reward>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
 			if (keys!=null)
@@ -91,7 +93,7 @@ public class RewardManager {
 							throw new NullPointerException();
 						Reward rew = rewardsType.get(key.toUpperCase()).getRewardInstance((MemorySection) section.get(id), gui);
 						if (rew!=null)
-							rewards.add(rew);
+							rewards.put(rew.getNameID(),rew);
 					} catch (Exception e) {
 						
 					}
@@ -116,6 +118,9 @@ public class RewardManager {
 			return;
 		for (QuestReward reward : list)
 			reward.applyReward(p,q);
+	}
+	public Collection<MissionRewardType> getMissionRewardsTypes() {
+		return Collections.unmodifiableCollection(missionRewardsType.values());
 	}
 
 }

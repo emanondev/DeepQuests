@@ -12,30 +12,43 @@ import org.bukkit.inventory.ItemStack;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.RewardGui;
 import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public abstract class AbstractReward {
 	private static final String PATH_DESCRIPTION = "description";
+	private final String nameID;
 	private String description; 
-	public AbstractReward(MemorySection section,WithGui parent) {
+	public AbstractReward(MemorySection section,YmlLoadable parent) {
 		if (section==null || parent==null)
 			throw new NullPointerException();
+		this.nameID = loadName(section).toLowerCase();
 		this.section = section;
 		this.parent = parent;
 		this.description = section.getString(PATH_DESCRIPTION);
 		this.addToEditor(0, new DescriptionEditorButtonFactory());
 	}
+	public String getNameID() {
+		return nameID;
+	}
+	/**
+	 * @return the unique name
+	 */
+	private String loadName(MemorySection m) {
+		String name = m.getName();
+		if (name==null||name.isEmpty())
+			throw new NullPointerException();
+		return name;
+	}
 	private final MemorySection section;
-	private final WithGui parent;
-	public WithGui getParent() {
+	private final YmlLoadable parent;
+	public YmlLoadable getParent() {
 		return parent;
 	}
 	protected MemorySection getSection() {
@@ -46,13 +59,13 @@ public abstract class AbstractReward {
 		openEditorGui(p,null);
 	}
 	public void openEditorGui(Player p,CustomGui previusHolder){
-		p.openInventory(new RewardGui(p,this,previusHolder,tools,"&9Reward &8("+getRewardType().getKey()+")").getInventory());
+		p.openInventory(new RewardGui(p,this,previusHolder,tools,"&9Reward &8("+getKey()+")").getInventory());
 	}
+	public abstract String getKey() ;
 	public void addToEditor(int slot,EditorButtonFactory item) {
 		if (item!=null)
 			tools.put(slot,item);
 	}
-	public abstract RewardType getRewardType();
 	
 	public String getDescription() {
 		return description;
@@ -96,7 +109,6 @@ public abstract class AbstractReward {
 			public void onClick(Player clicker, ClickType click) {
 				this.requestText(clicker, StringUtils.revertColors(description), changeDescriptionHelp);
 			}
-			@SuppressWarnings("rawtypes")
 			@Override
 			public void onReicevedText(String text) {
 				if (text == null)
@@ -104,7 +116,6 @@ public abstract class AbstractReward {
 				if (setDescription(text)) {
 					update();
 					getParent().reloadInventory();
-					((EditorGui) getParent()).updateTitle();
 				}
 				else
 					getOwner().sendMessage(StringUtils.fixColorsAndHolders(

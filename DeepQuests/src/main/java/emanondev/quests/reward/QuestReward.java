@@ -16,5 +16,9 @@ public interface QuestReward {
 	public String getDescription();
 	public QuestRewardType getRewardType();
 	public WithGui getParent();
+	public String getNameID();
+	public default String getKey() {
+		return getRewardType().getKey();
+	}
 
 }

@@ -1,6 +1,6 @@
 package emanondev.quests.utils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -24,19 +24,26 @@ public class MemoryUtils {
 	public static List<String> getStringList(MemorySection m,String path){
 		if (m==null)
 			return null;
-		List<String> list;
+		//List<String> list;
 		if (m.isString(path)) {
+			return Arrays.asList(m.getString(path));
+			
+			/*
 			String res = m.getString(path);
 			if (res==null)
 				return null;
 			list = new ArrayList<String>();
 			list.add(res);
-			return list;
+			return list;*/
 		}
-		list = m.getStringList(path);
+		if (m.isList(path))
+			return m.getStringList(path);
+		return null;
+		/*
 		if (list==null || list.isEmpty())
 			return null;
 		return list;
+		*/
 	}
 	
 

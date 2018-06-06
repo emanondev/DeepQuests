@@ -47,7 +47,8 @@ public class NPCTalkTaskType extends TaskType {
 		private final NPCTaskInfo npc;
 		public NPCTalkTask(MemorySection m, Mission parent) {
 			super(m, parent,NPCTalkTaskType.this);
-			npc = new NPCTaskInfo(m);
+			npc = new NPCTaskInfo(m,this);
+			this.addToEditor(9,npc.getIdSelectorButtonFactory());
 		}
 		
 	}

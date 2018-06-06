@@ -29,7 +29,6 @@ public class RequireGui extends CustomLinkedGui<CustomButton>{
 		this.require = require;
 		this.setFromEndCloseButtonPosition(8);
 		parentButton = new ParentButton();
-		//TODO updateTitle();
 		reloadInventory();
 	}
 

@@ -60,10 +60,11 @@ public class NPCKillTaskType extends TaskType {
 		private final DropsTaskInfo drops;
 		public NPCKillTask(MemorySection m, Mission parent) {
 			super(m, parent,NPCKillTaskType.this);
-			npc = new NPCTaskInfo(m);
+			npc = new NPCTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
 			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
 			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
+			this.addToEditor(9,npc.getIdSelectorButtonFactory());
 		}
 		
 	}

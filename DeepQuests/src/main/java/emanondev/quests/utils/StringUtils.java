@@ -1,8 +1,10 @@
 package emanondev.quests.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -234,5 +236,13 @@ public class StringUtils {
 		if (meta.hasLore())
 			desc.addAll(meta.getLore());
 		return desc;
+	}
+	public static List<String> getStringList(MemorySection m, String path) {
+		if (m.isString(path))
+			Arrays.asList(m.getString(path));
+		if (!m.isList(path))
+			return null;
+		else 
+			return m.getStringList(path);
 	}
 }

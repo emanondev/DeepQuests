@@ -24,7 +24,6 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.gui.TextEditorButton;
-import emanondev.quests.inventory.GuiManager.GuiHolder;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
@@ -138,7 +137,7 @@ public class QuestManager implements Savable {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Inventory inv = p.getOpenInventory().getTopInventory();
 			if (inv != null && inv.getHolder()!=null)
-				if (inv.getHolder() instanceof CustomGui || inv.getHolder() instanceof GuiHolder)
+				if (inv.getHolder() instanceof CustomGui)
 					p.closeInventory();
 		}
 		quests.clear();
@@ -194,16 +193,16 @@ public class QuestManager implements Savable {
 			return;
 		dirty = value;
 		if (dirty == true) {
-			Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
+			/*Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
 				@Override
-				public void run() {
+				public void run() {*/
 					QuestManager man = Quests.getInstance().getQuestManager();
 					if (!man.isDirty())
 						return;
 					data.save();
 					man.setDirty(false);
-				}
-			}, 20);
+				/*}
+			}, 20);*/
 		}
 		else {
 			for (Quest quest : quests.values()) {

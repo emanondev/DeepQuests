@@ -2,18 +2,18 @@ package emanondev.quests.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.player.PlayerEvent;
 
-import emanondev.quests.inventory.GuiManager.GuiHolder;
 
-public abstract class PlayerClickGuiEvent extends PlayerEvent implements Cancellable {
+abstract class AbstractPlayerClickEvent extends Event  implements Cancellable {
 	private final ClickType clickType;
 	private boolean cancelled = false;
-	private GuiHolder holder;
-	public PlayerClickGuiEvent(Player who,ClickType click,GuiHolder holder) {
-		super(who);
-		this.holder = holder;
+	private final Player clicker;
+	public AbstractPlayerClickEvent(Player who,ClickType click) {
+		if (who == null || click == null)
+			throw new NullPointerException();
+		this.clicker = who;
 		this.clickType = click;
 	}
 	public ClickType getClick() {
@@ -25,7 +25,7 @@ public abstract class PlayerClickGuiEvent extends PlayerEvent implements Cancell
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
     }
-	public GuiHolder getGuiHolder() {
-		return holder;
+	public Player getClicker() {
+		return clicker;
 	}
 }

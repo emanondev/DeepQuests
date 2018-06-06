@@ -29,7 +29,6 @@ public class RewardGui extends CustomLinkedGui<CustomButton>{
 		this.reward = reward;
 		this.setFromEndCloseButtonPosition(8);
 		parentButton = new ParentButton();
-		//TODO updateTitle();
 		reloadInventory();
 	}
 

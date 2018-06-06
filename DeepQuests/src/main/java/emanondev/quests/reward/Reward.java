@@ -3,7 +3,7 @@ package emanondev.quests.reward;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadable;
 
 /**
  * Any implementations of this class must provide a costructor(String text);
@@ -23,6 +23,8 @@ public interface Reward extends MissionReward,QuestReward {
 	}
 	public RewardType getRewardType();
 	public String getDescription();
-	public WithGui getParent();
-
+	public YmlLoadable getParent();
+	public default String getKey() {
+		return getRewardType().getKey();
+	}
 }

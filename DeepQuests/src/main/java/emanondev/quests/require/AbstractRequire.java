@@ -12,11 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.RequireGui;
 import emanondev.quests.gui.TextEditorButton;import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -25,10 +24,10 @@ public abstract class AbstractRequire {
 	private static final String PATH_DESCRIPTION = "description";
 	private final String nameID;
 	private final MemorySection section;
-	private final WithGui parent;
+	private final YmlLoadableWithCooldown parent;
 	private final HashMap<Integer,EditorButtonFactory> tools = new HashMap<Integer,EditorButtonFactory>();
 	private String description; 
-	public AbstractRequire(MemorySection section,WithGui parent) {
+	public AbstractRequire(MemorySection section,YmlLoadableWithCooldown parent) {
 		if (section==null || parent==null)
 			throw new NullPointerException();
 		this.nameID = loadName(section).toLowerCase();
@@ -49,7 +48,7 @@ public abstract class AbstractRequire {
 			throw new NullPointerException();
 		return name;
 	}
-	public WithGui getParent() {
+	public YmlLoadableWithCooldown getParent() {
 		return parent;
 	}
 	protected MemorySection getSection() {
@@ -109,7 +108,6 @@ public abstract class AbstractRequire {
 			public void onClick(Player clicker, ClickType click) {
 				this.requestText(clicker, StringUtils.revertColors(description), changeDescriptionHelp);
 			}
-			@SuppressWarnings("rawtypes")
 			@Override
 			public void onReicevedText(String text) {
 				if (text == null)
@@ -117,7 +115,6 @@ public abstract class AbstractRequire {
 				if (setDescription(text)) {
 					update();
 					getParent().reloadInventory();
-					((EditorGui) getParent()).updateTitle();
 				}
 				else
 					getOwner().sendMessage(StringUtils.fixColorsAndHolders(

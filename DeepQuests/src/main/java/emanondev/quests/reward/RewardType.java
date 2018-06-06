@@ -5,10 +5,10 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadable;
 
 public interface RewardType extends MissionRewardType,QuestRewardType {
-	public Reward getRewardInstance(MemorySection m,WithGui parent);
+	public Reward getRewardInstance(MemorySection m,YmlLoadable parent);
 	public Material getGuiItemMaterial();
 	public List<String> getDescription();
 	public String getKey();

@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
@@ -23,7 +22,7 @@ import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -39,7 +38,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 	public class ConsoleCommandReward extends AbstractReward implements Reward {
 		private static final String PATH_COMMAND = "command";
 		private String command;
-		public ConsoleCommandReward(MemorySection section,WithGui gui) {
+		public ConsoleCommandReward(MemorySection section,YmlLoadable gui) {
 			super(section, gui);
 			command = section.getString(PATH_COMMAND);
 			this.addToEditor(1, new CommandEditorButtonFactory());
@@ -95,7 +94,6 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 				public void onClick(Player clicker, ClickType click) {
 					this.requestText(clicker, StringUtils.revertColors(command), changeCommandHelp);
 				}
-				@SuppressWarnings("rawtypes")
 				@Override
 				public void onReicevedText(String text) {
 					if (text == null)
@@ -103,7 +101,6 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 					if (setCommand(text)) {
 						update();
 						getParent().reloadInventory();
-						((EditorGui) getParent()).updateTitle();
 					}
 					else
 						getOwner().sendMessage(StringUtils.fixColorsAndHolders(
@@ -114,6 +111,10 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 			public CustomButton getCustomButton(CustomGui parent) {
 				return new CommandEditorButton(parent);
 			}
+		}
+
+		public String getKey() {
+			return getRewardType().getKey();
 		}
 		
 		
@@ -140,8 +141,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 				);
 	}
 
-	@Override
-	public Reward getRewardInstance(MemorySection section,WithGui gui) {
+	public Reward getRewardInstance(MemorySection section,YmlLoadable gui) {
 		return new ConsoleCommandReward(section,gui);
 	}
 
@@ -154,6 +154,5 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 	public Reward getRewardInstance(MemorySection section, Quest q) {
 		return new ConsoleCommandReward(section,q);
 	}
-	
 
 }

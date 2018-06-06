@@ -24,7 +24,7 @@ import emanondev.quests.require.QuestRequire;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
@@ -48,7 +48,7 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 	public class NeedPermission extends AbstractRequire implements Require {
 		private String permission;
 
-		public NeedPermission(MemorySection section, WithGui gui) {
+		public NeedPermission(MemorySection section, YmlLoadableWithCooldown gui) {
 			super(section, gui);
 			this.permission = getSection().getString(PATH_PERMISSION);
 			if (this.permission != null)
@@ -58,9 +58,9 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 
 		@Override
 		public boolean isAllowed(QuestPlayer p) {
-			if (permission != null && !permission.isEmpty())
-				return p.getPlayer().hasPermission(permission);
-			return true;
+			if (permission== null || permission.isEmpty())
+				return true;
+			return p.getPlayer().hasPermission(permission);
 		}
 
 		@Override
@@ -77,13 +77,14 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		}
 
 		public boolean setPermission(String permission) {
-			if (permission.isEmpty()) {
-				this.permission = null;
-				return true;
-			}
-			if (permission.contains(" "))
+			if (!permission.isEmpty() && permission.contains(" "))
 				return false;
+
+			if (permission.isEmpty())
+				permission = null;
 			this.permission = permission;
+			getSection().set(PATH_PERMISSION, this.permission);
+			getParent().setDirty(true);
 			return true;
 		}
 
@@ -140,7 +141,7 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 	}
 
 	@Override
-	public Require getRequireInstance(MemorySection section, WithGui gui) {
+	public Require getRequireInstance(MemorySection section, YmlLoadableWithCooldown gui) {
 		return new NeedPermission(section, gui);
 	}
 

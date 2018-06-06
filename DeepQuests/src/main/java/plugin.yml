@@ -1,6 +1,6 @@
 name: DeepQuests
 main: emanondev.quests.Quests
-version: ${project.version}
+version: 0.9.8-ALPHA
 author: emanon
 softdepend: [Factions,Towny,SuperVanish,PremiumVanish,Mcmmo,VirginBlock,WorldGuard,PlaceHolderAPI,Citizens,MythicMobs,WGRegionEvents,Jobs]
 
@@ -17,6 +17,9 @@ commands:
     questtext:
         description: when a string is requested
         usage: "§cUsage: /questtext"
+    questitem:
+        description: when an item is requested
+        usage: "§cUsage: /questitem"
         
 permissions:
     quests.admin.help:

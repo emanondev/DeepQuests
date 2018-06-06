@@ -2,7 +2,15 @@ package emanondev.quests;
 
 
 public class Perms {
+	/**
+	 * use GUI_SEE_ALL
+	 */
+	@Deprecated 
 	public final static String BYPASS_ITEM_INVISIBILITY = 			"quests.gui.seeall";
+	
+	
+	public final static String GUI_SEE_ALL = 			"quests.gui.seeall";
+	
 	public static final String ADMIN_HELP = 						"quests.admin.help";
 	public static final String ADMIN_RELOAD = 						"quests.admin.reload";
 	public static final String ADMIN_LISTQUEST = 					"quests.admin.listquest";

@@ -21,6 +21,8 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 		super(p, previusHolder, Math.max(2, rows));
 		this.page = Math.max(1,page);
 		this.currPageButton = craftCurrentPageButton();
+		this.nextPageButton = craftNextPageButton();
+		this.prevPageButton = craftPrevPageButton();
 	}
 	public void addButton(T button) {
 		if (button!=null)
@@ -142,13 +144,13 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 	}
 
 	protected CustomButton craftPrevPageButton() {
-		return new PrevPageButton();
+		return new PrevPageButton(this);
 	}
 	protected CustomButton craftNextPageButton() {
-		return new NextPageButton();
+		return new NextPageButton(this);
 	}
 	protected CustomButton craftCurrentPageButton() {
-		return new CurrPageButton();
+		return new CurrPageButton(this);
 	}
 
 	private static ItemStack loadPrevPageItem() {
@@ -172,8 +174,8 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 		public ItemStack getItem() {
 			return prevPageButtonItem;
 		}
-		public PrevPageButton() {
-			super(CustomMultiPageGui.this);
+		public PrevPageButton(CustomMultiPageGui<T> parent) {
+			super(parent);
 		}
 
 		@Override
@@ -185,8 +187,8 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 		public ItemStack getItem() {
 			return nextPageButtonItem;
 		}
-		public NextPageButton() {
-			super(CustomMultiPageGui.this);
+		public NextPageButton(CustomMultiPageGui<T> parent) {
+			super(parent);
 		}
 		@Override
 		public void onClick(Player clicker, ClickType click) {
@@ -199,8 +201,8 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 		public ItemStack getItem() {
 			return item;
 		}
-		public CurrPageButton() {
-			super(CustomMultiPageGui.this);
+		public CurrPageButton(CustomMultiPageGui<T> parent) {
+			super(parent);
 			this.item = new ItemStack(Material.NAME_TAG);
 			update();
 		}
@@ -216,7 +218,7 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 		}
 	}
 	private CustomButton currPageButton;
-	private CustomButton nextPageButton = craftNextPageButton();
-	private CustomButton prevPageButton = craftPrevPageButton();
+	private CustomButton nextPageButton;
+	private CustomButton prevPageButton;
 
 }

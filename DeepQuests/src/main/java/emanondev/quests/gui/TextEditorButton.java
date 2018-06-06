@@ -16,6 +16,8 @@ public abstract class TextEditorButton extends CustomButton {
 	}
 	
 	public abstract void onReicevedText(String text);
-
+	protected void requestText(Player p,BaseComponent[] message) {
+		CommandQuestText.requestText(p, message, this);
+	}
 
 }

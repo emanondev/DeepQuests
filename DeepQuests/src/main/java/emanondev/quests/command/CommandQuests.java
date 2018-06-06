@@ -17,7 +17,8 @@ public class CommandQuests extends CmdManager {
 	@Override
 	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
 		Player p = (Player) sender;
-		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(p, 1));
+		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(p, Quests.getInstance().getQuestManager(),false));
 	}
+	
 
 }

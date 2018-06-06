@@ -12,7 +12,7 @@ import org.bukkit.configuration.MemorySection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 
 public class RequireManager {
 	private final static HashMap<String,RequireType> requiresType = 
@@ -74,7 +74,7 @@ public class RequireManager {
 		}
 		return requires;
 	}
-	public LinkedHashMap<String,Require> loadRequires(WithGui gui,MemorySection section){
+	public LinkedHashMap<String,Require> loadRequires(YmlLoadableWithCooldown loadable,MemorySection section){
 		LinkedHashMap<String,Require> requires  = new LinkedHashMap<String,Require>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
@@ -84,7 +84,7 @@ public class RequireManager {
 						String key = section.getString(id+".type");
 						if (key== null || !requiresType.containsKey(key.toUpperCase()))
 							throw new NullPointerException();
-						Require rew = requiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), gui);
+						Require rew = requiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), loadable);
 						if (rew!=null)
 							requires.put(rew.getNameID(),rew);
 					} catch (Exception e) {

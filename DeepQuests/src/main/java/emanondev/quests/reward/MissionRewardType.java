@@ -8,7 +8,7 @@ import org.bukkit.configuration.MemorySection;
 import emanondev.quests.mission.Mission;
 
 public abstract interface MissionRewardType {
-	public Reward getRewardInstance(MemorySection m,Mission mission);
+	public MissionReward getRewardInstance(MemorySection m,Mission mission);
 	public Material getGuiItemMaterial();
 	public List<String> getDescription();
 	public String getKey();

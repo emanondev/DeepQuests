@@ -103,6 +103,8 @@ public class YMLConfig extends YamlConfiguration
 			while (end<current.length()){
 				end = end + addNextComponent(base,current.substring(end));
 			}
+			if (i<texts.size()-1)
+				base.append("\n");
 		}
 		
 

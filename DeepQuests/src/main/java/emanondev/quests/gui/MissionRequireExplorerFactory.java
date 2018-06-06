@@ -25,20 +25,26 @@ public class MissionRequireExplorerFactory implements EditorButtonFactory {
 
 		public MissionRequireExplorerButton(CustomGui parent) {
 			super(parent);
-			item.setAmount(Math.max(1, Math.min(127, requires.size())));
 			ArrayList<String> desc = new ArrayList<String>();
 			desc.add("&6&lSelect/Show requires");
 			desc.add("&6Click to Select a require to edit");
 			StringUtils.setDescription(item, desc);
+			update();
 		}
-
+		public void update() {
+			item.setAmount(Math.max(1, Math.min(127, requires.size())));
+		}
 		@Override
 		public ItemStack getItem() {
+			if (requires.isEmpty())
+				return null;
 			return item;
 		}
 
 		@Override
 		public void onClick(Player clicker, ClickType click) {
+			if (requires.isEmpty())
+				return;
 			clicker.openInventory(new RequireExplorer(clicker, this.getParent()).getInventory());
 		}
 
@@ -81,8 +87,6 @@ public class MissionRequireExplorerFactory implements EditorButtonFactory {
 
 	@Override
 	public CustomButton getCustomButton(CustomGui parent) {
-		if (requires == null || requires.isEmpty())
-			return null;
 		return new MissionRequireExplorerButton(parent);
 	}
 }

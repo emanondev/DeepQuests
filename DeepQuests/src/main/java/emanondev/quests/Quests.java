@@ -8,14 +8,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.LoggerManager.Logger;
+import emanondev.quests.citizenbinds.CitizenBindManager;
 import emanondev.quests.command.CmdManager;
+import emanondev.quests.command.CommandQuestItem;
 import emanondev.quests.command.CommandQuestText;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomGuiHandler;
-import emanondev.quests.inventory.GuiManager;
-import emanondev.quests.inventory.GuiManager.GuiHolder;
+import emanondev.quests.inventory.QuestPlayerGuiManager;
 import emanondev.quests.mission.MissionManager;
 import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
@@ -24,6 +25,8 @@ import emanondev.quests.require.type.NeedMissionType;
 import emanondev.quests.require.type.NeedPermissionType;
 import emanondev.quests.reward.RewardManager;
 import emanondev.quests.reward.type.ConsoleCommandRewardType;
+import emanondev.quests.reward.type.ForceStartMissionRewardType;
+import emanondev.quests.reward.type.ItemStackRewardType;
 import emanondev.quests.task.TaskManager;
 import emanondev.quests.task.type.BreakBlockTaskType;
 import emanondev.quests.task.type.BreedMobTaskType;
@@ -32,6 +35,7 @@ import emanondev.quests.task.type.FishingTaskType;
 import emanondev.quests.task.type.KillMobTaskType;
 import emanondev.quests.task.type.LeaveRegionTaskType;
 import emanondev.quests.task.type.MythicMobKillTaskType;
+import emanondev.quests.task.type.NPCDeliverTaskType;
 import emanondev.quests.task.type.NPCKillTaskType;
 import emanondev.quests.task.type.NPCTalkTaskType;
 import emanondev.quests.task.type.PlaceBlockTaskType;
@@ -49,7 +53,7 @@ public class Quests extends JavaPlugin {
 	private RewardManager rewardManager;
 	private RequireManager requireManager;
 	private LoggerManager loggerManager;
-	private GuiManager guiManager;
+	private QuestPlayerGuiManager guiManager;
 	private ConfigManager configManager;
 	private static Quests instance;
 
@@ -123,7 +127,7 @@ public class Quests extends JavaPlugin {
 	public RequireManager getRequireManager() {
 		return requireManager;
 	}
-	public GuiManager getGuiManager() {
+	public QuestPlayerGuiManager getGuiManager() {
 		return guiManager;
 	}
 	public ConfigManager getConfigManager() {
@@ -147,8 +151,9 @@ public class Quests extends JavaPlugin {
 		new CommandQuests();
 		new CommandQuestsAdmin();
 		new CommandQuestText();
+		new CommandQuestItem();
 		registerListener(new CustomGuiHandler());
-		guiManager = new GuiManager();
+		guiManager = new QuestPlayerGuiManager();
 		
 		requireManager = new RequireManager();
 		
@@ -161,6 +166,8 @@ public class Quests extends JavaPlugin {
 		requireManager.registerRequireType(new NeedPermissionType());
 		requireManager.registerMissionRequireType(new NeedMissionType());
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
+		rewardManager.registerRewardType(new ItemStackRewardType());
+		rewardManager.registerMissionRewardType(new ForceStartMissionRewardType());
 		taskManager.registerType(new BreakBlockTaskType());
 		taskManager.registerType(new PlaceBlockTaskType());
 		taskManager.registerType(new BreedMobTaskType());
@@ -169,8 +176,10 @@ public class Quests extends JavaPlugin {
 		taskManager.registerType(new ShearSheepTaskType());
 		taskManager.registerType(new TameMobTaskType());
 		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
+			this.citizenBindManager = new CitizenBindManager();
 			taskManager.registerType(new NPCKillTaskType());
 			taskManager.registerType(new NPCTalkTaskType());
+			taskManager.registerType(new NPCDeliverTaskType());
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
 				&& Bukkit.getPluginManager().isPluginEnabled("WGRegionEvents")) {
@@ -196,15 +205,21 @@ public class Quests extends JavaPlugin {
 		
 		questManager.reload();
 		playerManager.reload();
+		if (citizenBindManager!=null)
+			citizenBindManager.reload();
 	}
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Inventory inv = p.getOpenInventory().getTopInventory();
 			if (inv != null && inv.getHolder()!=null)
-				if (inv.getHolder() instanceof CustomGui || inv.getHolder() instanceof GuiHolder)
+				if (inv.getHolder() instanceof CustomGui)
 					p.closeInventory();
 		}
 		playerManager.saveAll();
+	}
+	private CitizenBindManager citizenBindManager = null;
+	public CitizenBindManager getCitizenBindManager() {
+		return citizenBindManager;
 	}
 	
 	

@@ -4,13 +4,13 @@ import org.bukkit.entity.Player;
 
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.utils.WithGui;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 
 public interface Require extends QuestRequire,MissionRequire {
 
 	public boolean isAllowed(QuestPlayer p);
 	public String getDescription();
-	public WithGui getParent();
+	public YmlLoadableWithCooldown getParent();
 	public RequireType getRequireType();
 	public void openEditorGui(Player p);
 	public void openEditorGui(Player p,CustomGui previusHolder);

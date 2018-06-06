@@ -1,9 +1,12 @@
 package emanondev.quests.player;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.Perms;
 import emanondev.quests.events.PlayerCompleteMissionEvent;
 import emanondev.quests.events.PlayerCompleteTaskEvent;
 import emanondev.quests.events.PlayerFailMissionEvent;
@@ -19,7 +22,7 @@ import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
-import net.md_5.bungee.api.chat.BaseComponent;
+import emanondev.quests.utils.StringUtils;
 
 public class QuestPlayer extends OfflineQuestPlayer{
 	
@@ -81,116 +84,132 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	public long getCooldown(Mission mission) {
 		return getMissionData(mission).getCooldownTimeLeft();
 	}
-	public void startMission(Mission m) {
-		startMission(m,false);
+	public void startMission(Mission mission) {
+		startMission(mission,false);
 	}
-	private boolean hasRequires(Mission m) {
-		for (MissionRequire req: m.getRequires())
+	private boolean hasRequires(Mission mission) {
+		for (MissionRequire req: mission.getRequires())
 			if (!req.isAllowed(this))
 				return false;
 		return true;
 	}
-	private boolean hasRequires(Quest q) {
-		for (QuestRequire req: q.getRequires())
-			if (req.isAllowed(this))
+	private boolean hasRequires(Quest quest) {
+		for (QuestRequire req: quest.getRequires())
+			if (!req.isAllowed(this))
 				return false;
 		return true;
 	}
-	public void startMission(Mission m,boolean forced) {
+	public void startMission(Mission mission,boolean forced) {
 		//TODO mission limit
-		if (!forced && !hasRequires(m)) {
+		if (!forced && !hasRequires(mission)) {
 			return;
 		}
 		
-		PlayerStartMissionEvent event = new PlayerStartMissionEvent(this,m);
+		PlayerStartMissionEvent event = new PlayerStartMissionEvent(this,mission);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled())
 			return;
 		
-		MissionData mData = this.getMissionData(m);
-		mData.start();
+		MissionData missionData = this.getMissionData(mission);
+		missionData.start();
 		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,m);
-		BaseComponent[] mex = m.getStartMessage(this);
+			reward.applyReward(this,mission);
+		ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getStartMessage());
 		if (mex!=null)
-			getPlayer().spigot().sendMessage(mex);
+			for (String text:mex)
+				getPlayer().sendMessage(text);
 		
 	}
-	public void failMission(Mission m) {
-		DisplayState state = getDisplayState(m);
+	public void failMission(Mission mission) {
+		DisplayState state = getDisplayState(mission);
 		switch (state){
 		case COMPLETED:
 		case FAILED:
 			return;
 		default:
 		}
-		PlayerFailMissionEvent event = new PlayerFailMissionEvent(this,m);
+		PlayerFailMissionEvent event = new PlayerFailMissionEvent(this,mission);
 		Bukkit.getPluginManager().callEvent(event);
-		getMissionData(m).fail();
-		BaseComponent[] mex = m.getFailMessage(this);
+		getMissionData(mission).fail();
+		ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getFailMessage());
 		if (mex!=null)
-			getPlayer().spigot().sendMessage(mex);
+			for (String text:mex)
+				getPlayer().sendMessage(text);
 	}
-	public void togglePauseMission(Mission m) {//TODO check permission
-		if (getDisplayState(m)!=DisplayState.ONPROGRESS)
+	public void togglePauseMission(Mission mission) {//TODO check permission
+		if (getDisplayState(mission)!=DisplayState.ONPROGRESS)
 			return;
-		MissionData missionData = getMissionData(m);
+		MissionData missionData = getMissionData(mission);
 		
 		if (missionData.isPaused()) {
-			BaseComponent[] mex = m.getUnpauseMessage(this);
+			ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getUnpauseMessage());
 			if (mex!=null)
-				getPlayer().spigot().sendMessage(mex);
+				for (String text:mex)
+					getPlayer().sendMessage(text);
 		}
 		else {
-			BaseComponent[] mex = m.getPauseMessage(this);
+			ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getPauseMessage());
 			if (mex!=null)
-				getPlayer().spigot().sendMessage(mex);
+				for (String text:mex)
+					getPlayer().sendMessage(text);
 		}
 		missionData.setPaused(!missionData.isPaused());
 	}
-	public void completeMission(Mission m) {
+	public void completeMission(Mission mission) {
 
-		PlayerCompleteMissionEvent event = new PlayerCompleteMissionEvent(this,m);
+		PlayerCompleteMissionEvent event = new PlayerCompleteMissionEvent(this,mission);
 		Bukkit.getPluginManager().callEvent(event);
 		
-		MissionData mData = this.getMissionData(m);
-		mData.complete();
-		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,m);
-		BaseComponent[] mex = m.getCompleteMessage(this);
+		MissionData missionData = this.getMissionData(mission);
+		missionData.complete();
+		ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getCompleteMessage());
 		if (mex!=null)
-			getPlayer().spigot().sendMessage(mex);
+			for (String text:mex)
+				getPlayer().sendMessage(text);
+		for (MissionReward reward : event.getRewards())
+			reward.applyReward(this,mission);
 	}
-	public boolean progressTask(Task t,int amount) {
-		TaskData tData = getTaskData(t);
-		amount = Math.min(amount,t.getMaxProgress()-tData.getProgress());
+	public boolean progressTask(Task task,int amount) {
+		TaskData taskData = getTaskData(task);
+		amount = Math.min(amount,task.getMaxProgress()-taskData.getProgress());
 		if (amount <=0)
 			return false;
-		PlayerProgressTaskEvent event = new PlayerProgressTaskEvent(this,t,amount);
+		PlayerProgressTaskEvent event = new PlayerProgressTaskEvent(this,task,amount);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled() || event.getProgressAmount() <=0)
 			return false;
-		tData.setProgress(tData.getProgress()+event.getProgressAmount());
+		taskData.setProgress(taskData.getProgress()+event.getProgressAmount());
 		for (Reward rew : event.getRewards())
 			for (int i = 0 ; i < event.getProgressAmount() ; i++)
 				rew.applyReward(this);
-		if (t.getMaxProgress()<=tData.getProgress())
-			completeTask(t);
+		if (task.getMaxProgress()<=taskData.getProgress())
+			completeTask(task);
 		return true;
 	}
-	public void completeTask(Task t) {
-		PlayerCompleteTaskEvent event = new PlayerCompleteTaskEvent(this,t);
+	public void completeTask(Task task) {
+		PlayerCompleteTaskEvent event = new PlayerCompleteTaskEvent(this,task);
 		Bukkit.getPluginManager().callEvent(event);
 		boolean completed = true;
-		for (TaskData tData : getMissionData(t.getParent()).getTasksData()) {
-			if (!tData.isCompleted()) {
+		for (TaskData taskData : getMissionData(task.getParent()).getTasksData()) {
+			if (!taskData.isCompleted()) {
 				completed = false;
 				break;
 			}
 		}
 		if (completed==true) {
-			completeMission(t.getParent());
+			completeMission(task.getParent());
 		}
+	}
+
+	public boolean canSee(Quest quest) {
+		if (getPlayer().hasPermission(Perms.GUI_SEE_ALL))
+			return true;
+		return !quest.getDisplayInfo().isHidden(getDisplayState(quest));
+	}
+	public boolean canSee(Mission mission) {
+		if (getPlayer().hasPermission(Perms.GUI_SEE_ALL))
+			return true;
+		return !mission.getDisplayInfo().isHidden(getDisplayState(mission));
 	}
 	
 }
