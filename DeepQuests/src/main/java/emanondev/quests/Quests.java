@@ -194,6 +194,8 @@ public class Quests extends JavaPlugin {
 		questManager = new QuestManager();
 		
 		playerManager = new PlayerManager();
+		if (citizenBindManager!=null)
+			citizenBindManager.reload();
 	}
 	
 	public void reload(){

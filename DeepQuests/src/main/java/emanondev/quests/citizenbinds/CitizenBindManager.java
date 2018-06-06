@@ -28,7 +28,6 @@ import net.md_5.bungee.api.ChatColor;
 public class CitizenBindManager implements Listener {
 	public CitizenBindManager() {
 		Quests.getInstance().registerListener(this);
-		loadMap();
 	}
 	
 	private YMLConfig data = new YMLConfig(Quests.getInstance(),"CitizenGuiBinds");
