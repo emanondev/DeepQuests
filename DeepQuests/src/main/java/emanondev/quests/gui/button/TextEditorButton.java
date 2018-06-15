@@ -1,8 +1,10 @@
-package emanondev.quests.gui;
+package emanondev.quests.gui.button;
 
 import org.bukkit.entity.Player;
 
 import emanondev.quests.command.CommandQuestText;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomGui;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class TextEditorButton extends CustomButton {

@@ -189,6 +189,17 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 				return new NeedMissionEditorButton(parent);
 			}
 		}
+		@Override
+		public String getInfo() {
+			Mission mission;
+			if (targetMissionID==null) {
+				mission = null;
+				return "Require an unselected mission";
+			}
+			else
+				mission = getParent().getParent().getMissionByNameID(targetMissionID);
+			return "Require mission '"+mission.getDisplayName()+"'";
+		}
 	}
 
 	@Override

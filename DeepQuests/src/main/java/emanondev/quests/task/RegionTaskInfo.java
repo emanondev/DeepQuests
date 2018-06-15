@@ -15,7 +15,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;

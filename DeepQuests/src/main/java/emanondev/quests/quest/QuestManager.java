@@ -24,7 +24,7 @@ import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.SubExplorerFactory;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;

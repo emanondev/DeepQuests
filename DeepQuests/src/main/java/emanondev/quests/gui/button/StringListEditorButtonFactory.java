@@ -1,4 +1,4 @@
-package emanondev.quests.gui;
+package emanondev.quests.gui.button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomLinkedGui;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

@@ -157,7 +157,7 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 
 	@Override
 	public List<String> getDescription() {
-		return Arrays.asList("Force the player to start selected mission");
+		return Arrays.asList("&7Force the player to start selected mission");
 	}
 
 }

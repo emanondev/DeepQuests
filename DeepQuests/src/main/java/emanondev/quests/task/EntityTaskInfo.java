@@ -84,7 +84,7 @@ public class EntityTaskInfo {
 			spawnReasonsWhitelist = m.getBoolean(PATH_ENTITY_SPAWNREASON_AS_WHITELIST,false);
 		
 		
-		ignoreNPC = m.getBoolean(PATH_IGNORE_NPC,false);
+		ignoreNPC = m.getBoolean(PATH_IGNORE_NPC,true);
 	}
 	public boolean isEntityTypeListWhitelist() {
 		return entityWhitelist;
@@ -158,7 +158,7 @@ public class EntityTaskInfo {
 		return entityName.equals(e.getName());
 	}
 	private boolean checkNPC(Entity e) {
-		if (e.hasMetadata("NPC")&&ignoreNPC)
+		if (ignoreNPC && e.hasMetadata("NPC"))
 			return false;
 		return true;
 	}
@@ -872,7 +872,7 @@ public class EntityTaskInfo {
 				meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lCitizen Npc Flag"));
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add("&6Click to toggle");
-				if (!ignoreNPC) {
+				if (ignoreNPC) {
 					lore.add("&7Now Citizen NPC &cwon't count &7as valid Targets");
 				}
 				else {

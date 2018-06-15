@@ -12,21 +12,19 @@ import emanondev.quests.utils.DisplayState;
 
 public class MissionButton extends CustomButton {
 	private final Mission mission;
-	private boolean forceSee;
 	
-	public MissionButton(PlayerMissionsGui parent,Mission mission,boolean forceSee) {
+	public MissionButton(PlayerMissionsGui parent,Mission mission) {
 		super(parent);
 		if (mission==null)
 			throw new NullPointerException();
 		this.mission = mission;
-		this.forceSee = forceSee;
 	}
 	public Mission getMission() {
 		return mission;
 	}
 	@Override
 	public ItemStack getItem() {
-		return getParent().getQuestPlayer().getGuiItem(mission, forceSee);
+		return getParent().getQuestPlayer().getGuiItem(mission);
 	}
 	public PlayerMissionsGui getParent() {
 		return (PlayerMissionsGui) super.getParent();

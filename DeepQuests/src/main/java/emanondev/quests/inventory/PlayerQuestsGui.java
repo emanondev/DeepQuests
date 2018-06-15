@@ -14,6 +14,9 @@ public class PlayerQuestsGui extends AbstractQuestPlayerGui {
 	
 	private final QuestManager questManager;
 	private boolean forceSeeAll;
+	public boolean isForcedShow() {
+		return forceSeeAll;
+	}
 	public PlayerQuestsGui(QuestPlayer target, QuestManager questManager,boolean forceSeeAll) {
 		super(target, null);
 		if (questManager==null)
@@ -27,7 +30,8 @@ public class PlayerQuestsGui extends AbstractQuestPlayerGui {
 	public void update() {
 		this.items.clear();
 		for (Quest quest:questManager.getQuests()) {
-			this.items.add(new QuestButton(this,quest,forceSeeAll));
+			if (forceSeeAll || getQuestPlayer().canSee(quest))
+				this.items.add(new QuestButton(this,quest));
 		}
 		super.update();
 	}

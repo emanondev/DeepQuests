@@ -22,9 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.task.Task;
 import emanondev.quests.gui.EditorGui;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.gui.EditorButtonFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -36,6 +36,27 @@ public abstract class YmlLoadable implements Savable,WithGui {
 	public static final String PATH_WORLDS_IS_BLACKLIST = "worlds.is-blacklist";
 	
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + name.hashCode();
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		YmlLoadable other = (YmlLoadable) obj;
+		if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
 	private String displayName;
 	private final String name;
 	private final HashSet<String> worlds = new HashSet<String>();

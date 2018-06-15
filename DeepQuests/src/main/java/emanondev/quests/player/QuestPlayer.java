@@ -67,16 +67,14 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			return DisplayState.UNSTARTED;
 		return DisplayState.LOCKED;
 	}
-	public ItemStack getGuiItem(Mission mission, boolean bypassHidden) {
+	
+	public ItemStack getGuiItem(Mission mission) {
 		DisplayState state = getDisplayState(mission);
-		if (!bypassHidden && mission.getDisplayInfo().isHidden(state))
-			return null;
 		return mission.getDisplayInfo().getGuiItem(getPlayer(), state);
 	}
-	public ItemStack getGuiItem(Quest quest, boolean bypassHidden) {
+	
+	public ItemStack getGuiItem(Quest quest) {
 		DisplayState state = getDisplayState(quest);
-		if (!bypassHidden && quest.getDisplayInfo().isHidden(state))
-			return null;
 		return quest.getDisplayInfo().getGuiItem(getPlayer(), state);
 	}
 	public long getCooldown(Quest quest) {
@@ -95,6 +93,8 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		return true;
 	}
 	private boolean hasRequires(Quest quest) {
+		if (!quest.isWorldAllowed(getPlayer().getWorld()))
+			return false;
 		for (QuestRequire req: quest.getRequires())
 			if (!req.isAllowed(this))
 				return false;
@@ -202,10 +202,12 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			completeMission(task.getParent());
 		}
 	}
-
+	
 	public boolean canSee(Quest quest) {
 		if (getPlayer().hasPermission(Perms.GUI_SEE_ALL))
 			return true;
+		if (!quest.isWorldAllowed(getPlayer().getWorld()))
+			return false;
 		return !quest.getDisplayInfo().isHidden(getDisplayState(quest));
 	}
 	public boolean canSee(Mission mission) {

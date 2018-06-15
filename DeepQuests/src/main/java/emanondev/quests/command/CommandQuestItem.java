@@ -11,7 +11,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import emanondev.quests.gui.ItemEditorButton;
+import emanondev.quests.gui.button.ItemEditorButton;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

@@ -33,7 +33,7 @@ public class PlayerMissionsGui extends AbstractQuestPlayerGui{
 		this.items.clear();
 		for (Mission mission:quest.getMissions()) {
 			if (seeAllForced || getQuestPlayer().canSee(mission))
-				this.items.add(new MissionButton(this,mission,seeAllForced));
+				this.items.add(new MissionButton(this,mission));
 		}
 		super.update();
 	}

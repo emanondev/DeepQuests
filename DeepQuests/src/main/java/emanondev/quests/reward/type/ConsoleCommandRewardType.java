@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;

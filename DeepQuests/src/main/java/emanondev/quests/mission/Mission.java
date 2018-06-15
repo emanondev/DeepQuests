@@ -25,11 +25,11 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.EditorButtonFactory;
+import emanondev.quests.gui.MissionCompleteRewardExplorerFactory;
 import emanondev.quests.gui.SubExplorerFactory;
+import emanondev.quests.gui.button.StringListEditorButtonFactory;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.gui.MissionRequireExplorerFactory;
-import emanondev.quests.gui.MissionRewardExplorerFactory;
-import emanondev.quests.gui.StringListEditorButtonFactory;
-import emanondev.quests.gui.TextEditorButton;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
@@ -113,10 +113,10 @@ public class Mission extends YmlLoadableWithCooldown {
 		this.addToEditor(0, new SubExplorerFactory<Task>(Task.class, getTasks(), "&8Tasks List"));
 		this.addToEditor(1, new AddTaskFactory());
 		this.addToEditor(2, new DeleteTaskFactory());
-		this.addToEditor(18, new MissionRequireExplorerFactory(requires.values(), "&8Requires"));
+		this.addToEditor(18, new MissionRequireExplorerFactory(this, "&8Requires"));
 		this.addToEditor(19, new AddRequireFactory());
 		this.addToEditor(20, new DeleteRequireFactory());
-		this.addToEditor(27, new MissionRewardExplorerFactory(completeRewards.values(), "&8Complete Rewards"));
+		this.addToEditor(27, new MissionCompleteRewardExplorerFactory(this, "&8Complete Rewards"));
 		this.addToEditor(28, new AddCompleteRewardFactory());
 		this.addToEditor(29, new DeleteCompleteRewardFactory());
 		this.addToEditor(31, new StartMessageButtonFactory());
@@ -865,6 +865,7 @@ public class Mission extends YmlLoadableWithCooldown {
 							@Override
 							public void onClick(Player clicker, ClickType click) {
 								deleteRequire(req);
+								DeleteRequireButton.this.getParent().update();
 								clicker.openInventory(DeleteRequireButton.this.getParent().getInventory());
 							}
 						}

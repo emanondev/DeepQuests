@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.ItemEditorButton;
+import emanondev.quests.gui.button.ItemEditorButton;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;

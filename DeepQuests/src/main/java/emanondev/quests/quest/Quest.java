@@ -25,7 +25,7 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.QuestRequireExplorerFactory;
 import emanondev.quests.gui.SubExplorerFactory;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.require.QuestRequire;
 import emanondev.quests.require.QuestRequireType;
@@ -42,6 +42,28 @@ import net.md_5.bungee.api.chat.HoverEvent;
 public class Quest extends YmlLoadableWithCooldown {
 	public static final String PATH_MISSIONS = "missions";
 	public static final String PATH_REQUIRES = "requires";
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + parent.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Quest other = (Quest) obj;
+		if (!parent.equals(other.parent))
+			return false;
+		return true;
+	}
 
 	private final LinkedHashMap<String, Mission> missions = new LinkedHashMap<String, Mission>();
 	private final QuestManager parent;
@@ -74,7 +96,7 @@ public class Quest extends YmlLoadableWithCooldown {
 		this.addToEditor(0, new SubExplorerFactory<Mission>(Mission.class, getMissions(), "&8Missions List"));
 		this.addToEditor(1, new AddMissionFactory());
 		this.addToEditor(2, new DeleteMissionFactory());
-		this.addToEditor(18, new QuestRequireExplorerFactory(requires.values(), "&8Requires"));
+		this.addToEditor(18, new QuestRequireExplorerFactory(this, "&8Requires"));
 		this.addToEditor(19, new AddRequireFactory());
 		this.addToEditor(20, new DeleteRequireFactory());
 	}
@@ -666,6 +688,7 @@ public class Quest extends YmlLoadableWithCooldown {
 							@Override
 							public void onClick(Player clicker, ClickType click) {
 								deleteRequire(req);
+								DeleteRequireButton.this.getParent().update();
 								clicker.openInventory(DeleteRequireButton.this.getParent().getInventory());
 							}
 						}

@@ -54,7 +54,7 @@ public class PlayerManager implements Listener {
 	public QuestPlayer getQuestPlayer(Player p) {
 		if (players.containsKey(p))
 			return players.get(p);
-		throw new RuntimeException("error player has no questplayer object");
+		return null;
 	}
 	/**
 	 * 

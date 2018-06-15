@@ -14,4 +14,5 @@ public interface QuestRequire {
 	public void openEditorGui(Player p);
 	public void openEditorGui(Player p,CustomGui previusHolder);
 	public String getNameID();
+	public String getInfo();
 }

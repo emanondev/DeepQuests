@@ -12,19 +12,17 @@ import emanondev.quests.quest.Quest;
 
 public class QuestButton extends CustomButton {
 	private final Quest quest;
-	private boolean forceSee;
 	
-	public QuestButton(PlayerQuestsGui parent,Quest quest,boolean forceSee) {
+	public QuestButton(PlayerQuestsGui parent,Quest quest) {
 		super(parent);
 		if (quest==null)
 			throw new NullPointerException();
 		this.quest = quest;
-		this.forceSee = forceSee;
 	}
 	
 	@Override
 	public ItemStack getItem() {
-		return getParent().getQuestPlayer().getGuiItem(quest, forceSee);
+		return getParent().getQuestPlayer().getGuiItem(quest);
 	}
 	@Override
 	public void onClick(Player clicker, ClickType click) {
@@ -40,7 +38,7 @@ public class QuestButton extends CustomButton {
 		if (event.isCancelled())
 			return;
 		if (click==ClickType.LEFT)
-			clicker.openInventory(Quests.getInstance().getGuiManager().getMissionsInventory(clicker,quest,true,forceSee));
+			clicker.openInventory(Quests.getInstance().getGuiManager().getMissionsInventory(getParent().getPlayer(),quest,true,getParent().isForcedShow()));
 	}
 	public PlayerQuestsGui getParent() {
 		return (PlayerQuestsGui) super.getParent();

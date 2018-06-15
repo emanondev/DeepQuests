@@ -1,22 +1,22 @@
 package emanondev.quests.gui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.mission.Mission;
 import emanondev.quests.reward.MissionReward;
 import emanondev.quests.utils.StringUtils;
 
-public class MissionRewardExplorerFactory implements EditorButtonFactory {
-	private final Collection<MissionReward> rewards;
+public class MissionCompleteRewardExplorerFactory implements EditorButtonFactory {
+	private final Mission mission;
 	private final String title;
 
-	public MissionRewardExplorerFactory(Collection<MissionReward> rewards, String title) {
-		this.rewards = rewards;
+	public MissionCompleteRewardExplorerFactory(Mission mission, String title) {
+		this.mission = mission;
 		this.title = title;
 	}
 
@@ -25,26 +25,29 @@ public class MissionRewardExplorerFactory implements EditorButtonFactory {
 
 		public MissionRewardExplorerButton(CustomGui parent) {
 			super(parent);
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6&lSelect/Show rewards");
-			desc.add("&6Click to Select a reward to edit");
-			StringUtils.setDescription(item, desc);
 			update();
 		}
 		public void update() {
-			item.setAmount(Math.max(1, Math.min(127, rewards.size())));
+			item.setAmount(Math.max(1, Math.min(127, mission.getCompleteRewards().size())));
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lSelect/Show rewards");
+			desc.add("&6Click to Select a reward to edit");
+			if (mission.getCompleteRewards().size()>0)
+				for (MissionReward reward: mission.getCompleteRewards())
+					desc.add("&7"+reward.getInfo());
+			StringUtils.setDescription(item, desc);
 		}
 
 		@Override
 		public ItemStack getItem() {
-			if (rewards.isEmpty())
+			if (mission.getCompleteRewards().isEmpty())
 				return null;
 			return item;
 		}
 
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (rewards.isEmpty())
+			if (mission.getCompleteRewards().isEmpty())
 				return;
 			clicker.openInventory(new RewardExplorer(clicker, this.getParent()).getInventory());
 		}
@@ -54,7 +57,7 @@ public class MissionRewardExplorerFactory implements EditorButtonFactory {
 			public RewardExplorer(Player p, CustomGui parent) {
 				super(p, parent, 6, 1);
 				this.setFromEndCloseButtonPosition(8);
-				for (MissionReward reward : rewards)
+				for (MissionReward reward : mission.getCompleteRewards())
 					addButton(new RewardButton(reward));
 				this.setTitle(null, StringUtils.fixColorsAndHolders(title));
 				reloadInventory();

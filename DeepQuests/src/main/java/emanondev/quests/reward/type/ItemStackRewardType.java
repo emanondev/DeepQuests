@@ -12,10 +12,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import emanondev.quests.gui.AmountEditorButtonFactory;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.ItemEditorButton;
+import emanondev.quests.gui.button.AmountEditorButtonFactory;
+import emanondev.quests.gui.button.ItemEditorButton;
 import emanondev.quests.inventory.InventoryUtils;
 import emanondev.quests.inventory.InventoryUtils.ExcessManage;
 import emanondev.quests.mission.Mission;

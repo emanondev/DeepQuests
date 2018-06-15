@@ -22,12 +22,17 @@ import emanondev.quests.mission.MissionManager;
 import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
+import emanondev.quests.require.type.JobsLvRequireType;
+import emanondev.quests.require.type.McmmoLvRequireType;
 import emanondev.quests.require.type.NeedMissionType;
 import emanondev.quests.require.type.NeedPermissionType;
 import emanondev.quests.reward.RewardManager;
 import emanondev.quests.reward.type.ConsoleCommandRewardType;
+import emanondev.quests.reward.type.ForceStartAnotherQuestMissionRewardType;
 import emanondev.quests.reward.type.ForceStartMissionRewardType;
 import emanondev.quests.reward.type.ItemStackRewardType;
+import emanondev.quests.reward.type.JobsExpRewardType;
+import emanondev.quests.reward.type.McmmoExpRewardType;
 import emanondev.quests.task.TaskManager;
 import emanondev.quests.task.type.BreakBlockTaskType;
 import emanondev.quests.task.type.BreedMobTaskType;
@@ -169,6 +174,7 @@ public class Quests extends JavaPlugin {
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		rewardManager.registerRewardType(new ItemStackRewardType());
 		rewardManager.registerMissionRewardType(new ForceStartMissionRewardType());
+		rewardManager.registerMissionRewardType(new ForceStartAnotherQuestMissionRewardType());
 		taskManager.registerType(new BreakBlockTaskType());
 		taskManager.registerType(new PlaceBlockTaskType());
 		taskManager.registerType(new BreedMobTaskType());
@@ -176,18 +182,37 @@ public class Quests extends JavaPlugin {
 		taskManager.registerType(new KillMobTaskType());
 		taskManager.registerType(new ShearSheepTaskType());
 		taskManager.registerType(new TameMobTaskType());
+		if (Bukkit.getPluginManager().isPluginEnabled("Jobs")) {
+			this.consoleLog("Hooking into Jobs");
+			requireManager.registerRequireType(new JobsLvRequireType());
+			rewardManager.registerRewardType(new JobsExpRewardType());
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Mcmmo")) {
+			this.consoleLog("Hooking into Mcmmo");
+			requireManager.registerRequireType(new McmmoLvRequireType());
+			rewardManager.registerRewardType(new McmmoExpRewardType());
+		}
 		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
-			this.citizenBindManager = new CitizenBindManager();
+			this.consoleLog("Hooking into Citizens");
 			taskManager.registerType(new NPCKillTaskType());
 			taskManager.registerType(new NPCTalkTaskType());
 			taskManager.registerType(new NPCDeliverTaskType());
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Quests.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					citizenBindManager = new CitizenBindManager();
+				}
+			}, 2);
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
 				&& Bukkit.getPluginManager().isPluginEnabled("WGRegionEvents")) {
+
+			this.consoleLog("Hooking into WGRegionEvents");
 			taskManager.registerType(new EnterRegionTaskType());
 			taskManager.registerType(new LeaveRegionTaskType());
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("MythicMobs")) {
+			this.consoleLog("Hooking into MythicMobs");
 			taskManager.registerType(new MythicMobKillTaskType());
 		}
 		//TODO implement a way to activate listeners only if required

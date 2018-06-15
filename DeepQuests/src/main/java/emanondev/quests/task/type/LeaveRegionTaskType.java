@@ -27,6 +27,8 @@ public class LeaveRegionTaskType extends TaskType {
 	private void onRegionLeave(RegionLeaveEvent event) {
 		Player p = event.getPlayer();
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		if (qPlayer==null)
+			return;
 		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager().getTaskType(key));
 		if (tasks == null || tasks.isEmpty())
 			return;

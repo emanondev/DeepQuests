@@ -13,7 +13,7 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.RewardGui;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.utils.Savable;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;

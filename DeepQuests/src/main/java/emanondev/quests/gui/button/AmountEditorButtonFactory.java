@@ -1,4 +1,4 @@
-package emanondev.quests.gui;
+package emanondev.quests.gui.button;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.CustomLinkedGui;
+import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.utils.StringUtils;
 
 public abstract class AmountEditorButtonFactory implements EditorButtonFactory {

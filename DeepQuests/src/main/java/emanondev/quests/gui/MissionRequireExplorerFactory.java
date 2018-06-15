@@ -1,22 +1,22 @@
 package emanondev.quests.gui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.mission.Mission;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.utils.StringUtils;
 
 public class MissionRequireExplorerFactory implements EditorButtonFactory {
-	private final Collection<MissionRequire> requires;
+	private final Mission mission;
 	private final String title;
 
-	public MissionRequireExplorerFactory(Collection<MissionRequire> requires, String title) {
-		this.requires = requires;
+	public MissionRequireExplorerFactory(Mission mission, String title) {
+		this.mission = mission;
 		this.title = title;
 	}
 
@@ -25,25 +25,28 @@ public class MissionRequireExplorerFactory implements EditorButtonFactory {
 
 		public MissionRequireExplorerButton(CustomGui parent) {
 			super(parent);
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6&lSelect/Show requires");
-			desc.add("&6Click to Select a require to edit");
-			StringUtils.setDescription(item, desc);
 			update();
 		}
 		public void update() {
-			item.setAmount(Math.max(1, Math.min(127, requires.size())));
+			item.setAmount(Math.max(1, Math.min(127, mission.getRequires().size())));
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lSelect/Show requires");
+			desc.add("&6Click to Select a require to edit");
+			if (mission.getRequires().size()>0)
+				for (MissionRequire require: mission.getRequires())
+					desc.add("&7"+require.getInfo());
+			StringUtils.setDescription(item, desc);
 		}
 		@Override
 		public ItemStack getItem() {
-			if (requires.isEmpty())
+			if (mission.getRequires().isEmpty())
 				return null;
 			return item;
 		}
 
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (requires.isEmpty())
+			if (mission.getRequires().isEmpty())
 				return;
 			clicker.openInventory(new RequireExplorer(clicker, this.getParent()).getInventory());
 		}
@@ -53,7 +56,7 @@ public class MissionRequireExplorerFactory implements EditorButtonFactory {
 			public RequireExplorer(Player p, CustomGui parent) {
 				super(p, parent, 6, 1);
 				this.setFromEndCloseButtonPosition(8);
-				for (MissionRequire require : requires)
+				for (MissionRequire require : mission.getRequires())
 					addButton(new RequireButton(require));
 				this.setTitle(null, StringUtils.fixColorsAndHolders(title));
 				reloadInventory();

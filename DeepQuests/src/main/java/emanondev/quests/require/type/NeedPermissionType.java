@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.TextEditorButton;
+import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
@@ -137,6 +137,13 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 			public CustomButton getCustomButton(CustomGui parent) {
 				return new PermissionEditorButton(parent);
 			}
+		}
+
+		@Override
+		public String getInfo() {
+			if (permission == null)
+				return "Require an unselected permission";
+			return "Require permission '"+permission+"'";
 		}
 	}
 

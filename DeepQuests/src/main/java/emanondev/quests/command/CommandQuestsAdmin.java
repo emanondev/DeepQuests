@@ -110,7 +110,7 @@ class SubPlayer extends SubCmdManager {
 }
 class SubPlayerOpenGui extends SubCmdManager {
 
-	public SubPlayerOpenGui() {
+	SubPlayerOpenGui() {
 		super("opengui", null);
 		this.setPlayersOnly(true);
 		this.setDescription(ChatColor.GOLD+"Open the Quests gui of the player");
@@ -124,7 +124,7 @@ class SubPlayerOpenGui extends SubCmdManager {
 			return;
 		}
 		Player p = (Player) sender;
-		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(target, Quests.getInstance().getQuestManager(), true));
+		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(target, Quests.getInstance().getQuestManager(), false));
 		return;
 	}
 }

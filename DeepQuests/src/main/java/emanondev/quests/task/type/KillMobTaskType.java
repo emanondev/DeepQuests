@@ -30,6 +30,8 @@ public class KillMobTaskType extends TaskType {
 			return;
 		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
 				.getQuestPlayer(event.getEntity().getKiller());
+		if (qPlayer==null)
+			return;
 		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
