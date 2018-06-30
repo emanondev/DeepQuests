@@ -1,24 +1,26 @@
-package emanondev.quests.reward;
+package emanondev.quests.utils;
 
 import java.util.ArrayList;
-import org.bukkit.configuration.MemorySection;
-import emanondev.quests.utils.AbstractApplyable;
-import emanondev.quests.utils.YmlLoadable;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import java.util.HashMap;
 
-public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> implements Reward {
-	
-	
-	
-	
-	
-	/*
+import org.bukkit.Material;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+
+import emanondev.quests.gui.ApplyableGui;
+import emanondev.quests.gui.CustomButton;
+import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.EditorButtonFactory;
+import emanondev.quests.gui.button.TextEditorButton;
+import net.md_5.bungee.api.chat.BaseComponent;
+
+public abstract class AbstractApplyable<T extends YmlLoadable> implements Applyable<T> {
 	private static final String PATH_DESCRIPTION = "description";
 	private final String nameID;
 	private String description; 
-	public AbstractReward(MemorySection section,YmlLoadable parent) {
+	public AbstractApplyable(MemorySection section,T parent) {
 		if (section==null || parent==null)
 			throw new NullPointerException();
 		this.nameID = loadName(section).toLowerCase();
@@ -32,7 +34,7 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 	}
 	/**
 	 * @return the unique name
-	 *//*
+	 */
 	private String loadName(MemorySection m) {
 		String name = m.getName();
 		if (name==null||name.isEmpty())
@@ -40,8 +42,8 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 		return name;
 	}
 	private final MemorySection section;
-	private final YmlLoadable parent;
-	public YmlLoadable getParent() {
+	private final T parent;
+	public T getParent() {
 		return parent;
 	}
 	protected MemorySection getSection() {
@@ -52,7 +54,7 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 		openEditorGui(p,null);
 	}
 	public void openEditorGui(Player p,CustomGui previusHolder){
-		p.openInventory(new RewardGui(p,this,previusHolder,tools,"&9Reward &8("+getKey()+")").getInventory());
+		p.openInventory(new ApplyableGui<T>(p,this,previusHolder,tools,getEditorTitle()).getInventory());
 	}
 	public final String getKey() {
 		return getType().getKey();
@@ -72,8 +74,7 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 			return false;
 		this.description = desc;
 		section.set(PATH_DESCRIPTION,description);
-		if (parent instanceof Savable)
-			((Savable) parent).setDirty(true);
+		parent.setDirty(true);
 		return true;
 	}
 	private class DescriptionEditorButtonFactory implements EditorButtonFactory {
@@ -88,21 +89,11 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 				return item;
 			}
 			public void update() {
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lReward Description Editor");
-				desc.add("&6Click to edit");
-				desc.add("&7Current value:");
-				if (description!=null)
-					desc.add("&7'&f"+description+"&7'");
-				else
-					desc.add("&7no description is set");
-				desc.add("");
-				desc.add("&7Represent the description of the Reward");
-				StringUtils.setDescription(item, desc);
+				StringUtils.setDescription(item, getDescriptionButtonDisplay());
 			}
 			@Override
 			public void onClick(Player clicker, ClickType click) {
-				this.requestText(clicker, StringUtils.revertColors(description), changeDescriptionHelp);
+				this.requestText(clicker, StringUtils.revertColors(description), getChangeDescriptionHelp());
 			}
 			@Override
 			public void onReicevedText(String text) {
@@ -121,40 +112,9 @@ public abstract class AbstractReward extends AbstractApplyable<YmlLoadable> impl
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new DescriptionEditorButton(parent);
 		}
-	}*/
-
-	public AbstractReward(MemorySection section, YmlLoadable parent) {
-		super(section, parent);
 	}
+	protected abstract String getEditorTitle();
+	protected abstract BaseComponent[] getChangeDescriptionHelp();
+	protected abstract ArrayList<String> getDescriptionButtonDisplay();
 
-	private static final BaseComponent[] changeDescriptionHelp = new ComponentBuilder(
-			ChatColor.GOLD+"Click suggest the command and the old description\n\n"+
-			ChatColor.GOLD+"Change override old description with new description\n"+
-			ChatColor.YELLOW+"/questtext <new description>\n\n"
-			).create();
-
-	@Override
-	protected String getEditorTitle() {
-		return "&9Reward &8("+getKey()+")";
-	}
-
-	@Override
-	protected BaseComponent[] getChangeDescriptionHelp() {
-		return changeDescriptionHelp;
-	}
-
-	@Override
-	protected ArrayList<String> getDescriptionButtonDisplay() {
-		ArrayList<String> desc = new ArrayList<String>();
-		desc.add("&6&lReward Description Editor");
-		desc.add("&6Click to edit");
-		desc.add("&7Current value:");
-		if (getDescription()!=null)
-			desc.add("&7'&f"+getDescription()+"&7'");
-		else
-			desc.add("&7no description is set");
-		desc.add("");
-		desc.add("&7Represent the description of the Reward");
-		return desc;
-	}
 }

@@ -17,9 +17,7 @@ import emanondev.quests.mission.Mission;
 import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData;
 import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData.TaskData;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.require.MissionRequire;
-import emanondev.quests.require.QuestRequire;
-import emanondev.quests.reward.MissionReward;
+import emanondev.quests.require.Require;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.DisplayState;
@@ -87,7 +85,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		startMission(mission,false);
 	}
 	private boolean hasRequires(Mission mission) {
-		for (MissionRequire req: mission.getRequires())
+		for (Require req: mission.getRequires())
 			if (!req.isAllowed(this))
 				return false;
 		return true;
@@ -95,7 +93,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	private boolean hasRequires(Quest quest) {
 		if (!quest.isWorldAllowed(getPlayer().getWorld()))
 			return false;
-		for (QuestRequire req: quest.getRequires())
+		for (Require req: quest.getRequires())
 			if (!req.isAllowed(this))
 				return false;
 		return true;
@@ -113,8 +111,8 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		
 		MissionData missionData = this.getMissionData(mission);
 		missionData.start();
-		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,mission);
+		for (Reward reward : event.getRewards())
+			reward.applyReward(this);
 		ArrayList<String> mex = StringUtils.convertList(getPlayer(),mission.getStartMessage());
 		if (mex!=null)
 			for (String text:mex)
@@ -167,8 +165,8 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		if (mex!=null)
 			for (String text:mex)
 				getPlayer().sendMessage(text);
-		for (MissionReward reward : event.getRewards())
-			reward.applyReward(this,mission);
+		for (Reward reward : event.getRewards())
+			reward.applyReward(this);
 	}
 	public boolean progressTask(Task task,int amount) {
 		TaskData taskData = getTaskData(task);

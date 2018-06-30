@@ -16,6 +16,13 @@ public class QuestPlayerGuiManager {
 		QuestPlayer questPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(target);
 		return new PlayerQuestsGui(questPlayer,questManager,seeAllForced).getInventory();
 	}
+	public Inventory getMissionsResetGui(Player target, QuestManager questManager) {
+		return new MissionsResetGui(target,null,questManager).getInventory();
+	}
+	public Inventory getQuestsResetGui(Player target, QuestManager questManager) {
+		return new QuestResetGui(target,null,questManager).getInventory();
+	}
+	
 }
 
 

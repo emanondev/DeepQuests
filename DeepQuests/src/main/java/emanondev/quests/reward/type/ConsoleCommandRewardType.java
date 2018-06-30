@@ -15,9 +15,7 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.button.TextEditorButton;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
 import emanondev.quests.utils.Savable;
@@ -44,15 +42,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 			this.addToEditor(1, new CommandEditorButtonFactory());
 		}
 		@Override
-		public void applyReward(QuestPlayer p) {
-			if (command!=null)
-				Bukkit.dispatchCommand(
-					Bukkit.getConsoleSender(),
-					command.replace("%player%", p.getPlayer().getName())
-					);
-		}
-		@Override
-		public RewardType getRewardType() {
+		public RewardType getType() {
 			return ConsoleCommandRewardType.this;
 		}
 		public boolean setCommand(String cmd) {
@@ -112,13 +102,17 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 				return new CommandEditorButton(parent);
 			}
 		}
-
-		public String getKey() {
-			return getRewardType().getKey();
-		}
 		@Override
 		public String getInfo() {
 			return "'"+command+"'";
+		}
+		@Override
+		public void applyReward(QuestPlayer qPlayer, int amount) {
+			if (command==null)
+				return;
+			String cmd = command.replace("%player%", qPlayer.getPlayer().getName()).replace("%player_name%", qPlayer.getPlayer().getName());
+			for (int i = 0; i<amount ; i++)
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),cmd);
 		}
 		
 		
@@ -144,19 +138,8 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 				"&7Example: 'give %player diamond'%"
 				);
 	}
-
-	public Reward getRewardInstance(MemorySection section,YmlLoadable gui) {
-		return new ConsoleCommandReward(section,gui);
-	}
-
 	@Override
-	public Reward getRewardInstance(MemorySection section, Mission mission) {
-		return new ConsoleCommandReward(section,mission);
+	public Reward getInstance(MemorySection section,YmlLoadable parent) {
+		return new ConsoleCommandReward(section,parent);
 	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection section, Quest q) {
-		return new ConsoleCommandReward(section,q);
-	}
-
 }

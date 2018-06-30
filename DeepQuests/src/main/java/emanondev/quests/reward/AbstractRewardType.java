@@ -1,15 +1,10 @@
 package emanondev.quests.reward;
 
-public abstract class AbstractRewardType{
-	private final String key;
+import emanondev.quests.utils.AbstractApplyableType;
+import emanondev.quests.utils.YmlLoadable;
+
+public abstract class AbstractRewardType extends AbstractApplyableType<YmlLoadable> implements RewardType {
 	public AbstractRewardType(String key) {
-		if (key == null)
-			throw new NullPointerException();
-		if (key.isEmpty() || key.contains(" ")|| key.contains(":"))
-			throw new IllegalArgumentException("invalid reward name '"+key+"'");
-		this.key = key.toUpperCase();
-	}
-	public final String getKey() {
-		return key;
+		super(key);
 	}
 }

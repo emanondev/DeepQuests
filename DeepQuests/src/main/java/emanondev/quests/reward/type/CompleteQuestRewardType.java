@@ -11,7 +11,7 @@ import emanondev.quests.reward.AbstractReward;
 import emanondev.quests.reward.AbstractRewardType;
 import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.MissionRewardType;
-import emanondev.quests.reward.RewardType;
+import emanondev.quests.utils.YmlLoadable;
 
 public class CompleteQuestRewardType extends AbstractRewardType implements MissionRewardType {
 
@@ -25,34 +25,29 @@ public class CompleteQuestRewardType extends AbstractRewardType implements Missi
 		}
 
 		@Override
-		public void applyReward(QuestPlayer p, Mission q) {
-			//TODO
-			
-		}
-
-		@Override
-		public RewardType getRewardType() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getKey() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
 		public String getInfo() {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
-	}
 
-	@Override
-	public MissionReward getRewardInstance(MemorySection m, Mission mission) {
-		return new CompleteQuestReward(m,mission);
+		@Override
+		public void applyReward(QuestPlayer qPlayer, int amount) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public Mission getParent() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public MissionRewardType getType() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
 	}
 
 	@Override
@@ -63,6 +58,12 @@ public class CompleteQuestRewardType extends AbstractRewardType implements Missi
 	@Override
 	public List<String> getDescription() {
 		return Arrays.asList("&7Complete the quest that contains this Mission");
+	}
+
+	@Override
+	public MissionReward getInstance(MemorySection section, YmlLoadable parent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

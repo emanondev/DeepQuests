@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -21,14 +22,16 @@ import emanondev.quests.Quests;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
+import emanondev.quests.gui.DeleteApplyableFactory;
+import emanondev.quests.gui.AddApplyableFactory;
+import emanondev.quests.gui.ApplyableExplorerFactory;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.QuestRequireExplorerFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.gui.button.TextEditorButton;
 import emanondev.quests.mission.Mission;
-import emanondev.quests.require.QuestRequire;
-import emanondev.quests.require.QuestRequireType;
+import emanondev.quests.require.Require;
+import emanondev.quests.require.RequireType;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.YmlLoadable;
@@ -67,7 +70,7 @@ public class Quest extends YmlLoadableWithCooldown {
 
 	private final LinkedHashMap<String, Mission> missions = new LinkedHashMap<String, Mission>();
 	private final QuestManager parent;
-	private final LinkedHashMap<String, QuestRequire> requires = new LinkedHashMap<String, QuestRequire>();
+	private final LinkedHashMap<String, Require> requires = new LinkedHashMap<String, Require>();
 	// private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
 	private final QuestDisplayInfo displayInfo;
 
@@ -86,7 +89,7 @@ public class Quest extends YmlLoadableWithCooldown {
 				this.dirty = true;
 		}
 
-		LinkedHashMap<String, QuestRequire> req = loadRequires(m);
+		LinkedHashMap<String, Require> req = loadRequires(m);
 		if (req != null)
 			requires.putAll(req);
 		displayInfo = loadDisplayInfo(m);
@@ -96,9 +99,31 @@ public class Quest extends YmlLoadableWithCooldown {
 		this.addToEditor(0, new SubExplorerFactory<Mission>(Mission.class, getMissions(), "&8Missions List"));
 		this.addToEditor(1, new AddMissionFactory());
 		this.addToEditor(2, new DeleteMissionFactory());
-		this.addToEditor(18, new QuestRequireExplorerFactory(this, "&8Requires"));
+		this.addToEditor(18, new RequireExplorerFactory());
 		this.addToEditor(19, new AddRequireFactory());
 		this.addToEditor(20, new DeleteRequireFactory());
+	}
+
+	private class RequireExplorerFactory extends ApplyableExplorerFactory<Require> {
+		public RequireExplorerFactory() {
+			super("&9Requires");
+		}
+
+		@Override
+		protected ArrayList<String> getExplorerButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lSelect/Show requires");
+			desc.add("&6Click to Select a require to edit");
+			if (requires.size() > 0)
+				for (Require require : getRequires())
+					desc.add("&7" + require.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected Collection<Require> getCollection() {
+			return getRequires();
+		}
 	}
 
 	@Override
@@ -117,7 +142,7 @@ public class Quest extends YmlLoadableWithCooldown {
 		return parent;
 	}
 
-	public Collection<QuestRequire> getRequires() {
+	public Collection<Require> getRequires() {
 		return Collections.unmodifiableCollection(requires.values());
 	}
 
@@ -172,7 +197,7 @@ public class Quest extends YmlLoadableWithCooldown {
 		}
 		if (requires.size() > 0) {
 			comp.append("\n" + ChatColor.DARK_AQUA + "Requires:");
-			for (QuestRequire require : requires.values()) {
+			for (Require require : requires.values()) {
 				comp.append("\n" + ChatColor.AQUA + " - " + require.getDescription());
 
 			}
@@ -188,7 +213,7 @@ public class Quest extends YmlLoadableWithCooldown {
 		return new QuestDisplayInfo(m, this);
 	}
 
-	private LinkedHashMap<String, QuestRequire> loadRequires(MemorySection m) {
+	private LinkedHashMap<String, Require> loadRequires(MemorySection m) {
 		MemorySection m2 = (MemorySection) m.get(PATH_REQUIRES);
 		if (m2 == null)
 			m2 = (MemorySection) m.createSection(PATH_REQUIRES);
@@ -279,7 +304,7 @@ public class Quest extends YmlLoadableWithCooldown {
 
 	private final static String PATH_REQUIRE_TYPE = "type";
 
-	public QuestRequire addRequire(QuestRequireType type) {
+	public Require addRequire(RequireType type) {
 		if (type == null)
 			return null;
 		String key = null;
@@ -289,13 +314,13 @@ public class Quest extends YmlLoadableWithCooldown {
 			i++;
 		} while (requires.containsKey(key));
 		getSection().set(PATH_REQUIRES + "." + key + "." + PATH_REQUIRE_TYPE, type.getKey());
-		QuestRequire req = type.getRequireInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
+		Require req = type.getInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
 		requires.put(req.getNameID(), req);
 		setDirty(true);
 		return req;
 	}
 
-	public boolean deleteRequire(QuestRequire req) {
+	public boolean deleteRequire(Require req) {
 		if (req == null || !requires.containsKey(req.getNameID()) || !requires.get(req.getNameID()).equals(req))
 			return false;
 		getSection().set(PATH_REQUIRES + "." + req.getNameID(), null);
@@ -517,189 +542,97 @@ public class Quest extends YmlLoadableWithCooldown {
 		}
 	}
 
-	private class AddRequireFactory implements EditorButtonFactory {
-		private class AddRequireGuiItem extends CustomButton {
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
-
-			public AddRequireGuiItem(CustomGui parent) {
-				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Require"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Require"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new CreateRequireGui(clicker, this.getParent()).getInventory());
-			}
-
-			private class CreateRequireGui extends CustomMultiPageGui<CustomButton> {
-				public CreateRequireGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setFromEndCloseButtonPosition(8);
-					for (QuestRequireType type : Quests.getInstance().getRequireManager().getQuestRequiresTypes())
-						this.addButton(new QuestRequireTypeButton(type));
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Select a Require Type"));
-					reloadInventory();
-				}
-
-				private class QuestRequireTypeButton extends CustomButton {
-					private final ItemStack item;
-					private final QuestRequireType type;
-
-					public QuestRequireTypeButton(QuestRequireType type) {
-						super(CreateRequireGui.this.getPreviusHolder());
-						item = new ItemStack(type.getGuiItemMaterial());
-						this.type = type;
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Click to add a require of type:");
-						desc.add("&e" + type.getKey());
-						desc.addAll(type.getDescription());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						QuestRequire req = Quest.this.addRequire(type);
-						if (req == null) {
-							// TODO
-							return;
-						}
-						req.openEditorGui(clicker, AddRequireGuiItem.this.getParent());
-					}
-				}
-			}
+	private class AddRequireFactory extends AddApplyableFactory<RequireType> implements EditorButtonFactory {
+		public AddRequireFactory() {
+			super("&8Select a Require Type");
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddRequireGuiItem(parent);
+		protected Collection<RequireType> getCollection() {
+			return Quests.getInstance().getRequireManager().getQuestRequiresTypes();
+		}
+
+		@Override
+		protected ArrayList<String> getAddButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&a&lAdd &6&lNew Require");
+			desc.add("&6Click to create new Require");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getTypeButtonDescription(RequireType type) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Click to add a require of type:");
+			desc.add("&e" + type.getKey());
+			desc.addAll(type.getDescription());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getTypeButtonItemStack(RequireType type) {
+			ItemStack item = new ItemStack(type.getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected void onAdd(RequireType type) {
+			addRequire(type);
 		}
 	}
 
-	private class DeleteRequireFactory implements EditorButtonFactory {
-		private class DeleteRequireButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-
-			public DeleteRequireButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&c&lDelete &6&lRequire");
-				desc.add("&6Click to select and delete a Require");
-				StringUtils.setDescription(item, desc);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				if (requires.isEmpty())
-					return null;
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				if (requires.isEmpty())
-					return;
-				clicker.openInventory(new DeleteRequireSelectorGui(clicker, getParent()).getInventory());
-			}
-
-			private class DeleteRequireSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteRequireSelectorGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&cSelect Require to delete"));
-					for (QuestRequire req : getRequires()) {
-						this.addButton(new SelectRequireButton(req));
-					}
-					this.setFromEndCloseButtonPosition(8);
-					this.reloadInventory();
-				}
-
-				private class SelectRequireButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private QuestRequire req;
-
-					public SelectRequireButton(QuestRequire req) {
-						super(DeleteRequireSelectorGui.this);
-						this.req = req;
-						this.update();
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Require:");
-						desc.add("&6" + req.getDescription());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker, getParent()).getInventory());
-					}
-
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22, new ConfirmationButton());
-							this.setTitle(null, StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							this.setFromEndCloseButtonPosition(8);
-							reloadInventory();
-						}
-
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cRequire delete can't be undone");
-								desc.add("");
-								desc.add("&6Require:");
-								desc.add("&6" + req.getDescription());
-								StringUtils.setDescription(item, desc);
-							}
-
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteRequire(req);
-								DeleteRequireButton.this.getParent().update();
-								clicker.openInventory(DeleteRequireButton.this.getParent().getInventory());
-							}
-						}
-					}
-				}
-			}
+	private class DeleteRequireFactory extends DeleteApplyableFactory<Require> implements EditorButtonFactory {
+		public DeleteRequireFactory() {
+			super("&cSelect Require to delete", "&cConfirm Delete?");
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new DeleteRequireButton(parent);
+		protected Collection<Require> getCollection() {
+			return requires.values();
+		}
+
+		@Override
+		protected ArrayList<String> getDeleteButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&c&lDelete &6&lRequire");
+			desc.add("&6Click to select and delete a Require");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getSelectButtonDescription(Require req) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Require:");
+			desc.add("&6" + req.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getSelectedButtonItemStack(Require req) {
+			ItemStack item = new ItemStack(req.getType().getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected ArrayList<String> getConfirmationButtonDescription(Require req) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&cClick to Confirm Delete");
+			desc.add("&cRequire delete can't be undone");
+			desc.add("");
+			desc.add("&6Require:");
+			desc.add("&6" + req.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected void onDelete(Require req) {
+			deleteRequire(req);
 		}
 	}
 

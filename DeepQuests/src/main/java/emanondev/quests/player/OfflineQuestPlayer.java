@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import emanondev.quests.Quests;
 import emanondev.quests.YMLConfig;
@@ -129,9 +130,14 @@ public class OfflineQuestPlayer {
 			return;
 		l.remove(task);
 	}
-	private void unregisterActiveTask(Collection<TaskData> c) {
-		c.forEach((data)->{
+	private void unregisterActiveTaskData(Collection<TaskData> coll) {
+		coll.forEach((data)->{
 			unregisterActiveTask(data.task);
+		});
+	}
+	private void unregisterActiveTask(Collection<Task> coll) {
+		coll.forEach((task)->{
+			unregisterActiveTask(task);
 		});
 	}
 	/**
@@ -151,7 +157,30 @@ public class OfflineQuestPlayer {
 	public OfflinePlayer getPlayer() {
 		return p;
 	}
-	
+	public void resetMission(Mission mission) {
+		resetMission(mission,true);
+	}
+	private void resetMission(Mission mission,boolean reload) {
+		unregisterActiveTask(mission.getTasks());
+		MissionData missionData = getMissionData(mission);
+		missionData.erase();
+		if (reload) {
+			if (getPlayer() instanceof Player)
+				Quests.getInstance().getPlayerManager().reloadPlayer((Player) getPlayer());
+			else
+				data.save();
+		}
+	}
+	public void resetQuest(Quest quest) {
+		for(Mission mission:quest.getMissions())
+			resetMission(mission,false);
+		QuestData questData = getQuestData(quest);
+		questData.erase();
+		if (getPlayer() instanceof Player)
+			Quests.getInstance().getPlayerManager().reloadPlayer((Player) getPlayer());
+		else
+			data.save();
+	}
 	
 	
 	
@@ -187,6 +216,9 @@ public class OfflineQuestPlayer {
 			this.completedBefore = data.getBoolean(baseQuestPath+"."+PATH_WAS_COMPLETED_BEFORE, false);
 			this.completedTimes = data.getInt(baseQuestPath+"."+PATH_COMPLETED_TIMES, 0);
 			this.isFailed = data.getBoolean(baseQuestPath+"."+PATH_IS_FAILED, false);
+		}
+		public void erase() {
+			data.set(baseQuestPath,null);
 		}
 		public boolean isFailed() {
 			return isFailed;
@@ -248,6 +280,9 @@ public class OfflineQuestPlayer {
 				if (this.active == true)
 					registerActiveTask(tasksData.values());
 			}
+			public void erase() {
+				data.set(baseMissionPath,null);
+			}
 			public boolean isFailed() {
 				return this.isFailed;
 			}
@@ -296,7 +331,7 @@ public class OfflineQuestPlayer {
 					if (this.active == true)
 						registerActiveTask(tasksData.values());
 					else
-						unregisterActiveTask(tasksData.values());
+						unregisterActiveTaskData(tasksData.values());
 					shouldSave = true;
 				}
 			}

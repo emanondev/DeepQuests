@@ -1,16 +1,16 @@
 package emanondev.quests.require;
 
-import java.util.List;
-
-import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 
-import emanondev.quests.mission.Mission;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 
-public interface MissionRequireType {
-
-	public MissionRequire getRequireInstance(MemorySection memorySection, Mission m);
-	public String getKey();
-	public Material getGuiItemMaterial();
-	public List<String> getDescription();
+public interface MissionRequireType extends RequireType {
+	/**
+	 * 
+	 * @param section 
+	 * @param parent
+	 * @return an instance of the Applyable object
+	 */
+	@Override
+	public MissionRequire getInstance(MemorySection section, YmlLoadableWithCooldown parent);
 }

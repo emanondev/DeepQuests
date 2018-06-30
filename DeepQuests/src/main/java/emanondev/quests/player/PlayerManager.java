@@ -90,4 +90,10 @@ public class PlayerManager implements Listener {
 		});
 		
 	}
+
+	public void reloadPlayer(Player player) {
+		QuestPlayer qPlayer = getQuestPlayer(player);
+		qPlayer.save();
+		players.put(player, new QuestPlayer(player));
+	}
 }

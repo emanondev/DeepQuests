@@ -1,15 +1,16 @@
 package emanondev.quests.reward;
 
-import java.util.List;
-
-import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 
-import emanondev.quests.mission.Mission;
+import emanondev.quests.utils.YmlLoadable;
 
-public abstract interface MissionRewardType {
-	public MissionReward getRewardInstance(MemorySection m,Mission mission);
-	public Material getGuiItemMaterial();
-	public List<String> getDescription();
-	public String getKey();
+public interface MissionRewardType extends RewardType {
+	/**
+	 * 
+	 * @param section 
+	 * @param parent
+	 * @return an instance of the Applyable object
+	 */
+	@Override
+	public MissionReward getInstance(MemorySection section, YmlLoadable parent);
 }

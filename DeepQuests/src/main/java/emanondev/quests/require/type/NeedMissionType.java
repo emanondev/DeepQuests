@@ -22,8 +22,10 @@ import emanondev.quests.require.AbstractRequire;
 import emanondev.quests.require.AbstractRequireType;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
+import emanondev.quests.require.Require;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 
 public class NeedMissionType extends AbstractRequireType implements MissionRequireType {
 	private final static String ID = "MISSIONCOMPLETED";
@@ -34,8 +36,10 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 	}
 
 	@Override
-	public MissionRequire getRequireInstance(MemorySection section, Mission mission) {
-		return new NeedMission(section, mission);
+	public MissionRequire getInstance(MemorySection section, YmlLoadableWithCooldown mission) {
+		if (!(mission instanceof Mission))
+			throw new IllegalArgumentException();
+		return new NeedMission(section, (Mission) mission);
 	}
 
 	public class NeedMission extends AbstractRequire implements MissionRequire {
@@ -57,7 +61,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 			if (target == null) {
 				Quests.getLogger("errors").log("quest " + getParent().getParent().getNameID() + " -> mission "
 						+ getParent().getNameID() + " -> require unexistent mission " + targetMissionID);
-				return true;
+				return false;
 			}
 			switch (p.getDisplayState(target)) {
 			case COMPLETED:
@@ -70,14 +74,9 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 		}
 
 		@Override
-		public MissionRequireType getRequireType() {
+		public MissionRequireType getType() {
 			return NeedMissionType.this;
 		}
-
-		public String getKey() {
-			return getRequireType().getKey();
-		}
-
 		public boolean setTargetMission(Mission mission) {
 			if (mission == null) {
 				targetMissionID = null;
@@ -125,7 +124,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 						Mission thisMission = NeedMission.this.getParent();
 
 						// can't select already blocked missions
-						for (MissionRequire req : thisMission.getRequires()) {
+						for (Require req : thisMission.getRequires()) {
 							if (!(req instanceof NeedMission))
 								continue;
 							if (((NeedMission) req).targetMissionID == null)
@@ -136,7 +135,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 						for (Mission mission : thisMission.getParent().getMissions()) {
 							if (blackList.contains(mission.getNameID()))
 								continue;
-							for (MissionRequire req : mission.getRequires()) {
+							for (Require req : mission.getRequires()) {
 								if (!(req instanceof NeedMission))
 									continue;
 								if (((NeedMission) req).targetMissionID == null)

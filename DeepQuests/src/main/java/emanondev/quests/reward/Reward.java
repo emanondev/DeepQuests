@@ -1,30 +1,18 @@
 package emanondev.quests.reward;
 
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
+import emanondev.quests.utils.Applyable;
 import emanondev.quests.utils.YmlLoadable;
 
-/**
- * Any implementations of this class must provide a costructor(String text);
- * 
- * @author utente
- *
- */
-public interface Reward extends MissionReward,QuestReward {
-	
-	public void applyReward(QuestPlayer p);
-	
-	public default void applyReward(QuestPlayer p,Mission m) {
-		applyReward(p);
+public interface Reward extends Applyable<YmlLoadable> {
+	/**
+	 * 
+	 * @return the Type
+	 */
+	public RewardType getType();
+
+	public default void applyReward(QuestPlayer qPlayer) {
+		applyReward(qPlayer,1);
 	}
-	public default void applyReward(QuestPlayer p,Quest q) {
-		applyReward(p);
-	}
-	public RewardType getRewardType();
-	public String getDescription();
-	public YmlLoadable getParent();
-	public default String getKey() {
-		return getRewardType().getKey();
-	}
+	public void applyReward(QuestPlayer qPlayer,int amount);
 }

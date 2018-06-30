@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -21,20 +22,21 @@ import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.gui.CustomGui;
+import emanondev.quests.gui.AddApplyableFactory;
+import emanondev.quests.gui.ApplyableExplorerFactory;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
+import emanondev.quests.gui.DeleteApplyableFactory;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.MissionCompleteRewardExplorerFactory;
 import emanondev.quests.gui.SubExplorerFactory;
 import emanondev.quests.gui.button.StringListEditorButtonFactory;
 import emanondev.quests.gui.button.TextEditorButton;
-import emanondev.quests.gui.MissionRequireExplorerFactory;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.require.MissionRequire;
-import emanondev.quests.require.MissionRequireType;
-import emanondev.quests.reward.MissionReward;
-import emanondev.quests.reward.MissionRewardType;
+import emanondev.quests.require.Require;
+import emanondev.quests.require.RequireType;
+import emanondev.quests.reward.Reward;
+import emanondev.quests.reward.RewardType;
 import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
@@ -66,9 +68,9 @@ public class Mission extends YmlLoadableWithCooldown {
 	private final Quest parent;
 
 	private final LinkedHashMap<String, Task> tasks = new LinkedHashMap<String, Task>();
-	private final LinkedHashMap<String, MissionReward> completeRewards = new LinkedHashMap<String, MissionReward>();
-	private final LinkedHashMap<String, MissionReward> startRewards = new LinkedHashMap<String, MissionReward>();
-	private final LinkedHashMap<String, MissionRequire> requires = new LinkedHashMap<String, MissionRequire>();
+	private final LinkedHashMap<String, Reward> completeRewards = new LinkedHashMap<String, Reward>();
+	private final LinkedHashMap<String, Reward> startRewards = new LinkedHashMap<String, Reward>();
+	private final LinkedHashMap<String, Require> requires = new LinkedHashMap<String, Require>();
 	private final MissionDisplayInfo displayInfo;
 	private ArrayList<String> onStartText;
 	private ArrayList<String> onCompleteText;
@@ -81,7 +83,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		if (parent == null)
 			throw new NullPointerException();
 		this.parent = parent;
-		mayBePaused = m.getBoolean(PATH_CAN_PAUSE,false);
+		mayBePaused = m.getBoolean(PATH_CAN_PAUSE, false);
 		LinkedHashMap<String, Task> tasks = loadTasks((MemorySection) m.get(PATH_TASKS));
 		if (tasks != null)
 			this.tasks.putAll(tasks);
@@ -91,10 +93,10 @@ public class Mission extends YmlLoadableWithCooldown {
 			if (task.isDirty())
 				this.dirty = true;
 		}
-		LinkedHashMap<String, MissionRequire> req = loadRequires(m);
+		LinkedHashMap<String, Require> req = loadRequires(m);
 		if (req != null)
 			this.requires.putAll(req);
-		LinkedHashMap<String, MissionReward> rew = loadStartRewards(m);
+		LinkedHashMap<String, Reward> rew = loadStartRewards(m);
 		if (rew != null)
 			this.startRewards.putAll(rew);
 		rew = loadCompleteRewards(m);
@@ -113,10 +115,10 @@ public class Mission extends YmlLoadableWithCooldown {
 		this.addToEditor(0, new SubExplorerFactory<Task>(Task.class, getTasks(), "&8Tasks List"));
 		this.addToEditor(1, new AddTaskFactory());
 		this.addToEditor(2, new DeleteTaskFactory());
-		this.addToEditor(18, new MissionRequireExplorerFactory(this, "&8Requires"));
+		this.addToEditor(18, new RequireExplorerFactory());
 		this.addToEditor(19, new AddRequireFactory());
 		this.addToEditor(20, new DeleteRequireFactory());
-		this.addToEditor(27, new MissionCompleteRewardExplorerFactory(this, "&8Complete Rewards"));
+		this.addToEditor(27, new CompleteRewardExplorerFactory());
 		this.addToEditor(28, new AddCompleteRewardFactory());
 		this.addToEditor(29, new DeleteCompleteRewardFactory());
 		this.addToEditor(31, new StartMessageButtonFactory());
@@ -124,6 +126,50 @@ public class Mission extends YmlLoadableWithCooldown {
 		this.addToEditor(33, new PauseMessageButtonFactory());
 		this.addToEditor(34, new UnpauseMessageButtonFactory());
 		this.addToEditor(35, new FailMessageButtonFactory());
+	}
+
+	private class CompleteRewardExplorerFactory extends ApplyableExplorerFactory<Reward> {
+		public CompleteRewardExplorerFactory() {
+			super("&9Complete Rewards");
+		}
+
+		@Override
+		protected ArrayList<String> getExplorerButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lSelect/Show complete rewards");
+			desc.add("&6Click to Select a reward to edit");
+			if (completeRewards.size() > 0)
+				for (Reward reward : completeRewards.values())
+					desc.add("&7" + reward.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected Collection<Reward> getCollection() {
+			return getCompleteRewards();
+		}
+	}
+
+	private class RequireExplorerFactory extends ApplyableExplorerFactory<Require> {
+		public RequireExplorerFactory() {
+			super("&9Requires");
+		}
+
+		@Override
+		protected ArrayList<String> getExplorerButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6&lSelect/Show requires");
+			desc.add("&6Click to Select a require to edit");
+			if (requires.size() > 0)
+				for (Require require : requires.values())
+					desc.add("&7" + require.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected Collection<Require> getCollection() {
+			return getRequires();
+		}
 	}
 
 	public Quest getParent() {
@@ -142,18 +188,22 @@ public class Mission extends YmlLoadableWithCooldown {
 		}
 	}
 
-	public ArrayList<String> getStartMessage(){
+	public ArrayList<String> getStartMessage() {
 		return StringUtils.fixColorsAndHolders(onStartText, H.MISSION_NAME, getDisplayName());
 	}
+
 	public ArrayList<String> getCompleteMessage() {
 		return StringUtils.fixColorsAndHolders(onCompleteText, H.MISSION_NAME, getDisplayName());
 	}
+
 	public ArrayList<String> getUnpauseMessage() {
 		return StringUtils.fixColorsAndHolders(onUnpauseText, H.MISSION_NAME, getDisplayName());
 	}
+
 	public ArrayList<String> getPauseMessage() {
 		return StringUtils.fixColorsAndHolders(onPauseText, H.MISSION_NAME, getDisplayName());
 	}
+
 	public ArrayList<String> getFailMessage() {
 		return StringUtils.fixColorsAndHolders(onFailText, H.MISSION_NAME, getDisplayName());
 	}
@@ -166,15 +216,15 @@ public class Mission extends YmlLoadableWithCooldown {
 		return tasks.get(key);
 	}
 
-	public Collection<MissionReward> getStartRewards() {
+	public Collection<Reward> getStartRewards() {
 		return Collections.unmodifiableCollection(startRewards.values());
 	}
 
-	public Collection<MissionReward> getCompleteRewards() {
+	public Collection<Reward> getCompleteRewards() {
 		return Collections.unmodifiableCollection(completeRewards.values());
 	}
 
-	public Collection<MissionRequire> getRequires() {
+	public Collection<Require> getRequires() {
 		return Collections.unmodifiableCollection(requires.values());
 	}
 
@@ -226,7 +276,7 @@ public class Mission extends YmlLoadableWithCooldown {
 
 		if (requires.size() > 0) {
 			comp.append("\n" + ChatColor.DARK_AQUA + "Requires:");
-			for (MissionRequire require : requires.values()) {
+			for (Require require : requires.values()) {
 				comp.append("\n" + ChatColor.AQUA + " - " + require.getDescription());
 			}
 		}
@@ -265,7 +315,7 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	private ArrayList<String> loadStartText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m,PATH_START_TEXT);
+		List<String> list = StringUtils.getStringList(m, PATH_START_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultStartText();
 		if (list == null)
@@ -274,7 +324,7 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	private ArrayList<String> loadCompleteText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m,PATH_COMPLETE_TEXT);
+		List<String> list = StringUtils.getStringList(m, PATH_COMPLETE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultCompleteText();
 		if (list == null)
@@ -283,7 +333,7 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	private ArrayList<String> loadPauseText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m,PATH_PAUSE_TEXT);
+		List<String> list = StringUtils.getStringList(m, PATH_PAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultPauseText();
 		if (list == null)
@@ -292,7 +342,7 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	private ArrayList<String> loadUnpauseText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m,PATH_UNPAUSE_TEXT);
+		List<String> list = StringUtils.getStringList(m, PATH_UNPAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultUnpauseText();
 		if (list == null)
@@ -301,7 +351,7 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	private ArrayList<String> loadFailText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m,PATH_FAIL_TEXT);
+		List<String> list = StringUtils.getStringList(m, PATH_FAIL_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultFailText();
 		if (list == null)
@@ -313,21 +363,21 @@ public class Mission extends YmlLoadableWithCooldown {
 		return new MissionDisplayInfo(m, this);
 	}
 
-	private LinkedHashMap<String, MissionRequire> loadRequires(MemorySection m) {
+	private LinkedHashMap<String, Require> loadRequires(MemorySection m) {
 		MemorySection m2 = (MemorySection) m.get(PATH_REQUIRES);
 		if (m2 == null)
 			m2 = (MemorySection) m.createSection(PATH_REQUIRES);
 		return Quests.getInstance().getRequireManager().loadRequires(this, m2);
 	}
 
-	private LinkedHashMap<String, MissionReward> loadStartRewards(MemorySection m) {
+	private LinkedHashMap<String, Reward> loadStartRewards(MemorySection m) {
 		MemorySection m2 = (MemorySection) m.get(PATH_START_REWARDS);
 		if (m2 == null)
 			m2 = (MemorySection) m.createSection(PATH_START_REWARDS);
 		return Quests.getInstance().getRewardManager().loadRewards(this, m2);
 	}
 
-	private LinkedHashMap<String, MissionReward> loadCompleteRewards(MemorySection m) {
+	private LinkedHashMap<String, Reward> loadCompleteRewards(MemorySection m) {
 		MemorySection m2 = (MemorySection) m.get(PATH_COMPLETE_REWARDS);
 		if (m2 == null)
 			m2 = (MemorySection) m.createSection(PATH_COMPLETE_REWARDS);
@@ -694,196 +744,104 @@ public class Mission extends YmlLoadableWithCooldown {
 			ChatColor.GOLD + "Click suggest the command\n\n" + ChatColor.GOLD + "Set the display name for the task\n"
 					+ ChatColor.YELLOW + "/questtext <display name>").create();
 
-	private class AddRequireFactory implements EditorButtonFactory {
-		private class AddRequireGuiItem extends CustomButton {
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
-
-			public AddRequireGuiItem(CustomGui parent) {
-				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew Require"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new Require"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new CreateRequireGui(clicker, this.getParent()).getInventory());
-			}
-
-			private class CreateRequireGui extends CustomMultiPageGui<CustomButton> {
-				public CreateRequireGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setFromEndCloseButtonPosition(8);
-					for (MissionRequireType type : Quests.getInstance().getRequireManager().getMissionRequiresTypes())
-						this.addButton(new MissionRequireTypeButton(type));
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Select a Require Type"));
-					reloadInventory();
-				}
-
-				private class MissionRequireTypeButton extends CustomButton {
-					private final ItemStack item;
-					private final MissionRequireType type;
-
-					public MissionRequireTypeButton(MissionRequireType type) {
-						super(CreateRequireGui.this.getPreviusHolder());
-						item = new ItemStack(type.getGuiItemMaterial());
-						this.type = type;
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Click to add a require of type:");
-						desc.add("&e" + type.getKey());
-						desc.addAll(type.getDescription());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						MissionRequire req = Mission.this.addRequire(type);
-						if (req == null) {
-							// TODO
-							return;
-						}
-						req.openEditorGui(clicker, AddRequireGuiItem.this.getParent());
-					}
-				}
-			}
+	private class AddRequireFactory extends AddApplyableFactory<RequireType> implements EditorButtonFactory {
+		public AddRequireFactory() {
+			super("&8Select a Require Type");
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddRequireGuiItem(parent);
+		protected Collection<RequireType> getCollection() {
+			return Quests.getInstance().getRequireManager().getMissionRequiresTypes();
+		}
+
+		@Override
+		protected ArrayList<String> getAddButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&a&lAdd &6&lNew Require");
+			desc.add("&6Click to create new Require");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getTypeButtonDescription(RequireType type) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Click to add a require of type:");
+			desc.add("&e" + type.getKey());
+			desc.addAll(type.getDescription());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getTypeButtonItemStack(RequireType type) {
+			ItemStack item = new ItemStack(type.getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected void onAdd(RequireType type) {
+			addRequire(type);
 		}
 	}
 
-	private class DeleteRequireFactory implements EditorButtonFactory {
-		private class DeleteRequireButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-
-			public DeleteRequireButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&c&lDelete &6&lRequire");
-				desc.add("&6Click to select and delete a Require");
-				StringUtils.setDescription(item, desc);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				if (requires.isEmpty())
-					return null;
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				if (requires.isEmpty())
-					return;
-				clicker.openInventory(new DeleteRequireSelectorGui(clicker, getParent()).getInventory());
-			}
-
-			private class DeleteRequireSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteRequireSelectorGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&cSelect Require to delete"));
-					for (MissionRequire req : getRequires()) {
-						this.addButton(new SelectRequireButton(req));
-					}
-					this.setFromEndCloseButtonPosition(8);
-					this.reloadInventory();
-				}
-
-				private class SelectRequireButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private MissionRequire req;
-
-					public SelectRequireButton(MissionRequire req) {
-						super(DeleteRequireSelectorGui.this);
-						this.req = req;
-						this.update();
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Require:");
-						desc.add("&6" + req.getDescription());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker, getParent()).getInventory());
-					}
-
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22, new ConfirmationButton());
-							this.setTitle(null, StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							this.setFromEndCloseButtonPosition(8);
-							reloadInventory();
-						}
-
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cRequire delete can't be undone");
-								desc.add("");
-								desc.add("&6Require:");
-								desc.add("&6" + req.getDescription());
-								StringUtils.setDescription(item, desc);
-							}
-
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteRequire(req);
-								DeleteRequireButton.this.getParent().update();
-								clicker.openInventory(DeleteRequireButton.this.getParent().getInventory());
-							}
-						}
-					}
-				}
-			}
+	private class DeleteRequireFactory extends DeleteApplyableFactory<Require> implements EditorButtonFactory {
+		public DeleteRequireFactory() {
+			super("&cSelect Require to delete", "&cConfirm Delete?");
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new DeleteRequireButton(parent);
+		protected Collection<Require> getCollection() {
+			return requires.values();
+		}
+
+		@Override
+		protected ArrayList<String> getDeleteButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&c&lDelete &6&lRequire");
+			desc.add("&6Click to select and delete a Require");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getSelectButtonDescription(Require req) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Require:");
+			desc.add("&6" + req.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getSelectedButtonItemStack(Require req) {
+			ItemStack item = new ItemStack(req.getType().getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected ArrayList<String> getConfirmationButtonDescription(Require req) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&cClick to Confirm quest Delete");
+			desc.add("&cRequire delete can't be undone");
+			desc.add("");
+			desc.add("&6Require:");
+			desc.add("&6" + req.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected void onDelete(Require req) {
+			deleteRequire(req);
 		}
 	}
 
 	private final static String PATH_REQUIRE_TYPE = "type";
 	private final static String PATH_REWARD_TYPE = "type";
 
-	public MissionRequire addRequire(MissionRequireType type) {
+	public Require addRequire(RequireType type) {
 		if (type == null)
 			return null;
 		String key = null;
@@ -893,13 +851,13 @@ public class Mission extends YmlLoadableWithCooldown {
 			i++;
 		} while (requires.containsKey(key));
 		getSection().set(PATH_REQUIRES + "." + key + "." + PATH_REQUIRE_TYPE, type.getKey());
-		MissionRequire req = type.getRequireInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
+		Require req = type.getInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
 		requires.put(req.getNameID(), req);
 		setDirty(true);
 		return req;
 	}
 
-	public boolean deleteRequire(MissionRequire req) {
+	public boolean deleteRequire(Require req) {
 		if (req == null || !requires.containsKey(req.getNameID()) || !requires.get(req.getNameID()).equals(req))
 			return false;
 		getSection().set(PATH_REQUIRES + "." + req.getNameID(), null);
@@ -908,7 +866,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	public MissionReward addCompleteReward(MissionRewardType type) {
+	public Reward addCompleteReward(RewardType type) {
 		if (type == null)
 			return null;
 		String key = null;
@@ -918,13 +876,13 @@ public class Mission extends YmlLoadableWithCooldown {
 			i++;
 		} while (completeRewards.containsKey(key));
 		getSection().set(PATH_COMPLETE_REWARDS + "." + key + "." + PATH_REWARD_TYPE, type.getKey());
-		MissionReward rew = type.getRewardInstance((MemorySection) getSection().get(PATH_COMPLETE_REWARDS + "." + key), this);
+		Reward rew = type.getInstance((MemorySection) getSection().get(PATH_COMPLETE_REWARDS + "." + key), this);
 		completeRewards.put(rew.getNameID(), rew);
 		setDirty(true);
 		return rew;
 	}
 
-	public boolean deleteCompleteReward(MissionReward rew) {
+	public boolean deleteCompleteReward(Reward rew) {
 		if (rew == null || !completeRewards.containsKey(rew.getNameID())
 				|| !completeRewards.get(rew.getNameID()).equals(rew))
 			return false;
@@ -934,325 +892,241 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	private class AddCompleteRewardFactory implements EditorButtonFactory {
-		private class AddCompleteRewardGuiItem extends CustomButton {
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
+	private class AddCompleteRewardFactory extends AddApplyableFactory<RewardType> implements EditorButtonFactory {
 
-			public AddCompleteRewardGuiItem(CustomGui parent) {
-				super(parent);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(StringUtils.fixColorsAndHolders("&a&lAdd &6&lNew CompleteReward"));
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(StringUtils.fixColorsAndHolders("&6Click to create new CompleteReward"));
-				meta.setLore(lore);
-				item.setItemMeta(meta);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new CreateCompleteRewardGui(clicker, this.getParent()).getInventory());
-			}
-
-			private class CreateCompleteRewardGui extends CustomMultiPageGui<CustomButton> {
-				public CreateCompleteRewardGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setFromEndCloseButtonPosition(8);
-					for (MissionRewardType type : Quests.getInstance().getRewardManager().getMissionRewardsTypes())
-						this.addButton(new MissionCompleteRewardTypeButton(type));
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&8Select a CompleteReward Type"));
-					reloadInventory();
-				}
-
-				private class MissionCompleteRewardTypeButton extends CustomButton {
-					private final ItemStack item;
-					private final MissionRewardType type;
-
-					public MissionCompleteRewardTypeButton(MissionRewardType type) {
-						super(CreateCompleteRewardGui.this.getPreviusHolder());
-						item = new ItemStack(type.getGuiItemMaterial());
-						this.type = type;
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Click to add a reward of type:");
-						desc.add("&e" + type.getKey());
-						desc.addAll(type.getDescription());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						MissionReward req = Mission.this.addCompleteReward(type);
-						if (req == null) {
-							// TODO
-							return;
-						}
-						req.openEditorGui(clicker, AddCompleteRewardGuiItem.this.getParent());
-					}
-				}
-			}
+		public AddCompleteRewardFactory() {
+			super("&8Select a CompleteReward Type");
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddCompleteRewardGuiItem(parent);
-		}
-	}
-
-	private class DeleteCompleteRewardFactory implements EditorButtonFactory {
-		private class DeleteCompleteRewardButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-
-			public DeleteCompleteRewardButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&c&lDelete &6&lCompleteReward");
-				desc.add("&6Click to select and delete a CompleteReward");
-				StringUtils.setDescription(item, desc);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				if (completeRewards.isEmpty())
-					return null;
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				if (completeRewards.isEmpty())
-					return;
-				clicker.openInventory(new DeleteCompleteRewardSelectorGui(clicker, getParent()).getInventory());
-			}
-
-			private class DeleteCompleteRewardSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteCompleteRewardSelectorGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&cSelect CompleteReward to delete"));
-					for (MissionReward req : getCompleteRewards()) {
-						this.addButton(new SelectCompleteRewardButton(req));
-					}
-					this.setFromEndCloseButtonPosition(8);
-					this.reloadInventory();
-				}
-
-				private class SelectCompleteRewardButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private MissionReward rew;
-
-					public SelectCompleteRewardButton(MissionReward rew) {
-						super(DeleteCompleteRewardSelectorGui.this);
-						this.rew = rew;
-						this.update();
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Reward: "+rew.getRewardType().getKey());
-						desc.add("&6" + rew.getInfo());
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker, getParent()).getInventory());
-					}
-
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22, new ConfirmationButton());
-							this.setTitle(null, StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							this.setFromEndCloseButtonPosition(8);
-							reloadInventory();
-						}
-
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cReward delete can't be undone");
-								desc.add("");
-								desc.add("&6Reward: "+rew.getRewardType().getKey());
-								desc.add("&6" + rew.getInfo());
-								StringUtils.setDescription(item, desc);
-							}
-
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteCompleteReward(rew);
-								clicker.openInventory(DeleteCompleteRewardButton.this.getParent().getInventory());
-							}
-						}
-					}
-				}
-			}
+		protected Collection<RewardType> getCollection() {
+			return Quests.getInstance().getRewardManager().getMissionRewardsTypes();
 		}
 
 		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new DeleteCompleteRewardButton(parent);
+		protected ArrayList<String> getAddButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&a&lAdd &6&lNew CompleteReward");
+			desc.add("&6Click to create new CompleteReward");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getTypeButtonDescription(RewardType type) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Click to add a reward of type:");
+			desc.add("&e" + type.getKey());
+			desc.addAll(type.getDescription());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getTypeButtonItemStack(RewardType type) {
+			ItemStack item = new ItemStack(type.getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected void onAdd(RewardType type) {
+			addCompleteReward(type);
 		}
 	}
+
+	private class DeleteCompleteRewardFactory extends DeleteApplyableFactory<Reward> implements EditorButtonFactory {
+		public DeleteCompleteRewardFactory() {
+			super("&cSelect Reward to delete", "&cConfirm Delete?");
+		}
+
+		@Override
+		protected Collection<Reward> getCollection() {
+			return completeRewards.values();
+		}
+
+		@Override
+		protected ArrayList<String> getDeleteButtonDescription() {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&c&lDelete &6&lReward");
+			desc.add("&6Click to select and delete a Reward");
+			return desc;
+		}
+
+		@Override
+		protected ArrayList<String> getSelectButtonDescription(Reward rew) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&6Reward:");
+			desc.add("&6" + rew.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected ItemStack getSelectedButtonItemStack(Reward rew) {
+			ItemStack item = new ItemStack(rew.getType().getGuiItemMaterial());
+			ItemMeta meta = item.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		protected ArrayList<String> getConfirmationButtonDescription(Reward rew) {
+			ArrayList<String> desc = new ArrayList<String>();
+			desc.add("&cClick to Confirm Delete");
+			desc.add("&cReward delete can't be undone");
+			desc.add("");
+			desc.add("&6Reward:");
+			desc.add("&6" + rew.getInfo());
+			return desc;
+		}
+
+		@Override
+		protected void onDelete(Reward rew) {
+			deleteCompleteReward(rew);
+		}
+	}
+
 	private boolean mayBePaused;
+
 	public boolean mayBePaused() {
 		return mayBePaused;
 	}
-	
+
 	public boolean setStartMessage(ArrayList<String> value) {
-		if (value==null)
+		if (value == null)
 			return false;
 		this.onStartText = StringUtils.fixColorsAndHolders(value);
-		getSection().set(PATH_START_TEXT,onStartText);
+		getSection().set(PATH_START_TEXT, onStartText);
 		this.setDirty(true);
 		return true;
 	}
+
 	public boolean setCompleteMessage(ArrayList<String> value) {
-		if (value==null)
+		if (value == null)
 			return false;
 		this.onCompleteText = StringUtils.fixColorsAndHolders(value);
-		getSection().set(PATH_COMPLETE_TEXT,onCompleteText);
+		getSection().set(PATH_COMPLETE_TEXT, onCompleteText);
 		this.setDirty(true);
 		return true;
 	}
+
 	public boolean setUnpauseMessage(ArrayList<String> value) {
-		if (value==null)
+		if (value == null)
 			return false;
 		this.onUnpauseText = StringUtils.fixColorsAndHolders(value);
-		getSection().set(PATH_UNPAUSE_TEXT,onUnpauseText);
+		getSection().set(PATH_UNPAUSE_TEXT, onUnpauseText);
 		this.setDirty(true);
 		return true;
 	}
+
 	public boolean setPauseMessage(ArrayList<String> value) {
-		if (value==null)
+		if (value == null)
 			return false;
 		this.onPauseText = StringUtils.fixColorsAndHolders(value);
-		getSection().set(PATH_PAUSE_TEXT,onPauseText);
+		getSection().set(PATH_PAUSE_TEXT, onPauseText);
 		this.setDirty(true);
 		return true;
 	}
+
 	public boolean setFailMessage(ArrayList<String> value) {
-		if (value==null)
+		if (value == null)
 			return false;
 		this.onFailText = StringUtils.fixColorsAndHolders(value);
-		getSection().set(PATH_FAIL_TEXT,onFailText);
+		getSection().set(PATH_FAIL_TEXT, onFailText);
 		this.setDirty(true);
 		return true;
 	}
-	
+
 	private class StartMessageButtonFactory extends StringListEditorButtonFactory {
 		public StartMessageButtonFactory() {
-			super(startButtonDesc, "&8Start Message editor", Material.STAINED_CLAY,5);
+			super(startButtonDesc, "&8Start Message editor", Material.STAINED_CLAY, 5);
 		}
+
 		@Override
 		protected List<String> getStringList() {
 			return onStartText;
 		}
+
 		@Override
 		protected void onChange(ArrayList<String> newList) {
 			setStartMessage(newList);
 		}
 	}
+
 	private class CompleteMessageButtonFactory extends StringListEditorButtonFactory {
 		public CompleteMessageButtonFactory() {
-			super(completeButtonDesc, "&8Complete Message editor", Material.STAINED_CLAY,13);
+			super(completeButtonDesc, "&8Complete Message editor", Material.STAINED_CLAY, 13);
 		}
+
 		@Override
 		protected List<String> getStringList() {
 			return onCompleteText;
 		}
+
 		@Override
 		protected void onChange(ArrayList<String> newList) {
 			setCompleteMessage(newList);
 		}
 	}
+
 	private class PauseMessageButtonFactory extends StringListEditorButtonFactory {
 		public PauseMessageButtonFactory() {
-			super(pauseButtonDesc, "&8Pause Message editor", Material.STAINED_CLAY,4);
+			super(pauseButtonDesc, "&8Pause Message editor", Material.STAINED_CLAY, 4);
 		}
+
 		@Override
 		protected List<String> getStringList() {
 			return onPauseText;
 		}
+
 		@Override
 		protected void onChange(ArrayList<String> newList) {
 			setPauseMessage(newList);
 		}
 	}
+
 	private class UnpauseMessageButtonFactory extends StringListEditorButtonFactory {
 		public UnpauseMessageButtonFactory() {
-			super(unpauseButtonDesc, "&8Unpause Message editor", Material.STAINED_CLAY,1);
+			super(unpauseButtonDesc, "&8Unpause Message editor", Material.STAINED_CLAY, 1);
 		}
+
 		@Override
 		protected List<String> getStringList() {
 			return onUnpauseText;
 		}
+
 		@Override
 		protected void onChange(ArrayList<String> newList) {
 			setUnpauseMessage(newList);
 		}
 	}
+
 	private class FailMessageButtonFactory extends StringListEditorButtonFactory {
 		public FailMessageButtonFactory() {
-			super(failButtonDesc, "&8Fail Message editor", Material.STAINED_CLAY,14);
+			super(failButtonDesc, "&8Fail Message editor", Material.STAINED_CLAY, 14);
 		}
+
 		@Override
 		protected List<String> getStringList() {
 			return onFailText;
 		}
+
 		@Override
 		protected void onChange(ArrayList<String> newList) {
 			setFailMessage(newList);
 		}
 	}
-	private final static List<String> startButtonDesc = Arrays.asList(
-			"&6&lStart Message Editor",
-			"&6The message sended when the mission is started",
-			"&6Click to edit",
-			"&6Current value:");
-	private final static List<String> completeButtonDesc = Arrays.asList(
-			"&6&lComplete Message Editor",
-			"&6The message sended when the mission is completed",
-			"&6Click to edit",
-			"&6Current value:");
-	private final static List<String> pauseButtonDesc = Arrays.asList(
-			"&6&lPause Message Editor",
-			"&6The message sended when the mission is paused",
-			"&6Click to edit",
-			"&6Current value:");
-	private final static List<String> unpauseButtonDesc = Arrays.asList(
-			"&6&lUnpause Message Editor",
-			"&6The message sended when the mission is unpaused",
-			"&6Click to edit",
-			"&6Current value:");
-	private final static List<String> failButtonDesc = Arrays.asList(
-			"&6&lFail Message Editor",
-			"&6The message sended when the mission is failed",
-			"&6Click to edit",
-			"&6Current value:");
+
+	private final static List<String> startButtonDesc = Arrays.asList("&6&lStart Message Editor",
+			"&6The message sended when the mission is started", "&6Click to edit", "&6Current value:");
+	private final static List<String> completeButtonDesc = Arrays.asList("&6&lComplete Message Editor",
+			"&6The message sended when the mission is completed", "&6Click to edit", "&6Current value:");
+	private final static List<String> pauseButtonDesc = Arrays.asList("&6&lPause Message Editor",
+			"&6The message sended when the mission is paused", "&6Click to edit", "&6Current value:");
+	private final static List<String> unpauseButtonDesc = Arrays.asList("&6&lUnpause Message Editor",
+			"&6The message sended when the mission is unpaused", "&6Click to edit", "&6Current value:");
+	private final static List<String> failButtonDesc = Arrays.asList("&6&lFail Message Editor",
+			"&6The message sended when the mission is failed", "&6Click to edit", "&6Current value:");
 
 }

@@ -24,10 +24,12 @@ import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
 import emanondev.quests.require.type.JobsLvRequireType;
 import emanondev.quests.require.type.McmmoLvRequireType;
+import emanondev.quests.require.type.NeedAnotherQuestMissionType;
 import emanondev.quests.require.type.NeedMissionType;
 import emanondev.quests.require.type.NeedPermissionType;
 import emanondev.quests.reward.RewardManager;
 import emanondev.quests.reward.type.ConsoleCommandRewardType;
+import emanondev.quests.reward.type.FailMissionRewardType;
 import emanondev.quests.reward.type.ForceStartAnotherQuestMissionRewardType;
 import emanondev.quests.reward.type.ForceStartMissionRewardType;
 import emanondev.quests.reward.type.ItemStackRewardType;
@@ -171,8 +173,10 @@ public class Quests extends JavaPlugin {
 
 		requireManager.registerRequireType(new NeedPermissionType());
 		requireManager.registerMissionRequireType(new NeedMissionType());
+		requireManager.registerRequireType(new NeedAnotherQuestMissionType());
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		rewardManager.registerRewardType(new ItemStackRewardType());
+		rewardManager.registerRewardType(new FailMissionRewardType());
 		rewardManager.registerMissionRewardType(new ForceStartMissionRewardType());
 		rewardManager.registerMissionRewardType(new ForceStartAnotherQuestMissionRewardType());
 		taskManager.registerType(new BreakBlockTaskType());

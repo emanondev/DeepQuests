@@ -15,12 +15,9 @@ import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.button.TextEditorButton;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.require.AbstractRequire;
 import emanondev.quests.require.AbstractRequireType;
-import emanondev.quests.require.QuestRequire;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
 import emanondev.quests.utils.StringUtils;
@@ -41,7 +38,7 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 	}
 
 	@Override
-	public Require getRequireInstance(MemorySection section, Mission mission) {
+	public Require getInstance(MemorySection section, YmlLoadableWithCooldown mission) {
 		return new NeedPermission(section, mission);
 	}
 
@@ -64,12 +61,8 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		}
 
 		@Override
-		public RequireType getRequireType() {
+		public RequireType getType() {
 			return NeedPermissionType.this;
-		}
-
-		public String getKey() {
-			return getRequireType().getKey();
 		}
 
 		public String getPermission() {
@@ -148,11 +141,6 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 	}
 
 	@Override
-	public Require getRequireInstance(MemorySection section, YmlLoadableWithCooldown gui) {
-		return new NeedPermission(section, gui);
-	}
-
-	@Override
 	public Material getGuiItemMaterial() {
 		return Material.TRIPWIRE_HOOK;
 	}
@@ -162,11 +150,6 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		ArrayList<String> desc = new ArrayList<String>();
 		desc.add("&7Check if the player has the selected permission");
 		return desc;
-	}
-
-	@Override
-	public QuestRequire getRequireInstance(MemorySection section, Quest quest) {
-		return new NeedPermission(section, quest);
 	}
 
 }

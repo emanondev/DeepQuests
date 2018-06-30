@@ -23,6 +23,7 @@ import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.MissionRewardType;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.YmlLoadable;
 
 public class ForceStartMissionRewardType extends AbstractRewardType implements MissionRewardType {
 
@@ -46,7 +47,9 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 			return (Mission) super.getParent();
 		}
 		@Override
-		public void applyReward(QuestPlayer p, Mission m) {
+		public void applyReward(QuestPlayer p,int amount) {
+			if (amount<=0)
+				return;
 			if (targetMissionID==null)
 				return;
 			Mission target = getParent().getParent().getMissionByNameID(targetMissionID);
@@ -55,11 +58,8 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 			p.startMission(target,true);
 		}
 		@Override
-		public MissionRewardType getRewardType() {
+		public MissionRewardType getType() {
 			return ForceStartMissionRewardType.this;
-		}
-		public String getKey() {
-			return getRewardType().getKey();
 		}
 		public boolean setTargetMission(Mission mission) {
 			if (mission == null) {
@@ -146,8 +146,10 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 		
 	}
 	@Override
-	public MissionReward getRewardInstance(MemorySection m, Mission mission) {
-		return new ForceStartMissionReward(m,mission);
+	public MissionReward getInstance(MemorySection m, YmlLoadable mission) {
+		if(!(mission instanceof Mission))
+			throw new IllegalArgumentException();
+		return new ForceStartMissionReward(m,(Mission) mission);
 	}
 
 	@Override

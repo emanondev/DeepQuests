@@ -12,12 +12,9 @@ import com.gamingmesh.jobs.container.JobsPlayer;
 
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.JobEditorButtonFactory;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.reward.AbstractReward;
 import emanondev.quests.reward.AbstractRewardType;
-import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
 import emanondev.quests.utils.YmlLoadable;
@@ -30,17 +27,7 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 	}
 
 	@Override
-	public MissionReward getRewardInstance(MemorySection section, Mission parent) {
-		return new JobsExpReward(section,parent);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection section, Quest parent) {
-		return new JobsExpReward(section,parent);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection section, YmlLoadable parent) {
+	public Reward getInstance(MemorySection section, YmlLoadable parent) {
 		return new JobsExpReward(section,parent);
 	}
 
@@ -105,22 +92,18 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 		}
 
 		@Override
-		public void applyReward(QuestPlayer p) {
-			if (job==null)
+		public void applyReward(QuestPlayer p,int amount) {
+			if (job==null||amount<=0||exp<=0)
 				return;
+			
 			JobsPlayer jobsPlayer = Jobs.getPlayerManager().getJobsPlayer(p.getPlayer());
 			if (jobsPlayer!=null && jobsPlayer.isInJob(job))
-				jobsPlayer.getJobProgression(job).addExperience(exp);
+				jobsPlayer.getJobProgression(job).addExperience(exp*amount);
 		}
 
 		@Override
-		public RewardType getRewardType() {
+		public RewardType getType() {
 			return JobsExpRewardType.this;
-		}
-
-		@Override
-		public String getKey() {
-			return KEY;
 		}
 
 		public int getExperience() {

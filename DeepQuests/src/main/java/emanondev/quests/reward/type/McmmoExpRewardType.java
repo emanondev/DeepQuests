@@ -12,12 +12,9 @@ import com.gmail.nossr50.util.player.UserManager;
 
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.McmmoSkillEditorButtonFactory;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.reward.AbstractReward;
 import emanondev.quests.reward.AbstractRewardType;
-import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
 import emanondev.quests.utils.YmlLoadable;
@@ -30,17 +27,7 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 	}
 
 	@Override
-	public MissionReward getRewardInstance(MemorySection section, Mission parent) {
-		return new McmmoExpReward(section,parent);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection section, Quest parent) {
-		return new McmmoExpReward(section,parent);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection section, YmlLoadable parent) {
+	public Reward getInstance(MemorySection section, YmlLoadable parent) {
 		return new McmmoExpReward(section,parent);
 	}
 
@@ -117,24 +104,21 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 		}
 
 		@Override
-		public void applyReward(QuestPlayer p) {
+		public void applyReward(QuestPlayer p,int amount) {
+			if (amount<=0||exp<=0||skillType==null)
+				return;
 			try {
 				McMMOPlayer mcmmoPlayer = UserManager.getPlayer(p.getPlayer());
-				mcmmoPlayer.addXp(skillType, exp);
-				mcmmoPlayer.getProfile().registerXpGain(skillType, exp);
+				mcmmoPlayer.addXp(skillType, exp*amount);
+				mcmmoPlayer.getProfile().registerXpGain(skillType, exp*amount);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		@Override
-		public RewardType getRewardType() {
+		public RewardType getType() {
 			return McmmoExpRewardType.this;
-		}
-
-		@Override
-		public String getKey() {
-			return KEY;
 		}
 		public SkillType getSkillType() {
 			return skillType;

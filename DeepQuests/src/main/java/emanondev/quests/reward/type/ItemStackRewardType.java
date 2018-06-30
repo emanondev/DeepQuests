@@ -18,12 +18,9 @@ import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.ItemEditorButton;
 import emanondev.quests.inventory.InventoryUtils;
 import emanondev.quests.inventory.InventoryUtils.ExcessManage;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.reward.AbstractReward;
 import emanondev.quests.reward.AbstractRewardType;
-import emanondev.quests.reward.MissionReward;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.reward.RewardType;
 import emanondev.quests.utils.StringUtils;
@@ -51,23 +48,23 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 			this.addToEditor(10, new ItemStackAmountButtonFactory());
 		}
 		public String getInfo() {
+			if (item==null)
+				return "&cno Item is set";
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 				return item.getItemMeta().getDisplayName()+" ("+item.getType()+") &ex"+amount;
 			return item.getType()+" &ex"+amount;
 		}
 
-		public String getKey() {
-			return getRewardType().getKey();
-		}
-
 		@Override
-		public void applyReward(QuestPlayer p) {
+		public void applyReward(QuestPlayer p,int times) {
+			if (times<=0)
+				return;
 			if (item != null && amount > 0)
-				InventoryUtils.giveAmount(p.getPlayer(), item, amount, ExcessManage.DROP_EXCESS);
+				InventoryUtils.giveAmount(p.getPlayer(), item, amount*times, ExcessManage.DROP_EXCESS);
 		}
 
 		@Override
-		public RewardType getRewardType() {
+		public RewardType getType() {
 			return ItemStackRewardType.this;
 		}
 
@@ -206,17 +203,7 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 			ChatColor.GOLD + "Click to set the item in your main hand").create();
 
 	@Override
-	public MissionReward getRewardInstance(MemorySection m, Mission mission) {
-		return new ItemStackReward(m, mission);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection m, Quest q) {
-		return new ItemStackReward(m, q);
-	}
-
-	@Override
-	public Reward getRewardInstance(MemorySection m, YmlLoadable parent) {
+	public Reward getInstance(MemorySection m, YmlLoadable parent) {
 		return new ItemStackReward(m, parent);
 	}
 

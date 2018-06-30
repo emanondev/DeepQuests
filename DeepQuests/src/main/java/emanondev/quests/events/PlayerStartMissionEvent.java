@@ -9,7 +9,7 @@ import org.bukkit.event.HandlerList;
 import emanondev.quests.Quests;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.reward.MissionReward;
+import emanondev.quests.reward.Reward;
 
 public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancellable{
 	private static final HandlerList handlers = new HandlerList();
@@ -22,7 +22,7 @@ public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancell
 	private boolean cancelled = false;
 
 	private final Mission mission;
-	private final List<MissionReward> rewards = new ArrayList<MissionReward>();
+	private final List<Reward> rewards = new ArrayList<Reward>();
 
 	public PlayerStartMissionEvent(QuestPlayer questPlayer, Mission m) {
 		super(questPlayer);
@@ -35,10 +35,10 @@ public class PlayerStartMissionEvent extends QuestPlayerEvent implements Cancell
 	public Mission getMission() {
 		return mission;
 	}
-	public List<MissionReward> getRewards() {
+	public List<Reward> getRewards() {
 		return rewards;
 	}
-	public void setRewards(List<MissionReward> rewardsList) {
+	public void setRewards(List<Reward> rewardsList) {
 		rewards.clear();
 		if (rewardsList!=null)
 			rewards.addAll(rewardsList);

@@ -10,15 +10,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.mission.Mission;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.reward.AbstractReward;
 import emanondev.quests.task.Task;
+import emanondev.quests.utils.Applyable;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.YmlLoadable;
 
-public class RewardGui extends CustomLinkedGui<CustomButton>{
-	private AbstractReward reward;
+public class ApplyableGui<T extends YmlLoadable> extends CustomLinkedGui<CustomButton>{
+	private Applyable<T> reward;
 	private ParentButton parentButton;
 	private int parentButtonPos = 1;
-	public RewardGui(Player p, AbstractReward reward, CustomGui previusHolder,
+	public ApplyableGui(Player p, Applyable<T> reward, CustomGui previusHolder,
 			HashMap<Integer, EditorButtonFactory> tools,String title) {
 		super(p, previusHolder, 6);
 		for (Integer key : tools.keySet()) {
@@ -50,7 +51,7 @@ public class RewardGui extends CustomLinkedGui<CustomButton>{
 			return item;
 		}
 		public ParentButton() {
-			super(RewardGui.this);
+			super(ApplyableGui.this);
 			this.item = new ItemStack(Material.BOOK);
 			ItemMeta meta = item.getItemMeta();
 			if (reward.getParent() instanceof Task) {
@@ -66,18 +67,7 @@ public class RewardGui extends CustomLinkedGui<CustomButton>{
 		}
 		@Override
 		public void onClick(Player clicker, ClickType click) {
-			if (reward.getParent() instanceof Task) {
-				((Task) reward.getParent()).openEditorGui(clicker, RewardGui.this);
-				return;
-			}
-			else if (reward.getParent() instanceof Mission) {
-				((Mission) reward.getParent()).openEditorGui(clicker, RewardGui.this);
-				return;
-			}
-			else if (reward.getParent() instanceof Quest) {
-				((Quest) reward.getParent()).openEditorGui(clicker, RewardGui.this);
-				return;
-			}
+			reward.getParent().openEditorGui(clicker, ApplyableGui.this);
 		}
 	}
 }

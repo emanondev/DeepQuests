@@ -11,13 +11,9 @@ import com.gamingmesh.jobs.container.JobsPlayer;
 
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.JobEditorButtonFactory;
-import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.quest.Quest;
 import emanondev.quests.require.AbstractRequire;
 import emanondev.quests.require.AbstractRequireType;
-import emanondev.quests.require.MissionRequire;
-import emanondev.quests.require.QuestRequire;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
@@ -30,17 +26,7 @@ public class JobsLvRequireType extends AbstractRequireType implements RequireTyp
 	}
 
 	@Override
-	public MissionRequire getRequireInstance(MemorySection section, Mission parent) {
-		return new JobsLvRequire(section,parent);
-	}
-
-	@Override
-	public QuestRequire getRequireInstance(MemorySection section, Quest parent) {
-		return new JobsLvRequire(section,parent);
-	}
-
-	@Override
-	public Require getRequireInstance(MemorySection section, YmlLoadableWithCooldown parent) {
+	public Require getInstance(MemorySection section, YmlLoadableWithCooldown parent) {
 		return new JobsLvRequire(section,parent);
 	}
 
@@ -108,13 +94,8 @@ public class JobsLvRequireType extends AbstractRequireType implements RequireTyp
 		}
 
 		@Override
-		public RequireType getRequireType() {
+		public RequireType getType() {
 			return JobsLvRequireType.this;
-		}
-
-		@Override
-		public String getKey() {
-			return KEY;
 		}
 
 		@Override

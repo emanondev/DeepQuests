@@ -63,7 +63,9 @@ public class CommandQuestsAdmin extends CmdManager {
 class SubPlayer extends SubCmdManager {
 	SubPlayer() {
 		super("player",Perms.ADMIN_QUEST,
-				new SubPlayerOpenGui()
+				new SubPlayerOpenGui(),
+				new SubPlayerResetQuest(),
+				new SubPlayerResetMission()
 				);
 		this.setDescription(ChatColor.GOLD+"commands related to players");
 		this.setParams("<player>");
@@ -125,6 +127,46 @@ class SubPlayerOpenGui extends SubCmdManager {
 		}
 		Player p = (Player) sender;
 		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(target, Quests.getInstance().getQuestManager(), false));
+		return;
+	}
+}
+class SubPlayerResetQuest extends SubCmdManager {
+
+	SubPlayerResetQuest() {
+		super("resetquest", null);
+		this.setPlayersOnly(true);
+		this.setDescription(ChatColor.GOLD+"Reset Quests for the player with a click");
+	}
+	//qa 	player 	<player> 	ResetQuest
+	//		0		1			2
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Player target = Bukkit.getPlayer(args[1]);
+		if (target==null) {
+			sender.sendMessage(ChatColor.RED+"Player '"+args[1]+"' not found");
+			return;
+		}
+		Player p = (Player) sender;
+		p.openInventory(Quests.getInstance().getGuiManager().getQuestsResetGui(target, Quests.getInstance().getQuestManager()));
+		return;
+	}
+}
+class SubPlayerResetMission extends SubCmdManager {
+
+	SubPlayerResetMission() {
+		super("resetmission", null);
+		this.setPlayersOnly(true);
+		this.setDescription(ChatColor.GOLD+"Reset Missions for the player with a click");
+	}
+	//qa 	player 	<player> 	ResetMission
+	//		0		1			2
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		Player target = Bukkit.getPlayer(args[1]);
+		if (target==null) {
+			sender.sendMessage(ChatColor.RED+"Player '"+args[1]+"' not found");
+			return;
+		}
+		Player p = (Player) sender;
+		p.openInventory(Quests.getInstance().getGuiManager().getMissionsResetGui(target, Quests.getInstance().getQuestManager()));
 		return;
 	}
 }

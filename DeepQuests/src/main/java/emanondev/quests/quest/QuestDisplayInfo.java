@@ -18,19 +18,6 @@ public class QuestDisplayInfo extends DisplayStateInfo{
 
 	public QuestDisplayInfo(MemorySection m, Quest parent) {
 		super(m, parent);
-		/*for (int i = 0; i < DisplayState.values().length; i++) {
-			
-			this.setLore(DisplayState.values()[i], 
-				StringUtils.fixColorsAndHolders(this.getLore(DisplayState.values()[i]),
-				H.QUEST_MISSION_AMOUNT,""+parent.getMissions().size(),
-				H.QUEST_NAME,parent.getDisplayName()));
-			
-			this.setTitle(DisplayState.values()[i],
-				StringUtils.fixColorsAndHolders(this.getTitle(DisplayState.values()[i]),
-				H.QUEST_MISSION_AMOUNT,""+parent.getMissions().size(),
-				H.QUEST_NAME,parent.getDisplayName()));
-		
-		}*/
 	}
 
 	@Override
@@ -56,47 +43,28 @@ public class QuestDisplayInfo extends DisplayStateInfo{
 	@Override
 	public ItemStack getGuiItem(Player p, DisplayState state) {
 		ItemStack item = getItem(state);
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
-		if (state == DisplayState.COOLDOWN) {
-			StringUtils.setDescription(item, p, getDescription(state), 
-					H.QUEST_COMPLETED_MISSION_AMOUNT,""+qPlayer.getCompletedMissionAmount(getParent()),
-					H.QUEST_COOLDOWN_LEFT,StringUtils.getStringCooldown(qPlayer.getCooldown(getParent())),
-					H.QUEST_MISSION_AMOUNT,""+getParent().getMissions().size(),
-					H.QUEST_NAME,getParent().getDisplayName()
-					);
-		}
-		else {
-			StringUtils.setDescription(item, p, getDescription(state), 
-					H.QUEST_COMPLETED_MISSION_AMOUNT,""+qPlayer.getCompletedMissionAmount(getParent()),
-					H.QUEST_MISSION_AMOUNT,""+getParent().getMissions().size(),
-					H.QUEST_NAME,getParent().getDisplayName()
-					);
-		}/*
-		ItemMeta meta = item.getItemMeta();
-		QuestPla
-		String replacer = ""+Quests.getInstance().getPlayerManager()
-				.getQuestPlayer(p).getCompletedMissionAmount(getParent());
-		
-			meta.setLore(StringUtils.convertList(p, getLore(state), 
-				H.QUEST_COMPLETED_MISSION_AMOUNT,replacer,
-				H.QUEST_COOLDOWN_LEFT,StringUtils.getStringCooldown(Quests.getInstance()
-					.getPlayerManager().getQuestPlayer(p).getCooldown(getParent()))));
-			meta.setDisplayName(StringUtils.convertText(p, getTitle(state), 
-				H.QUEST_COMPLETED_MISSION_AMOUNT,replacer,
-				H.QUEST_COOLDOWN_LEFT,StringUtils.getStringCooldown(Quests.getInstance()
-					.getPlayerManager().getQuestPlayer(p).getCooldown(getParent()))));
-		}
-		else {
-			meta.setLore(StringUtils.convertList(p, getLore(state), 
-				H.QUEST_COMPLETED_MISSION_AMOUNT,replacer));
-			meta.setDisplayName(StringUtils.convertText(p, getTitle(state), 
-				H.QUEST_COMPLETED_MISSION_AMOUNT,replacer));
-		}
-		
-		item.setItemMeta(meta);*/
-		
+		StringUtils.setDescription(item, p, getDescription(state), getHolders(p,state));
 		return item;
 	}
+	public String[] getHolders(Player p,DisplayState state) {
+		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		String[] s;
+		if (state!=DisplayState.COOLDOWN) {
+			s = new String[4*2];
+			s[s.length-2] = H.QUEST_COOLDOWN_LEFT;
+			s[s.length-1] = StringUtils.getStringCooldown(qPlayer.getCooldown(getParent()));
+		} else {
+			s = new String[3*2];
+		}
+		s[0] = H.QUEST_COMPLETED_MISSION_AMOUNT;
+		s[1] = ""+qPlayer.getCompletedMissionAmount(getParent());
+		s[2] = H.QUEST_MISSION_AMOUNT;
+		s[3] = ""+getParent().getMissions().size();
+		s[4] = H.QUEST_NAME;
+		s[5] = getParent().getDisplayName();
+		return s;
+	}
+	
 	@Override
 	protected Quest getParent() {
 		return (Quest) super.getParent();

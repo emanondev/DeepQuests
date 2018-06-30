@@ -1,4 +1,4 @@
-package emanondev.quests.reward.type;
+package emanondev.quests.require.type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,59 +18,63 @@ import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.reward.AbstractReward;
-import emanondev.quests.reward.AbstractRewardType;
-import emanondev.quests.reward.MissionReward;
-import emanondev.quests.reward.MissionRewardType;
+import emanondev.quests.quest.QuestManager;
+import emanondev.quests.require.AbstractRequire;
+import emanondev.quests.require.AbstractRequireType;
+import emanondev.quests.require.Require;
+import emanondev.quests.require.RequireType;
 import emanondev.quests.task.Task;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadable;
+import emanondev.quests.utils.YmlLoadableWithCooldown;
 
-public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType implements MissionRewardType {
+public class NeedAnotherQuestMissionType extends AbstractRequireType implements RequireType {
 
 	private final static String PATH_TARGET_MISSION_ID = "target-mission";
 	private final static String PATH_TARGET_QUEST_ID = "target-quest";
 
-	public ForceStartAnotherQuestMissionRewardType() {
-		super("FORCESTARTANOTHERQUESTMISSION");
+	public NeedAnotherQuestMissionType() {
+		super("NEEDANOTHERQUESTMISSION");
 	}
 
-	public class ForceStartAnotherQuestMissionReward extends AbstractReward implements MissionReward {
+	public class NeedAnotherQuestMissionRequire extends AbstractRequire implements Require {
 		private String targetMissionID;
 		private String targetQuestID;
 
-		public ForceStartAnotherQuestMissionReward(MemorySection section, Mission parent) {
+		public NeedAnotherQuestMissionRequire(MemorySection section, YmlLoadableWithCooldown parent) {
 			super(section, parent);
+			if (!((parent instanceof Quest) || (parent instanceof Mission)))
+				throw new IllegalArgumentException();
 			this.targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID, null);
 			this.targetQuestID = getSection().getString(PATH_TARGET_QUEST_ID, null);
 
-			this.addToEditor(9, new RewardButtonFactory());
+			this.addToEditor(9, new RequireButtonFactory());
+		}
+		private QuestManager getQuestManager() {
+			if (getParent() instanceof Mission)
+				return ((Mission) getParent()).getParent().getParent();
+			return ((Quest) getParent()).getParent();
 		}
 
 		public String getInfo() {
 			Quest quest;
 			if (targetQuestID == null)
 				return "Quest (" + targetQuestID + ") Mission (" + targetMissionID + ")";
-			quest = getParent().getParent().getParent().getQuestByNameID(targetQuestID);
+			quest = getQuestManager().getQuestByNameID(targetQuestID);
 			if (quest == null)
-				return "Quest (" + targetQuestID + ") Mission (" + targetMissionID + ")";
+				return "Quest ??? Mission ???";
 			if (targetMissionID == null || quest.getMissionByNameID(targetMissionID) == null)
-				return "Quest " + quest.getDisplayName() + " (" + targetQuestID + ") Mission (" + targetMissionID + ")";
-			return "Quest " + quest.getDisplayName() + " (" + targetQuestID + ") Mission "
-					+ quest.getMissionByNameID(targetMissionID).getDisplayName() + " (" + targetMissionID + ")";
-		}
-
-		public Mission getParent() {
-			return (Mission) super.getParent();
+				return "Quest " + quest.getDisplayName() + " Mission ???";
+			return "Quest " + quest.getDisplayName() + " Mission "
+				+ quest.getMissionByNameID(targetMissionID).getDisplayName();
 		}
 
 		@Override
-		public MissionRewardType getType() {
-			return ForceStartAnotherQuestMissionRewardType.this;
+		public RequireType getType() {
+			return NeedAnotherQuestMissionType.this;
 		}
 
 		public boolean setTargetMission(Mission mission) {
-			if (mission != null && mission.getParent().equals(this.getParent().getParent()))
+			if (mission != null && (getParent() instanceof Mission) && mission.getParent().equals(((Mission) this.getParent()).getParent()))
 				return false;
 			if (mission == null) {
 				targetMissionID = null;
@@ -87,11 +91,11 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 			return true;
 		}
 
-		private class RewardButtonFactory implements EditorButtonFactory {
-			private class RewardButton extends CustomButton {
+		private class RequireButtonFactory implements EditorButtonFactory {
+			private class RequireButton extends CustomButton {
 				private ItemStack item = new ItemStack(Material.PAPER);
 
-				public RewardButton(CustomGui parent) {
+				public RequireButton(CustomGui parent) {
 					super(parent);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lRequired Mission Editor"));
@@ -113,10 +117,9 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 				private class QuestSelectorGui extends CustomMultiPageGui<CustomButton> {
 
 					public QuestSelectorGui(Player p) {
-						super(p, RewardButton.this.getParent(), 6, 1);
+						super(p, RequireButton.this.getParent(), 6, 1);
 						this.setTitle(null, StringUtils.fixColorsAndHolders("&8Select which quest"));
-						for (Quest quest : ForceStartAnotherQuestMissionReward.this.getParent().getParent().getParent()
-								.getQuests())
+						for (Quest quest : getQuestManager().getQuests())
 							this.addButton(new QuestButton(quest));
 						this.reloadInventory();
 					}
@@ -129,7 +132,7 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 							super(QuestSelectorGui.this);
 							this.quest = quest;
 							ArrayList<String> desc = new ArrayList<String>();
-							desc.add("&Quest: '&e" + quest.getDisplayName() + "&6'");
+							desc.add("&6Quest: '&e" + quest.getDisplayName() + "&6'");
 							desc.add("&6Click to open editor");
 							desc.add("");
 							desc.add("&7 contains &e" + quest.getMissions().size() + " &7missions");
@@ -151,7 +154,7 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 						private class MissionSelectorGui extends CustomMultiPageGui<CustomButton> {
 
 							public MissionSelectorGui(Player p) {
-								super(p, RewardButton.this.getParent(), 6, 1);
+								super(p, RequireButton.this.getParent(), 6, 1);
 								this.setTitle(null,
 										StringUtils.fixColorsAndHolders("&8Select which mission is autostarted"));
 								for (Mission mission : quest.getMissions())
@@ -186,7 +189,7 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 								@Override
 								public void onClick(Player clicker, ClickType click) {
 									setTargetMission(mission);
-									clicker.openInventory(RewardButton.this
+									clicker.openInventory(RequireButton.this
 											.getParent().getInventory());
 								}
 							}
@@ -197,31 +200,32 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 
 			@Override
 			public CustomButton getCustomButton(CustomGui parent) {
-				return new RewardButton(parent);
+				return new RequireButton(parent);
 			}
 		}
 
 		@Override
-		public void applyReward(QuestPlayer qPlayer, int amount) {
-			if (amount<=0)
-				return;
-			if (targetMissionID == null || targetQuestID == null)
-				return;
-			Quest quest = getParent().getParent().getParent().getQuestByNameID(targetQuestID);
-			if (quest == null)
-				return;
-			Mission target = quest.getMissionByNameID(targetMissionID);
-			if (target == null)
-				return;
-			qPlayer.startMission(target, true);
+		public boolean isAllowed(QuestPlayer qPlayer) {
+			try {
+				Quest targetQuest = getQuestManager().getQuestByNameID(targetQuestID);
+				switch (qPlayer.getDisplayState(targetQuest.getMissionByNameID(targetMissionID))) {
+				case COMPLETED:
+				case COOLDOWN:
+					return true;
+				default:
+					break;
+				}
+				return false;
+				
+			}catch (Exception e) {
+				return false;
+			}
 		}
 	}
 
 	@Override
-	public MissionReward getInstance(MemorySection m, YmlLoadable mission) {
-		if(!(mission instanceof Mission))
-			throw new IllegalArgumentException();
-		return new ForceStartAnotherQuestMissionReward(m,(Mission) mission);
+	public Require getInstance(MemorySection m, YmlLoadableWithCooldown loadable) {
+		return new NeedAnotherQuestMissionRequire(m,loadable);
 	}
 
 	@Override

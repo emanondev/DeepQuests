@@ -1,27 +1,20 @@
 package emanondev.quests.require;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-
-import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.RequireGui;
-import emanondev.quests.gui.button.TextEditorButton;
-import emanondev.quests.utils.Savable;
-import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.AbstractApplyable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
-public abstract class AbstractRequire {
+public abstract class AbstractRequire extends AbstractApplyable<YmlLoadableWithCooldown> implements Require {
+	
+	public AbstractRequire(MemorySection section, YmlLoadableWithCooldown parent) {
+		super(section, parent);
+	}
+
+	/*
 	private static final String PATH_DESCRIPTION = "description";
 	private final String nameID;
 	private final MemorySection section;
@@ -42,7 +35,7 @@ public abstract class AbstractRequire {
 	}
 	/**
 	 * @return the unique name
-	 */
+	 *//*
 	private String loadName(MemorySection m) {
 		String name = m.getName();
 		if (name==null||name.isEmpty())
@@ -61,7 +54,9 @@ public abstract class AbstractRequire {
 	public void openEditorGui(Player p,CustomGui previusHolder){
 		p.openInventory(new RequireGui(p,this,previusHolder,tools,"&9Require &8("+getKey()+")").getInventory());
 	}
-	public abstract String getKey();
+	public final String getKey() {
+		return getType().getKey();
+	}
 	public void addToEditor(int slot,EditorButtonFactory item) {
 		if (item!=null)
 			tools.put(slot,item);
@@ -126,11 +121,35 @@ public abstract class AbstractRequire {
 		public CustomButton getCustomButton(CustomGui parent) {
 			return new DescriptionEditorButton(parent);
 		}
-	}
+	}*/
 	
 	private static final BaseComponent[] changeDescriptionHelp = new ComponentBuilder(
 			ChatColor.GOLD+"Click suggest the command and the old description\n\n"+
 			ChatColor.GOLD+"Change override old description with new description\n"+
 			ChatColor.YELLOW+"/questtext <new description>\n\n"
 			).create();
+	@Override
+	protected String getEditorTitle() {
+		return "&9Require &8("+getKey()+")";
+	}
+
+	@Override
+	protected BaseComponent[] getChangeDescriptionHelp() {
+		return changeDescriptionHelp;
+	}
+
+	@Override
+	protected ArrayList<String> getDescriptionButtonDisplay() {
+		ArrayList<String> desc = new ArrayList<String>();
+		desc.add("&6&lRequire Description Editor");
+		desc.add("&6Click to edit");
+		desc.add("&7Current value:");
+		if (getDescription()!=null)
+			desc.add("&7'&f"+getDescription()+"&7'");
+		else
+			desc.add("&7no description is set");
+		desc.add("");
+		desc.add("&7Represent the description of the Require");
+		return desc;
+	}
 }

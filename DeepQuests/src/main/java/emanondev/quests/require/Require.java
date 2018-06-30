@@ -1,18 +1,25 @@
 package emanondev.quests.require;
 
-import org.bukkit.entity.Player;
-
-import emanondev.quests.gui.CustomGui;
 import emanondev.quests.player.QuestPlayer;
+import emanondev.quests.utils.Applyable;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 
-public interface Require extends QuestRequire,MissionRequire {
-
-	public boolean isAllowed(QuestPlayer p);
-	public String getDescription();
+public interface Require extends Applyable<YmlLoadableWithCooldown> {
+	
+	/**
+	 * 
+	 * @return the object that has this applied
+	 */
 	public YmlLoadableWithCooldown getParent();
-	public RequireType getRequireType();
-	public void openEditorGui(Player p);
-	public void openEditorGui(Player p,CustomGui previusHolder);
-	public String getNameID();
+	/**
+	 * 
+	 * @return the Type
+	 */
+	public RequireType getType();
+	/**
+	 * 
+	 * @param qPlayer
+	 * @return true if qPlayer satisfy this require
+	 */
+	public boolean isAllowed(QuestPlayer qPlayer);
 }

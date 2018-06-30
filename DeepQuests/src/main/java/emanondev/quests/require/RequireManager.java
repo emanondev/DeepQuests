@@ -17,10 +17,10 @@ import emanondev.quests.utils.YmlLoadableWithCooldown;
 public class RequireManager {
 	private final static HashMap<String,RequireType> requiresType = 
 			new HashMap<String,RequireType>();
-	private final static HashMap<String,MissionRequireType> missionRequiresType =
-			new HashMap<String,MissionRequireType>();
-	private final static HashMap<String,QuestRequireType> questRequiresType =
-			new HashMap<String,QuestRequireType>();
+	private final static HashMap<String,RequireType> missionRequiresType =
+			new HashMap<String,RequireType>();
+	private final static HashMap<String,RequireType> questRequiresType =
+			new HashMap<String,RequireType>();
 			
 
 	public void registerRequireType(RequireType type) {
@@ -34,8 +34,8 @@ public class RequireManager {
 	public void registerQuestRequireType(QuestRequireType type) {
 		questRequiresType.put(type.getKey(),type);
 	}
-	public LinkedHashMap<String,MissionRequire> loadRequires(Mission m,MemorySection section){
-		LinkedHashMap<String,MissionRequire> requires = new LinkedHashMap<String,MissionRequire>();
+	public LinkedHashMap<String,Require> loadRequires(Mission m,MemorySection section){
+		LinkedHashMap<String,Require> requires = new LinkedHashMap<String,Require>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
 			if (keys!=null)
@@ -44,7 +44,7 @@ public class RequireManager {
 						String key = section.getString(id+".type");
 						if (key== null || !missionRequiresType.containsKey(key.toUpperCase()))
 							throw new NullPointerException();
-						MissionRequire rew = missionRequiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), m);
+						Require rew = missionRequiresType.get(key.toUpperCase()).getInstance((MemorySection) section.get(id), m);
 						if (rew!=null)
 							requires.put(rew.getNameID(),rew);
 					} catch (Exception e) {
@@ -54,8 +54,8 @@ public class RequireManager {
 		}
 		return requires;
 	}
-	public LinkedHashMap<String,QuestRequire> loadRequires(Quest q,MemorySection section){
-		LinkedHashMap<String,QuestRequire> requires = new LinkedHashMap<String,QuestRequire>();
+	public LinkedHashMap<String,Require> loadRequires(Quest q,MemorySection section){
+		LinkedHashMap<String,Require> requires = new LinkedHashMap<String,Require>();
 		if (section!=null) {
 			Set<String> keys = section.getKeys(false);
 			if (keys!=null)
@@ -64,7 +64,7 @@ public class RequireManager {
 						String key = section.getString(id+".type");
 						if (key== null || !questRequiresType.containsKey(key.toUpperCase()))
 							throw new NullPointerException();
-						QuestRequire rew = questRequiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), q);
+						Require rew = questRequiresType.get(key.toUpperCase()).getInstance((MemorySection) section.get(id), q);
 						if (rew!=null)
 							requires.put(rew.getNameID(),rew);
 					} catch (Exception e) {
@@ -84,7 +84,7 @@ public class RequireManager {
 						String key = section.getString(id+".type");
 						if (key== null || !requiresType.containsKey(key.toUpperCase()))
 							throw new NullPointerException();
-						Require rew = requiresType.get(key.toUpperCase()).getRequireInstance((MemorySection) section.get(id), loadable);
+						Require rew = requiresType.get(key.toUpperCase()).getInstance((MemorySection) section.get(id), loadable);
 						if (rew!=null)
 							requires.put(rew.getNameID(),rew);
 					} catch (Exception e) {
@@ -103,10 +103,10 @@ public class RequireManager {
 		}
 		return true;
 	}
-	public Collection<QuestRequireType> getQuestRequiresTypes() {
+	public Collection<RequireType> getQuestRequiresTypes() {
 		return Collections.unmodifiableCollection(questRequiresType.values());
 	}
-	public Collection<MissionRequireType> getMissionRequiresTypes() {
+	public Collection<RequireType> getMissionRequiresTypes() {
 		return Collections.unmodifiableCollection(missionRequiresType.values());
 	}
 }
