@@ -50,7 +50,6 @@ public abstract class CustomGui implements InventoryHolder {
 			closeButton.onClick(clicker,click);
 			return;
 		}
-			
 	}
 	public Inventory getPreviusInventory() {
 		if (previusHolder==null)

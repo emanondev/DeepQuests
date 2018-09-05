@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -38,14 +38,14 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 	}
 
 	@Override
-	public Require getInstance(MemorySection section, YmlLoadableWithCooldown mission) {
+	public Require getInstance(ConfigSection section, YmlLoadableWithCooldown mission) {
 		return new NeedPermission(section, mission);
 	}
 
 	public class NeedPermission extends AbstractRequire implements Require {
 		private String permission;
 
-		public NeedPermission(MemorySection section, YmlLoadableWithCooldown gui) {
+		public NeedPermission(ConfigSection section, YmlLoadableWithCooldown gui) {
 			super(section, gui);
 			this.permission = getSection().getString(PATH_PERMISSION);
 			if (this.permission != null)
@@ -151,5 +151,4 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		desc.add("&7Check if the player has the selected permission");
 		return desc;
 	}
-
 }

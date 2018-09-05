@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -12,6 +11,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -30,9 +30,9 @@ public class NPCTaskInfo {
 	private final String name;
 	private final String nameContains;
 	private final Task parent;
-	private final MemorySection section;
+	private final ConfigSection section;
 
-	public NPCTaskInfo(MemorySection m, Task t) {
+	public NPCTaskInfo(ConfigSection m, Task t) {
 		if (t == null || m == null)
 			throw new NullPointerException();
 		this.parent = t;

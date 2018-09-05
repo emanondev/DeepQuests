@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,7 +13,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.Quests;
-import emanondev.quests.YMLConfig;
+import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -45,7 +45,7 @@ public class CitizenBindManager implements Listener {
 	}
 	private void loadMap() {
 		map.clear();
-		MemorySection section = (MemorySection) data.get(PATH_NPC_ID);
+		ConfigSection section = (ConfigSection) data.get(PATH_NPC_ID);
 		if (section==null) {
 			data.createSection(PATH_NPC_ID);
 			return;

@@ -4,12 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 
 import emanondev.quests.Defaults;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.utils.YmlLoadable;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -20,7 +21,7 @@ public class VoidTaskType extends TaskType {
 	}
 	
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new VoidTask(m,parent);
 	}
 
@@ -29,12 +30,12 @@ public class VoidTaskType extends TaskType {
 		private final Mission parent;
 		private final String taskID;
 		
-		public VoidTask(MemorySection m,Mission parent) {
+		public VoidTask(ConfigSection m,Mission parent) {
 			super(m);
 			this.parent = parent;
 			this.taskID = loadName(m).toLowerCase();
 		}
-		private String loadName(MemorySection m) {
+		private String loadName(ConfigSection m) {
 			String name = m.getName();
 			if (name==null||name.isEmpty())
 				throw new NullPointerException();

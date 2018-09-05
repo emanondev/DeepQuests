@@ -29,7 +29,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirginBlock"/>
-	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/citizens-2.0.22-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/MythicMobs-4.3.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/PlaceholderAPI-2.8.6.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/SuperVanish.jar"/>
@@ -39,5 +38,6 @@
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/worldguard-6.2.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/Jobs4.5.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/mcMMO.jar"/>
+	<classpathentry kind="lib" path="C:/Users/utente/Desktop/FlavioRPG2/citizens-2.0.23-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

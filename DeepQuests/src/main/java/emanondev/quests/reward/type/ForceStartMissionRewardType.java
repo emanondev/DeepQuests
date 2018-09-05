@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -33,7 +33,7 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 	}
 	public class ForceStartMissionReward extends AbstractReward implements MissionReward {
 		private String targetMissionID;
-		public ForceStartMissionReward(MemorySection section, Mission parent) {
+		public ForceStartMissionReward(ConfigSection section, Mission parent) {
 			super(section, parent);
 			this.targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID,null);
 			this.addToEditor(9,new ForceStartMissionRewardEditorButtonFactory());
@@ -146,7 +146,7 @@ public class ForceStartMissionRewardType extends AbstractRewardType implements M
 		
 	}
 	@Override
-	public MissionReward getInstance(MemorySection m, YmlLoadable mission) {
+	public MissionReward getInstance(ConfigSection m, YmlLoadable mission) {
 		if(!(mission instanceof Mission))
 			throw new IllegalArgumentException();
 		return new ForceStartMissionReward(m,(Mission) mission);

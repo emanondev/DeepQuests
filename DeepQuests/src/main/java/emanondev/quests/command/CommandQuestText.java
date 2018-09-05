@@ -60,7 +60,7 @@ public class CommandQuestText extends CmdManager implements TabExecutor {
 		p.closeInventory();
 		ComponentBuilder comp = new ComponentBuilder(
 				ChatColor.GOLD+"****************************\n"+
-				ChatColor.GOLD+"           Click Me           \n"+
+				ChatColor.GOLD+"           Click Me\n"+           
 				ChatColor.GOLD+"****************************");
 		if (baseText==null)
 			comp.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,

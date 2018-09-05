@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +14,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -65,7 +65,7 @@ public class BreakBlockTaskType extends TaskType {
 		private final DropsTaskInfo drops;
 		private final BlocksTaskInfo blocks;
 		//TODO option CHECKTOOL
-		public BreakBlockTask(MemorySection m, Mission parent) {
+		public BreakBlockTask(ConfigSection m, Mission parent) {
 			super(m, parent,BreakBlockTaskType.this);
 			drops = new DropsTaskInfo(m,this);
 			blocks = new BlocksTaskInfo(m,this);
@@ -147,7 +147,7 @@ public class BreakBlockTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new BreakBlockTask(m,parent);
 	}
 

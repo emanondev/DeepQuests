@@ -3,7 +3,8 @@ package emanondev.quests.utils;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
+
+import emanondev.quests.configuration.ConfigSection;
 
 public interface ApplyableType<T extends YmlLoadable> {
 	
@@ -13,7 +14,7 @@ public interface ApplyableType<T extends YmlLoadable> {
 	 * @param parent
 	 * @return an instance of the Applyable object
 	 */
-	public Applyable<T> getInstance(MemorySection section, T parent);
+	public Applyable<T> getInstance(ConfigSection section, T parent);
 	/**
 	 * 
 	 * @return the identifier for this Type

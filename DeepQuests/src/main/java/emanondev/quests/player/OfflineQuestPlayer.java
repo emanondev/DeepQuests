@@ -12,7 +12,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import emanondev.quests.Quests;
-import emanondev.quests.YMLConfig;
+import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData;
 import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData.TaskData;

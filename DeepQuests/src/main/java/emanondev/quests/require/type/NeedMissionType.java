@@ -5,13 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -36,7 +36,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 	}
 
 	@Override
-	public MissionRequire getInstance(MemorySection section, YmlLoadableWithCooldown mission) {
+	public MissionRequire getInstance(ConfigSection section, YmlLoadableWithCooldown mission) {
 		if (!(mission instanceof Mission))
 			throw new IllegalArgumentException();
 		return new NeedMission(section, (Mission) mission);
@@ -45,7 +45,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 	public class NeedMission extends AbstractRequire implements MissionRequire {
 		private String targetMissionID;
 
-		public NeedMission(MemorySection section, Mission mission) {
+		public NeedMission(ConfigSection section, Mission mission) {
 			super(section, mission);
 			targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID);
 			this.addToEditor(8, new NeedMissionEditorButtonFactory());
@@ -77,6 +77,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 		public MissionRequireType getType() {
 			return NeedMissionType.this;
 		}
+
 		public boolean setTargetMission(Mission mission) {
 			if (mission == null) {
 				targetMissionID = null;
@@ -164,7 +165,8 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 							desc.add("");
 							desc.add("&7 contains &e" + mission.getTasks().size() + " &7tasks");
 							for (Task task : mission.getTasks()) {
-								desc.add("&7 - &e" + task.getDisplayName() + " &7(" + task.getTaskType().getKey() + ")");
+								desc.add(
+										"&7 - &e" + task.getDisplayName() + " &7(" + task.getTaskType().getKey() + ")");
 							}
 							StringUtils.setDescription(item, desc);
 						}
@@ -188,16 +190,16 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 				return new NeedMissionEditorButton(parent);
 			}
 		}
+
 		@Override
 		public String getInfo() {
 			Mission mission;
-			if (targetMissionID==null) {
+			if (targetMissionID == null) {
 				mission = null;
 				return "Require an unselected mission";
-			}
-			else
+			} else
 				mission = getParent().getParent().getMissionByNameID(targetMissionID);
-			return "Require mission '"+mission.getDisplayName()+"'";
+			return "Require mission '" + mission.getDisplayName() + "'";
 		}
 	}
 

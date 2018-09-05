@@ -5,180 +5,174 @@ import java.util.EnumMap;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import emanondev.quests.configuration.ConfigSection;
 
 public abstract class DisplayStateInfo implements Savable {
-	
+
 	private final static String PATH_DESC = ".desc";
-	private final static String PATH_ITEM = ".item";//state.title
-	//private final static String PATH_TITLE = ".title";
+	private final static String PATH_ITEM = ".item";
 	private final static String PATH_HIDE = ".hide";
-	
-	private boolean dirty = false;//utility
-	public boolean isDirty(){
+
+	private boolean dirty = false;// utility
+
+	public boolean isDirty() {
 		return dirty;
 	}
+
 	public void setDirty(boolean value) {
 		dirty = value;
-		if (dirty==true)
+		if (dirty == true)
 			parent.setDirty(true);
 	}
-	
-	private EnumMap<DisplayState,Info> infos = new EnumMap<DisplayState,Info>(DisplayState.class);
-	
+
+	private EnumMap<DisplayState, Info> infos = new EnumMap<DisplayState, Info>(DisplayState.class);
 
 	private final YmlLoadable parent;
+
 	protected YmlLoadable getParent() {
 		return parent;
 	}
-	public DisplayStateInfo(MemorySection m,YmlLoadable parent) {
+
+	private final ConfigSection section;
+
+	protected ConfigSection getSection() {
+		return section;
+	}
+
+	public DisplayStateInfo(ConfigSection m, YmlLoadable parent) {
 		if (m == null || parent == null)
 			throw new NullPointerException();
-		MemorySection m2 = (MemorySection) m.get("display");
-		if (m2==null)
-			m2 = (MemorySection) m.createSection("display");
+		m = m.loadSection("display");
+		section = m;
 		this.parent = parent;
-		for (int i = 0; i< DisplayState.values().length; i++) {
-			infos.put(DisplayState.values()[i],new Info(m2,DisplayState.values()[i]));
+		for (int i = 0; i < DisplayState.values().length; i++) {
+			infos.put(DisplayState.values()[i], new Info(m, DisplayState.values()[i]));
 		}
 	}
-	
+
 	private class Info {
-		public Info(MemorySection m,DisplayState state) {
+		public Info(ConfigSection m, DisplayState state) {
 			String basePath = state.toString();
-			craftDisplayItem(m,basePath+PATH_ITEM,getDefaultItem(state),shouldItemAutogen(state));
-			craftDisplayDescription(m,basePath+PATH_DESC,getDefaultDescription(state),shouldDescriptionAutogen(state));
-			//craftDisplayTitle(m,basePath+PATH_TITLE,getDefaultTitle(state),shouldTitleAutogen(state));
-			//craftDisplayLore(m,basePath+PATH_LORE,getDefaultLore(state),shouldLoreAutogen(state));
-			craftDisplayHide(m,basePath+PATH_HIDE,getDefaultHide(state),shouldHideAutogen(state));
+			craftDisplayItem(basePath + PATH_ITEM, getDefaultItem(state), shouldItemAutogen(state));
+			craftDisplayDescription(basePath + PATH_DESC, getDefaultDescription(state),
+					shouldDescriptionAutogen(state));
+			craftDisplayHide(basePath + PATH_HIDE, getDefaultHide(state), shouldHideAutogen(state));
 		}
+
 		private ItemStack item;
 		private List<String> desc;
-		//private List<String> lore;
-		//private String title;
 		private boolean hide;
-		
-		private void craftDisplayItem(MemorySection m, String path, ItemStack defaults,boolean autosave) {
-			String tempItem = m.getString(path,null);
+
+		private void craftDisplayItem(String path, ItemStack defaults, boolean autosave) {
+			if (getSection().isItemStack(path)) {
+				item = getSection().getItemStack(path);
+				if (item.getType()!=Material.AIR)
+					return;
+			}
+			String tempItem = getSection().getString(path, null);
 			ItemStack tempStack = null;
-			if (tempItem!=null&&!tempItem.isEmpty()) {
+			if (tempItem != null && !tempItem.isEmpty()) {
 				try {
 					tempStack = MemoryUtils.getGuiItem(tempItem);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			if (tempStack==null || tempStack.getType()==Material.AIR) {
+			if (tempStack == null || tempStack.getType() == Material.AIR) {
 				tempStack = defaults;
 				if (autosave) {
-					m.set(path, MemoryUtils.getGuiItemString(tempStack));
+					getSection().set(path, MemoryUtils.getGuiItemString(tempStack));
 					dirty = true;
 				}
 			}
 			item = tempStack;
 		}
-		private void craftDisplayDescription(MemorySection m, String path,List<String> defaults, boolean autosave) {
-			
-			List<String> tempList = MemoryUtils.getStringList(m,path);
+
+		private void craftDisplayDescription(String path, List<String> defaults, boolean autosave) {
+
+			List<String> tempList = getSection().getStringList(path);
 			if (tempList == null) {
 				tempList = defaults;
-				if (tempList!=null && autosave) {
-					m.set(path, tempList);
+				if (tempList != null && autosave) {
+					getSection().set(path, tempList);
 					dirty = true;
 				}
 			}
 			desc = tempList;
-		}/*
-		private void craftDisplayLore(MemorySection m, String path,List<String> defaults, boolean autosave) {
-		
-			List<String> tempList = MemoryUtils.getStringList(m,path);
-			if (tempList == null) {
-				tempList = defaults;
-				if (tempList!=null && autosave) {
-					m.set(path, tempList);
-					dirty = true;
-				}
-			}
-			lore = tempList;
 		}
 
-		private void craftDisplayTitle(MemorySection m, String path,String defaults, boolean autosave) {
-			String tempText = m.getString(path);
-			if (tempText==null) {
-				tempText = defaults;
-				if (tempText==null)
-					tempText = getParent().getDisplayName();
-				if (autosave) {
-					m.set(path, tempText);
-					dirty = true;
-				}
-			}
-			title = tempText;
-		}
-		*/
-		private void craftDisplayHide(MemorySection m, String path, boolean defaults,boolean autosave) {
+		private void craftDisplayHide(String path, boolean defaults, boolean autosave) {
 			boolean tempBool;
-			if (m.isBoolean(path))
-				tempBool = m.getBoolean(path,defaults);
+			if (getSection().isBoolean(path))
+				tempBool = getSection().getBoolean(path, defaults);
 			else {
 				tempBool = defaults;
 				if (autosave) {
-					m.set(path,tempBool);
+					getSection().set(path, tempBool);
 					dirty = true;
 				}
 			}
 			hide = tempBool;
 		}
-		
+
 	}
-	
+
 	protected abstract boolean shouldHideAutogen(DisplayState state);
+
 	protected abstract boolean shouldItemAutogen(DisplayState state);
+
 	protected abstract boolean shouldDescriptionAutogen(DisplayState state);
-	//protected abstract boolean shouldLoreAutogen(DisplayState state);
-	//protected abstract boolean shouldTitleAutogen(DisplayState state);
+
 	protected abstract boolean getDefaultHide(DisplayState state);
-	
+
 	protected abstract ItemStack getDefaultItem(DisplayState state);
 
 	protected abstract List<String> getDefaultDescription(DisplayState state);
-	//protected abstract List<String> getDefaultLore(DisplayState state);
-	//protected abstract String getDefaultTitle(DisplayState state);
-	public abstract ItemStack getGuiItem(Player p,DisplayState state);
+
+	public abstract ItemStack getGuiItem(Player p, DisplayState state);
 
 	public ItemStack getItem(DisplayState state) {
 		return new ItemStack(infos.get(state).item);
 	}
-	public ArrayList<String> getDescription(DisplayState state){
+
+	public ArrayList<String> getDescription(DisplayState state) {
 		return new ArrayList<String>(infos.get(state).desc);
 	}
-	/*public List<String> getLore(DisplayState state){
-		return new ArrayList<String>(infos.get(state).lore);
-	}*/
+
 	public boolean isHidden(DisplayState state) {
 		return infos.get(state).hide;
 	}
-	/*public String getTitle(DisplayState state) {
-		return infos.get(state).title;
-	}*/
-	
-	public void setItem(DisplayState state,ItemStack item) {
+
+	public void setItem(DisplayState state, ItemStack item) {
+		if (item == null)
+			throw new NullPointerException();
+		if (item.hasItemMeta()) {
+			ItemMeta meta = item.getItemMeta();
+			if (meta.hasLore())
+				meta.setLore(null);
+			if (meta.hasDisplayName())
+				meta.setDisplayName(null);
+			item.setItemMeta(meta);
+		}
 		infos.get(state).item = item;
+		getSection().set(state.toString()+PATH_ITEM, item);
+		setDirty(true);
 	}
-	public void setHide(DisplayState state,boolean hide) {
+
+	public void setHide(DisplayState state, boolean hide) {
 		infos.get(state).hide = hide;
+		getSection().set(state.toString()+PATH_HIDE, hide);
+		setDirty(true);
 	}
-	public void setDescription(DisplayState state,List<String> desc) {
+
+	public void setDescription(DisplayState state, List<String> desc) {
 		infos.get(state).desc = desc;
+		getSection().set(state.toString()+PATH_DESC, desc);
+		setDirty(true);
 	}
-	/*
-	public void setLore(DisplayState state,List<String> lore) {
-		infos.get(state).lore = lore;
-	}
-	public void setTitle(DisplayState state,String title) {
-		infos.get(state).title = title;
-	}*/
 
 }

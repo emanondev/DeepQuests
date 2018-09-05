@@ -1,6 +1,11 @@
 package emanondev.quests;
 
-
+/**
+ * 
+ * @author emanon
+ *
+ * contains all permission constants
+ */
 public class Perms {
 	/**
 	 * use GUI_SEE_ALL

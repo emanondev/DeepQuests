@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -39,9 +39,9 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 		private String targetMissionID;
 		private String targetQuestID;
 
-		public FailMissionReward(MemorySection section, YmlLoadable parent) {
+		public FailMissionReward(ConfigSection section, YmlLoadable parent) {
 			super(section, parent);
-			if (!((parent instanceof Quest) || (parent instanceof Mission)))
+			if (!((parent instanceof Quest) || (parent instanceof Mission) || (parent instanceof Task)))
 				throw new IllegalArgumentException();
 			this.targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID, null);
 			this.targetQuestID = getSection().getString(PATH_TARGET_QUEST_ID, null);
@@ -51,7 +51,9 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 		private QuestManager getQuestManager() {
 			if (getParent() instanceof Mission)
 				return ((Mission) getParent()).getParent().getParent();
-			return ((Quest) getParent()).getParent();
+			if (getParent() instanceof Quest)
+				return ((Quest) getParent()).getParent();
+			return ((Task) getParent()).getParent().getParent().getParent();
 		}
 
 		public String getInfo() {
@@ -73,8 +75,8 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 		}
 
 		public boolean setTargetMission(Mission mission) {
-			if (mission != null && (getParent() instanceof Mission) && mission.getParent().equals(((Mission) this.getParent()).getParent()))
-				return false;
+			//if (mission != null && (getParent() instanceof Mission) && mission.getParent().equals(((Mission) this.getParent()).getParent()))
+			//	return false;
 			if (mission == null) {
 				targetMissionID = null;
 				targetQuestID = null;
@@ -205,12 +207,11 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 
 		@Override
 		public void applyReward(QuestPlayer qPlayer,int amount) {
-			if (amount<=1)
+			if (amount<=0)
 				return;
 			try {
 				Quest targetQuest = getQuestManager().getQuestByNameID(targetQuestID);
 				Mission targetMission = targetQuest.getMissionByNameID(targetMissionID);
-				
 				qPlayer.failMission(targetMission);
 				
 			}catch (Exception e) {
@@ -220,7 +221,7 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 	}
 
 	@Override
-	public Reward getInstance(MemorySection m, YmlLoadable loadable) {
+	public Reward getInstance(ConfigSection m, YmlLoadable loadable) {
 		return new FailMissionReward(m,loadable);
 	}
 

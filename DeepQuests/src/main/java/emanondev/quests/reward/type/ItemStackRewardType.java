@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
@@ -40,7 +40,7 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 		private ItemStack item;
 		private int amount;
 
-		public ItemStackReward(MemorySection section, YmlLoadable parent) {
+		public ItemStackReward(ConfigSection section, YmlLoadable parent) {
 			super(section, parent);
 			this.item = section.getItemStack(PATH_ITEMSTACK, null);
 			this.amount = section.getInt(PATH_AMOUNT, 1);
@@ -203,7 +203,7 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 			ChatColor.GOLD + "Click to set the item in your main hand").create();
 
 	@Override
-	public Reward getInstance(MemorySection m, YmlLoadable parent) {
+	public Reward getInstance(ConfigSection m, YmlLoadable parent) {
 		return new ItemStackReward(m, parent);
 	}
 

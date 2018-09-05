@@ -1,7 +1,6 @@
 package emanondev.quests.reward;
 
-import org.bukkit.configuration.MemorySection;
-
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.utils.YmlLoadable;
 
 public interface MissionRewardType extends RewardType {
@@ -12,5 +11,5 @@ public interface MissionRewardType extends RewardType {
 	 * @return an instance of the Applyable object
 	 */
 	@Override
-	public MissionReward getInstance(MemorySection section, YmlLoadable parent);
+	public MissionReward getInstance(ConfigSection section, YmlLoadable parent);
 }

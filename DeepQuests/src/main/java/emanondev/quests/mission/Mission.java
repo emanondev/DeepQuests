@@ -11,7 +11,6 @@ import java.util.Set;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
@@ -21,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.AddApplyableFactory;
 import emanondev.quests.gui.ApplyableExplorerFactory;
@@ -78,13 +78,13 @@ public class Mission extends YmlLoadableWithCooldown {
 	private ArrayList<String> onUnpauseText;
 	private ArrayList<String> onFailText;
 
-	public Mission(MemorySection m, Quest parent) {
+	public Mission(ConfigSection m, Quest parent) {
 		super(m);
 		if (parent == null)
 			throw new NullPointerException();
 		this.parent = parent;
-		mayBePaused = m.getBoolean(PATH_CAN_PAUSE, false);
-		LinkedHashMap<String, Task> tasks = loadTasks((MemorySection) m.get(PATH_TASKS));
+		mayBePaused = getSection().getBoolean(PATH_CAN_PAUSE, false);
+		LinkedHashMap<String, Task> tasks = loadTasks(getSection().loadSection(PATH_TASKS));
 		if (tasks != null)
 			this.tasks.putAll(tasks);
 		for (Task task : tasks.values()) {
@@ -93,23 +93,23 @@ public class Mission extends YmlLoadableWithCooldown {
 			if (task.isDirty())
 				this.dirty = true;
 		}
-		LinkedHashMap<String, Require> req = loadRequires(m);
+		LinkedHashMap<String, Require> req = loadRequires();
 		if (req != null)
 			this.requires.putAll(req);
-		LinkedHashMap<String, Reward> rew = loadStartRewards(m);
+		LinkedHashMap<String, Reward> rew = loadStartRewards();
 		if (rew != null)
 			this.startRewards.putAll(rew);
-		rew = loadCompleteRewards(m);
+		rew = loadCompleteRewards();
 		if (rew != null)
 			this.completeRewards.putAll(rew);
 
-		onStartText = loadStartText(m);
-		onCompleteText = loadCompleteText(m);
-		onPauseText = loadPauseText(m);
-		onUnpauseText = loadUnpauseText(m);
-		onFailText = loadFailText(m);
+		onStartText = loadStartText();
+		onCompleteText = loadCompleteText();
+		onPauseText = loadPauseText();
+		onUnpauseText = loadUnpauseText();
+		onFailText = loadFailText();
 
-		this.displayInfo = loadDisplayInfo(m);
+		this.displayInfo = loadDisplayInfo();
 		if (displayInfo.isDirty())
 			this.dirty = true;
 		this.addToEditor(0, new SubExplorerFactory<Task>(Task.class, getTasks(), "&8Tasks List"));
@@ -292,7 +292,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		displayInfo.reloadDisplay();
 	}
 
-	private LinkedHashMap<String, Task> loadTasks(MemorySection m) {
+	private LinkedHashMap<String, Task> loadTasks(ConfigSection m) {
 		if (m == null)
 			return new LinkedHashMap<String, Task>();
 		Set<String> s = m.getKeys(false);
@@ -300,7 +300,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		s.forEach((key) -> {
 			try {
 				Task task = Quests.getInstance().getTaskManager().readTask(
-						m.getString(key + "." + AbstractTask.PATH_TASK_TYPE), (MemorySection) m.get(key), this);
+						m.getString(key + "." + AbstractTask.PATH_TASK_TYPE), m.loadSection(key), this);
 				map.put(task.getNameID(), task);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -314,8 +314,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return map;
 	}
 
-	private ArrayList<String> loadStartText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m, PATH_START_TEXT);
+	private ArrayList<String> loadStartText() {
+		List<String> list = getSection().getStringList(PATH_START_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultStartText();
 		if (list == null)
@@ -323,8 +323,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadCompleteText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m, PATH_COMPLETE_TEXT);
+	private ArrayList<String> loadCompleteText() {
+		List<String> list = getSection().getStringList(PATH_COMPLETE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultCompleteText();
 		if (list == null)
@@ -332,8 +332,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadPauseText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m, PATH_PAUSE_TEXT);
+	private ArrayList<String> loadPauseText( ) {
+		List<String> list = getSection().getStringList( PATH_PAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultPauseText();
 		if (list == null)
@@ -341,8 +341,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadUnpauseText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m, PATH_UNPAUSE_TEXT);
+	private ArrayList<String> loadUnpauseText( ) {
+		List<String> list = getSection().getStringList( PATH_UNPAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultUnpauseText();
 		if (list == null)
@@ -350,8 +350,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadFailText(MemorySection m) {
-		List<String> list = StringUtils.getStringList(m, PATH_FAIL_TEXT);
+	private ArrayList<String> loadFailText( ) {
+		List<String> list = getSection().getStringList( PATH_FAIL_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultFailText();
 		if (list == null)
@@ -359,29 +359,23 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private MissionDisplayInfo loadDisplayInfo(MemorySection m) {
-		return new MissionDisplayInfo(m, this);
+	private MissionDisplayInfo loadDisplayInfo( ) {
+		return new MissionDisplayInfo(getSection(), this);
 	}
 
-	private LinkedHashMap<String, Require> loadRequires(MemorySection m) {
-		MemorySection m2 = (MemorySection) m.get(PATH_REQUIRES);
-		if (m2 == null)
-			m2 = (MemorySection) m.createSection(PATH_REQUIRES);
-		return Quests.getInstance().getRequireManager().loadRequires(this, m2);
+	private LinkedHashMap<String, Require> loadRequires() {
+		return Quests.getInstance().getRequireManager().loadRequires(this, 
+				getSection().loadSection(PATH_REQUIRES));
 	}
 
-	private LinkedHashMap<String, Reward> loadStartRewards(MemorySection m) {
-		MemorySection m2 = (MemorySection) m.get(PATH_START_REWARDS);
-		if (m2 == null)
-			m2 = (MemorySection) m.createSection(PATH_START_REWARDS);
-		return Quests.getInstance().getRewardManager().loadRewards(this, m2);
+	private LinkedHashMap<String, Reward> loadStartRewards() {
+		return Quests.getInstance().getRewardManager().loadRewards(this, 
+				getSection().loadSection(PATH_START_REWARDS));
 	}
 
-	private LinkedHashMap<String, Reward> loadCompleteRewards(MemorySection m) {
-		MemorySection m2 = (MemorySection) m.get(PATH_COMPLETE_REWARDS);
-		if (m2 == null)
-			m2 = (MemorySection) m.createSection(PATH_COMPLETE_REWARDS);
-		return Quests.getInstance().getRewardManager().loadRewards(this, m2);
+	private LinkedHashMap<String, Reward> loadCompleteRewards() {
+		return Quests.getInstance().getRewardManager().loadRewards(this, 
+				getSection().loadSection(PATH_COMPLETE_REWARDS));
 	}
 
 	@Override
@@ -851,7 +845,7 @@ public class Mission extends YmlLoadableWithCooldown {
 			i++;
 		} while (requires.containsKey(key));
 		getSection().set(PATH_REQUIRES + "." + key + "." + PATH_REQUIRE_TYPE, type.getKey());
-		Require req = type.getInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
+		Require req = type.getInstance(getSection().loadSection(PATH_REQUIRES + "." + key), this);
 		requires.put(req.getNameID(), req);
 		setDirty(true);
 		return req;
@@ -876,7 +870,7 @@ public class Mission extends YmlLoadableWithCooldown {
 			i++;
 		} while (completeRewards.containsKey(key));
 		getSection().set(PATH_COMPLETE_REWARDS + "." + key + "." + PATH_REWARD_TYPE, type.getKey());
-		Reward rew = type.getInstance((MemorySection) getSection().get(PATH_COMPLETE_REWARDS + "." + key), this);
+		Reward rew = type.getInstance(getSection().loadSection(PATH_COMPLETE_REWARDS + "." + key), this);
 		completeRewards.put(rew.getNameID(), rew);
 		setDirty(true);
 		return rew;

@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -40,7 +40,7 @@ public class NeedAnotherQuestMissionType extends AbstractRequireType implements 
 		private String targetMissionID;
 		private String targetQuestID;
 
-		public NeedAnotherQuestMissionRequire(MemorySection section, YmlLoadableWithCooldown parent) {
+		public NeedAnotherQuestMissionRequire(ConfigSection section, YmlLoadableWithCooldown parent) {
 			super(section, parent);
 			if (!((parent instanceof Quest) || (parent instanceof Mission)))
 				throw new IllegalArgumentException();
@@ -224,7 +224,7 @@ public class NeedAnotherQuestMissionType extends AbstractRequireType implements 
 	}
 
 	@Override
-	public Require getInstance(MemorySection m, YmlLoadableWithCooldown loadable) {
+	public Require getInstance(ConfigSection m, YmlLoadableWithCooldown loadable) {
 		return new NeedAnotherQuestMissionRequire(m,loadable);
 	}
 

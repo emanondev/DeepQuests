@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -36,7 +36,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 	public class ConsoleCommandReward extends AbstractReward implements Reward {
 		private static final String PATH_COMMAND = "command";
 		private String command;
-		public ConsoleCommandReward(MemorySection section,YmlLoadable gui) {
+		public ConsoleCommandReward(ConfigSection section,YmlLoadable gui) {
 			super(section, gui);
 			command = section.getString(PATH_COMMAND);
 			this.addToEditor(1, new CommandEditorButtonFactory());
@@ -139,7 +139,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 				);
 	}
 	@Override
-	public Reward getInstance(MemorySection section,YmlLoadable parent) {
+	public Reward getInstance(ConfigSection section,YmlLoadable parent) {
 		return new ConsoleCommandReward(section,parent);
 	}
 }

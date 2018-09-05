@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -67,7 +67,7 @@ public class MythicMobKillTaskType extends TaskType{
 		private final DropsTaskInfo drops;
 		private final HashSet<String> internalNames = new HashSet<String>();
 		//TODO option CHECKTOOL
-		public MythicMobKillTask(MemorySection m, Mission parent) {
+		public MythicMobKillTask(ConfigSection m, Mission parent) {
 			super(m, parent,MythicMobKillTaskType.this);
 			drops = new DropsTaskInfo(m,this);
 			List<String> list = m.getStringList(PATH_INTERNAL_NAMES);
@@ -220,7 +220,7 @@ public class MythicMobKillTaskType extends TaskType{
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new MythicMobKillTask(m,parent);
 	}
 	@Override

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.JobsPlayer;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.JobEditorButtonFactory;
 import emanondev.quests.player.QuestPlayer;
@@ -27,7 +27,7 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 	}
 
 	@Override
-	public Reward getInstance(MemorySection section, YmlLoadable parent) {
+	public Reward getInstance(ConfigSection section, YmlLoadable parent) {
 		return new JobsExpReward(section,parent);
 	}
 
@@ -51,7 +51,7 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 		private Job job;
 		private int exp;
 
-		public JobsExpReward(MemorySection section, YmlLoadable parent) {
+		public JobsExpReward(ConfigSection section, YmlLoadable parent) {
 			super(section, parent);
 			try {
 				String jobName = getSection().getString(PATH_JOB,null);

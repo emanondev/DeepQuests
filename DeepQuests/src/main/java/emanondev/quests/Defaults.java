@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 
@@ -99,9 +100,8 @@ public class Defaults {
 			case COMPLETED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:5"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:5"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -109,9 +109,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"LIME_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "LIME_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -122,9 +121,8 @@ public class Defaults {
 			case COOLDOWN:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:1"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:1"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -132,8 +130,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
+						item = MemoryUtils
+								.getGuiItem(data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
 										"ORANGE_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
@@ -145,9 +143,8 @@ public class Defaults {
 			case LOCKED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:14"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:14"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -155,9 +152,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"RED_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "RED_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -168,9 +164,8 @@ public class Defaults {
 			case FAILED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:15"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:15"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -178,9 +173,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"BLACK_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "BLACK_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -193,8 +187,7 @@ public class Defaults {
 		}
 
 		public static ArrayList<String> getDefaultDescription(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data,
-					BASE_PATH + "display." + state.toString() + ".desc.value");
+			List<String> list = data.getStringList(BASE_PATH + "display." + state.toString() + ".desc.value");
 			if (list != null)
 				return new ArrayList<String>(list);
 			switch (state) {
@@ -222,7 +215,7 @@ public class Defaults {
 		}
 
 		public static List<String> getWorldsListDefault() {
-			return MemoryUtils.getStringList(data, BASE_PATH + "disabled-world.worlds");
+			return data.getStringList(BASE_PATH + "disabled-world.worlds");
 		}
 
 		public static boolean shouldWorldsAutogen() {
@@ -316,9 +309,8 @@ public class Defaults {
 			case COMPLETED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:5"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:5"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -326,9 +318,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"LIME_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "LIME_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -339,9 +330,8 @@ public class Defaults {
 			case COOLDOWN:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:1"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:1"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -349,8 +339,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
+						item = MemoryUtils
+								.getGuiItem(data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
 										"ORANGE_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
@@ -362,9 +352,8 @@ public class Defaults {
 			case FAILED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:15"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:15"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -372,9 +361,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"BLACK_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "BLACK_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -385,9 +373,8 @@ public class Defaults {
 			case LOCKED:
 				if (MemoryUtils.isPre113) {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"STAINED_GLASS_PANE:14"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "STAINED_GLASS_PANE:14"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -395,9 +382,8 @@ public class Defaults {
 					}
 				} else {
 					try {
-						item = MemoryUtils.getGuiItem(
-								data.getString(BASE_PATH + "display." + state.toString() + ".item.value",
-										"RED_STAINED_GLASS_PANE"));
+						item = MemoryUtils.getGuiItem(data.getString(
+								BASE_PATH + "display." + state.toString() + ".item.value", "RED_STAINED_GLASS_PANE"));
 						if (item == null || item.getType() == Material.AIR)
 							throw new Exception();
 					} catch (Exception e) {
@@ -410,8 +396,7 @@ public class Defaults {
 		}
 
 		public static List<String> getDefaultDescription(DisplayState state) {
-			List<String> list = MemoryUtils.getStringList(data,
-					BASE_PATH + "display." + state.toString() + ".desc.value");
+			List<String> list = data.getStringList(BASE_PATH + "display." + state.toString() + ".desc.value");
 			if (list != null)
 				return list;
 			switch (state) {
@@ -433,7 +418,7 @@ public class Defaults {
 		}
 
 		public static List<String> getWorldsListDefault() {
-			return MemoryUtils.getStringList(data, BASE_PATH + "disabled-world.worlds");
+			return data.getStringList(BASE_PATH + "disabled-world.worlds");
 		}
 
 		public static boolean shouldWorldsAutogen() {
@@ -483,7 +468,7 @@ public class Defaults {
 		private static final String BASE_PATH = "task.";
 
 		public static List<String> getWorldsListDefault() {
-			return MemoryUtils.getStringList(data, BASE_PATH + "disabled-world.worlds");
+			return data.getStringList(BASE_PATH + "disabled-world.worlds");
 		}
 
 		public static boolean shouldWorldsAutogen() {

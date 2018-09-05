@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,13 +20,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Quests;
 import emanondev.quests.SpawnReasonTracker;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.gui.EditorGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.hooks.Hooks;
-import emanondev.quests.utils.MemoryUtils;
 import emanondev.quests.utils.StringUtils;
 
 public class EntityTaskInfo {
@@ -44,11 +43,11 @@ public class EntityTaskInfo {
 	private boolean ignoreNPC;
 	private String entityName;
 	private final Task parent;
-	private final MemorySection section;
-	public EntityTaskInfo(MemorySection m,Task parent) {
+	private final ConfigSection section;
+	public EntityTaskInfo(ConfigSection m,Task parent) {
 		this.parent = parent;
 		this.section = m;
-		List<String> list = MemoryUtils.getStringList(m, PATH_ENTITY);
+		List<String> list = m.getStringList(PATH_ENTITY);
 		if (list!=null)
 			for (String value : list) {
 				try {
@@ -67,7 +66,7 @@ public class EntityTaskInfo {
 		entityName = m.getString(PATH_ENTITY_NAME,null);
 		
 		
-		list = MemoryUtils.getStringList(m, PATH_ENTITY_SPAWNREASON);
+		list = m.getStringList(PATH_ENTITY_SPAWNREASON);
 		if (list!=null)
 			for (String value : list) {
 				try {

@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
+
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.reward.AbstractReward;
@@ -20,7 +21,7 @@ public class CompleteQuestRewardType extends AbstractRewardType implements Missi
 	}
 	
 	public class CompleteQuestReward extends AbstractReward implements MissionReward{
-		public CompleteQuestReward(MemorySection m, Mission mission) {
+		public CompleteQuestReward(ConfigSection m, Mission mission) {
 			super(m,mission);
 		}
 
@@ -61,7 +62,7 @@ public class CompleteQuestRewardType extends AbstractRewardType implements Missi
 	}
 
 	@Override
-	public MissionReward getInstance(MemorySection section, YmlLoadable parent) {
+	public MissionReward getInstance(ConfigSection section, YmlLoadable parent) {
 		// TODO Auto-generated method stub
 		return null;
 	}

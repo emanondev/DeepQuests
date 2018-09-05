@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -44,7 +44,7 @@ public class PlaceBlockTaskType extends TaskType {
 	public class PlaceBlockTask extends AbstractTask {
 		private final BlocksTaskInfo blocks;
 
-		public PlaceBlockTask(MemorySection m, Mission parent) {
+		public PlaceBlockTask(ConfigSection m, Mission parent) {
 			super(m, parent,PlaceBlockTaskType.this);
 			blocks = new BlocksTaskInfo(m,this);
 			this.addToEditor(9,blocks.getBlocksSelectorButtonFactory());
@@ -53,7 +53,7 @@ public class PlaceBlockTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new PlaceBlockTask(m,parent);
 	}
 	@Override

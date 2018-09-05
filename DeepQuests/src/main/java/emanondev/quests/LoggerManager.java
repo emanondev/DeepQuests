@@ -13,6 +13,8 @@ import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 
+import emanondev.quests.configuration.YMLConfig;
+
 public class LoggerManager{
 	
 	
@@ -78,6 +80,12 @@ public class LoggerManager{
 		private DateFormat dateFormat;
 		private final String path;
 
+		/**
+		 * 
+		 * @param fileName - the name of the file/path associated to the logger <br>
+		 * it may ends with ".log" else ".log" will be added<br>
+		 * to choose a file in a sub folder use "/" in the name<br>example "myfolder/mysubfolder/mylogger.log"
+		 */
 		public Logger(String fileName) {
 			
 			if (Quests.getInstance()==null||fileName==null)
@@ -108,6 +116,9 @@ public class LoggerManager{
 				data.save();
 			}
 		}
+		/**
+		 * reload the config for this logger
+		 */
 		public void reload() {
 			if (data.isString(path+".dateformat")) {
 				dateFormat = new SimpleDateFormat(data.getString(path+".dateformat"),Locale.ITALY);
@@ -116,7 +127,12 @@ public class LoggerManager{
 				data.set(path+".dateformat", data.getString("dateformat"));
 			}
 		}
-		
+		/**
+		 * 
+		 * @param message <br>
+		 *
+		 * adds this message to a new line of the file
+		 */
 		public void log(String message){
 			String date = dateFormat.format(new Date());
 			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
@@ -124,7 +140,7 @@ public class LoggerManager{
 				public void run() {
 					try {
 				        BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-				        bw.append(date+ message+"\n");
+						bw.append(date+ message+"\n");
 				        bw.close();
 				    } catch (IOException e) {
 				        e.printStackTrace();
@@ -133,7 +149,15 @@ public class LoggerManager{
 			});
 		    
 		}
+		/**
+		 * 
+		 * @param messages <br>
+		 * 
+		 * adds this messages to the file
+		 */
 		public void log(List<String> messages){
+			if (messages==null)
+				return;
 			String date = dateFormat.format(new Date());
 			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
 				@Override
@@ -149,7 +173,15 @@ public class LoggerManager{
 				}
 			});
 		}
+		/**
+		 * 
+		 * @param messages <br>
+		 * 
+		 * adds this messages to the file
+		 */
 		public void log(String... messages){
+			if (messages==null)
+				return;
 			String date = dateFormat.format(new Date());
 			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
 				@Override

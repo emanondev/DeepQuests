@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -25,10 +25,10 @@ public class RegionTaskInfo {
 	private final static String PATH_REGION_NAME_CONTAINS = "region-name-contains";
 	private String regionName;
 	private String regionNameContains;
-	private final MemorySection section;
+	private final ConfigSection section;
 	private final Task parent;
 
-	public RegionTaskInfo(MemorySection m, Task t) {
+	public RegionTaskInfo(ConfigSection m, Task t) {
 		if (m == null || t == null)
 			throw new NullPointerException();
 		this.section = m;

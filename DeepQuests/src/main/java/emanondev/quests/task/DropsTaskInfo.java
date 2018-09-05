@@ -3,11 +3,11 @@ package emanondev.quests.task;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
@@ -19,9 +19,9 @@ public class DropsTaskInfo {
 	private final static String PATH_REMOVE_EXP = "remove-exp";
 	private boolean removeDrops;
 	private boolean removeExp;
-	private final MemorySection section;
+	private final ConfigSection section;
 	private final Task parent;
-	public DropsTaskInfo(MemorySection m,Task parent) {
+	public DropsTaskInfo(ConfigSection m,Task parent) {
 		this.section = m;
 		this.parent = parent;
 		removeDrops = m.getBoolean(PATH_REMOVE_DROP,false);

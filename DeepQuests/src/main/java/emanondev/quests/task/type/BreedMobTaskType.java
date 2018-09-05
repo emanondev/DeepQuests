@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityBreedEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -50,7 +50,7 @@ public class BreedMobTaskType extends TaskType {
 	public class BreedMobTask extends AbstractTask {
 		private final EntityTaskInfo entity;
 		private final DropsTaskInfo drops;
-		public BreedMobTask(MemorySection m, Mission parent) {
+		public BreedMobTask(ConfigSection m, Mission parent) {
 			super(m, parent,BreedMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
@@ -62,7 +62,7 @@ public class BreedMobTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new BreedMobTask(m,parent);
 	}
 	

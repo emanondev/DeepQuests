@@ -10,7 +10,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -18,7 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import emanondev.quests.Quests;
-import emanondev.quests.YMLConfig;
+import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomButton;
@@ -143,14 +143,12 @@ public class QuestManager implements Savable {
 		}
 		quests.clear();
 		data.reload();
-		Object unknow = data.get(PATH_QUESTS);
-		if (unknow!=null && unknow instanceof MemorySection) {
-			MemorySection section = (MemorySection) unknow;
-			Set<String> s = section.getValues(false).keySet();
+		ConfigSection section = data.loadSection(PATH_QUESTS);
+		Set<String> s = section.getValues(false).keySet();
 			s.forEach((key)->{
 				boolean dirty = false;
 				try {
-					Quest quest = new Quest((MemorySection) section.get(key),this);
+					Quest quest = new Quest(section.loadSection(key),this);
 					quests.put(quest.getNameID(),quest);
 					if (quest.isDirty())
 						dirty = true;
@@ -170,7 +168,7 @@ public class QuestManager implements Savable {
 				if (dirty)
 					data.save();
 			});
-		}
+		
 	}
 	
 	
@@ -223,7 +221,7 @@ public class QuestManager implements Savable {
 		if (quests.containsKey(id))
 			return false;
 		data.set(PATH_QUESTS+"."+id+"."+YmlLoadable.PATH_DISPLAY_NAME,displayName);
-		Quest q = new Quest((MemorySection) data.get(PATH_QUESTS+"."+id),this);
+		Quest q = new Quest(data.loadSection(PATH_QUESTS+"."+id),this);
 		quests.put(q.getNameID(), q);
 		save();
 		reload();

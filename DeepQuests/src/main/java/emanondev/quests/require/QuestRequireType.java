@@ -1,7 +1,6 @@
 package emanondev.quests.require;
 
-import org.bukkit.configuration.MemorySection;
-
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.utils.YmlLoadableWithCooldown;
 
 public interface QuestRequireType extends RequireType {
@@ -12,5 +11,5 @@ public interface QuestRequireType extends RequireType {
 	 * @return an instance of the QuestRequire object
 	 */
 	@Override
-	public QuestRequire getInstance(MemorySection section, YmlLoadableWithCooldown parent);
+	public QuestRequire getInstance(ConfigSection section, YmlLoadableWithCooldown parent);
 }

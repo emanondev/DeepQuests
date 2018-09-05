@@ -10,7 +10,7 @@ import emanondev.quests.Quests;
 
 public class CommandQuests extends CmdManager {
 	public CommandQuests() {
-		super("quests",Arrays.asList("quest"),null);
+		super("quests",Arrays.asList("quest","q"),null);
 		this.setPlayersOnly(true);
 	}
 

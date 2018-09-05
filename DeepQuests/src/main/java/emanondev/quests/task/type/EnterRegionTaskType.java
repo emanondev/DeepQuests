@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import com.mewin.WGRegionEvents.events.RegionEnterEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -43,7 +43,7 @@ public class EnterRegionTaskType extends TaskType {
 	public class EnterRegionTask extends AbstractTask {
 		private final RegionTaskInfo regionInfo;
 
-		public EnterRegionTask(MemorySection m, Mission parent) {
+		public EnterRegionTask(ConfigSection m, Mission parent) {
 			super(m, parent, EnterRegionTaskType.this);
 			regionInfo = new RegionTaskInfo(m, this);
 			this.addToEditor(9,regionInfo.getRegionNameEditorButtonFactory());
@@ -52,7 +52,7 @@ public class EnterRegionTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new EnterRegionTask(m, parent);
 	}
 

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 
 import com.gmail.nossr50.datatypes.player.McMMOPlayer;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.util.player.UserManager;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.McmmoSkillEditorButtonFactory;
 import emanondev.quests.player.QuestPlayer;
@@ -27,7 +27,7 @@ public class McmmoLvRequireType extends AbstractRequireType implements RequireTy
 	}
 
 	@Override
-	public Require getInstance(MemorySection section, YmlLoadableWithCooldown parent) {
+	public Require getInstance(ConfigSection section, YmlLoadableWithCooldown parent) {
 		return new McmmoLvRequire(section,parent);
 	}
 
@@ -49,7 +49,7 @@ public class McmmoLvRequireType extends AbstractRequireType implements RequireTy
 	public class McmmoLvRequire extends AbstractRequire implements Require {
 		private SkillType skillType;
 		private int level;
-		public McmmoLvRequire(MemorySection section, YmlLoadableWithCooldown parent) {
+		public McmmoLvRequire(ConfigSection section, YmlLoadableWithCooldown parent) {
 			super(section, parent);
 			try {
 				skillType = SkillType.valueOf(getSection().getString(PATH_SKILLTYPE,null));

@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
@@ -19,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
@@ -74,12 +74,12 @@ public class Quest extends YmlLoadableWithCooldown {
 	// private final List<QuestRequire> requires = new ArrayList<QuestRequire>();
 	private final QuestDisplayInfo displayInfo;
 
-	public Quest(MemorySection m, QuestManager parent) {
-		super(m);
+	public Quest(ConfigSection section, QuestManager parent) {
+		super(section);
 		if (parent == null)
 			throw new NullPointerException();
 		this.parent = parent;
-		LinkedHashMap<String, Mission> map = this.loadMissions((MemorySection) m.get(PATH_MISSIONS));
+		LinkedHashMap<String, Mission> map = this.loadMissions((ConfigSection) section.get(PATH_MISSIONS));
 		if (map != null)
 			missions.putAll(map);
 		for (Mission mission : missions.values()) {
@@ -89,10 +89,10 @@ public class Quest extends YmlLoadableWithCooldown {
 				this.dirty = true;
 		}
 
-		LinkedHashMap<String, Require> req = loadRequires(m);
+		LinkedHashMap<String, Require> req = loadRequires(section);
 		if (req != null)
 			requires.putAll(req);
-		displayInfo = loadDisplayInfo(m);
+		displayInfo = loadDisplayInfo(section);
 		if (displayInfo.isDirty())
 			this.dirty = true;
 
@@ -209,25 +209,25 @@ public class Quest extends YmlLoadableWithCooldown {
 		return comp.create();
 	}
 
-	private QuestDisplayInfo loadDisplayInfo(MemorySection m) {
+	private QuestDisplayInfo loadDisplayInfo(ConfigSection m) {
 		return new QuestDisplayInfo(m, this);
 	}
 
-	private LinkedHashMap<String, Require> loadRequires(MemorySection m) {
-		MemorySection m2 = (MemorySection) m.get(PATH_REQUIRES);
+	private LinkedHashMap<String, Require> loadRequires(ConfigSection m) {
+		ConfigSection m2 = (ConfigSection) m.get(PATH_REQUIRES);
 		if (m2 == null)
-			m2 = (MemorySection) m.createSection(PATH_REQUIRES);
+			m2 = (ConfigSection) m.createSection(PATH_REQUIRES);
 		return Quests.getInstance().getRequireManager().loadRequires(this, m2);
 	}
 
-	private LinkedHashMap<String, Mission> loadMissions(MemorySection m) {
+	private LinkedHashMap<String, Mission> loadMissions(ConfigSection m) {
 		if (m == null)
 			return new LinkedHashMap<String, Mission>();
 		Set<String> s = m.getKeys(false);
 		LinkedHashMap<String, Mission> map = new LinkedHashMap<String, Mission>();
 		s.forEach((key) -> {
 			try {
-				Mission mission = new Mission((MemorySection) m.get(key), this);
+				Mission mission = new Mission(m.loadSection(key), this);
 				map.put(mission.getNameID(), mission);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -283,7 +283,7 @@ public class Quest extends YmlLoadableWithCooldown {
 		if (missions.containsKey(id))
 			return false;
 		getSection().set(PATH_MISSIONS + "." + id + "." + YmlLoadable.PATH_DISPLAY_NAME, displayName);
-		Mission m = new Mission((MemorySection) getSection().get(PATH_MISSIONS + "." + id), this);
+		Mission m = new Mission(getSection().loadSection(PATH_MISSIONS + "." + id), this);
 		missions.put(m.getNameID(), m);
 		parent.save();
 		parent.reload();
@@ -314,7 +314,7 @@ public class Quest extends YmlLoadableWithCooldown {
 			i++;
 		} while (requires.containsKey(key));
 		getSection().set(PATH_REQUIRES + "." + key + "." + PATH_REQUIRE_TYPE, type.getKey());
-		Require req = type.getInstance((MemorySection) getSection().get(PATH_REQUIRES + "." + key), this);
+		Require req = type.getInstance(getSection().loadSection(PATH_REQUIRES + "." + key), this);
 		requires.put(req.getNameID(), req);
 		setDirty(true);
 		return req;

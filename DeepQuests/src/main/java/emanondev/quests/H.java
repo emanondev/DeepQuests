@@ -1,5 +1,13 @@
 package emanondev.quests;
 
+
+/**
+ * 
+ * @author emanon
+ * 
+ * a class that contains holders names
+ *
+ */
 public class H {
 
 
@@ -19,4 +27,5 @@ public class H {
 	public static final String QUEST_MISSION_AMOUNT = "{mission-amount}";
 	public static final String QUEST_NAME = "{quest-name}";
 	public static final String QUEST_COMPLETED_MISSION_AMOUNT = "{completed-mission-amount}";
+	public static final String PAGE_HOLDER = "{page}";
 }

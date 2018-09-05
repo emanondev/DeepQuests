@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -49,7 +49,7 @@ public class ShearSheepTaskType extends TaskType {
 	public class ShearSheepTask extends AbstractTask {
 		private final EntityTaskInfo entity;
 		private final DropsTaskInfo drops;
-		public ShearSheepTask(MemorySection m, Mission parent) {
+		public ShearSheepTask(ConfigSection m, Mission parent) {
 			super(m, parent,ShearSheepTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
@@ -61,7 +61,7 @@ public class ShearSheepTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new ShearSheepTask(m,parent);
 	}
 	@Override

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.gui.button.ItemEditorButton;
@@ -19,11 +19,11 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class ItemTaskInfo {
 	private final static String PATH_ITEM = "itemstack";
-	private final MemorySection section;
+	private final ConfigSection section;
 	private final Task parent;
 	private ItemStack item;
 
-	public ItemTaskInfo(MemorySection m, Task parent) {
+	public ItemTaskInfo(ConfigSection m, Task parent) {
 		if (m == null || parent == null)
 			throw new NullPointerException();
 		this.parent = parent;

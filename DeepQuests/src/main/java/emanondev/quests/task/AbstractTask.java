@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+
 import emanondev.quests.Defaults;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.EditorGui;
@@ -34,11 +35,11 @@ import net.md_5.bungee.api.chat.HoverEvent;
  */
 public abstract class AbstractTask extends YmlLoadable implements Task {
 	/**
-	 * path from MemorySection m of the task to the type of the task
+	 * path from ConfigSection m of the task to the type of the task
 	 */
 	public static final String PATH_TASK_TYPE = "type";
 	/**
-	 * path from MemorySection m of the task to the max progress value of the task
+	 * path from ConfigSection m of the task to the max progress value of the task
 	 */
 	public static final String PATH_TASK_MAX_PROGRESS = "max-progress";
 	
@@ -47,7 +48,7 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	public static final String PATH_TASK_DESCRIPTION_UNSTARTED = "description-unstarted";
 	
 	/**
-	 * Config variables can be stored and read from MemorySection m<br>
+	 * Config variables can be stored and read from ConfigSection m<br>
 	 * also additional info may be taken from Mission parent<br>
 	 * 
 	 * N.B. parent mission is not fully loaded when Task is generating<br>
@@ -55,43 +56,43 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * @param m must be != null
 	 * @param parent must be != null
 	 */
-	public AbstractTask(MemorySection m,Mission parent,TaskType type) {
+	public AbstractTask(ConfigSection m,Mission parent,TaskType type) {
 		super(m);
 		if (parent == null||type ==null)
 			throw new NullPointerException();
 		this.parent = parent;
 		this.type = type;
-		this.maxProgress = loadMaxProgress(m);
+		this.maxProgress = loadMaxProgress();
 		if (this.maxProgress <= 0)
 			throw new IllegalArgumentException("task max progress must be always > 0");
-		this.descUnstarted = loadDescUnstarted(m);
-		this.descProgress = loadDescProgress(m);
+		this.descUnstarted = loadDescUnstarted();
+		this.descProgress = loadDescProgress();
 
 		this.addToEditor(8,new MaxProgressButtonFactory());
 		this.addToEditor(16,new UnstartedDescEditorButtonFactory());
 		this.addToEditor(17,new ProgressDescEditorButtonFactory());
 	}
-	private String loadDescUnstarted(MemorySection m) {
-		if (!m.isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
+	private String loadDescUnstarted() {
+		if (!getSection().isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
 			String val = Defaults.TaskDef.getUnstartedDescription()
 					.replace("<task>",this.getNameID());
-			m.set(PATH_TASK_DESCRIPTION_UNSTARTED, val);
+			getSection().set(PATH_TASK_DESCRIPTION_UNSTARTED, val);
 			dirty = true;
 			return val;
 		}
-		return m.getString(PATH_TASK_DESCRIPTION_UNSTARTED, 
+		return getSection().getString(PATH_TASK_DESCRIPTION_UNSTARTED, 
 			Defaults.TaskDef.getUnstartedDescription()
 			.replace("<task>",this.getNameID()));
 	}
-	private String loadDescProgress(MemorySection m) {
-		if (!m.isString(PATH_TASK_DESCRIPTION_PROGRESS)) {
+	private String loadDescProgress() {
+		if (!getSection().isString(PATH_TASK_DESCRIPTION_PROGRESS)) {
 			String val = StringUtils.revertColors(Defaults.TaskDef.getProgressDescription()
 					.replace("<task>",this.getNameID()));
-			m.set(PATH_TASK_DESCRIPTION_PROGRESS, val);
+			getSection().set(PATH_TASK_DESCRIPTION_PROGRESS, val);
 			dirty = true;
 			return val;
 		}
-		return StringUtils.revertColors(m.getString(PATH_TASK_DESCRIPTION_PROGRESS, 
+		return StringUtils.revertColors(getSection().getString(PATH_TASK_DESCRIPTION_PROGRESS, 
 			Defaults.TaskDef.getProgressDescription()
 			.replace("<task>",this.getNameID())));
 	}
@@ -174,28 +175,15 @@ public abstract class AbstractTask extends YmlLoadable implements Task {
 	 * @param m config
 	 * @return the max progress amount
 	 */
-	private int loadMaxProgress(MemorySection m) {
-		if (m == null)
-			throw new NullPointerException();
-		int pr = m.getInt(PATH_TASK_MAX_PROGRESS);
+	private int loadMaxProgress() {
+		int pr = getSection().getInt(PATH_TASK_MAX_PROGRESS);
 		if (pr < 1) {
-			m.set(PATH_TASK_MAX_PROGRESS,1);
+			getSection().set(PATH_TASK_MAX_PROGRESS,1);
 			pr = 1;
 			dirty = true;
 		}
 		return pr;
 	}
-	/**
-	 * utility to autogenerate descriptions on gui<br>
-	 * this method should return a string that represent<br>
-	 * info abouth the task<br><br>
-	 * 
-	 * ex:<br>
-	 * a Mining task<br>
-	 * task.getDefaultDescription() = "&eMine "+task.getMaxProgress()+" "+task.getBlockType()+" blocks"
-	 * @return
-	 */
-	//protected abstract String getDefaultDescription();
 
 	protected  List<String> getWorldsListDefault(){
 		return Defaults.TaskDef.getWorldsListDefault();

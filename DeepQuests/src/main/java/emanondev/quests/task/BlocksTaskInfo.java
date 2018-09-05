@@ -3,21 +3,20 @@ package emanondev.quests.task;
 import java.util.List;
 
 import org.bukkit.block.Block;
-import org.bukkit.configuration.MemorySection;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.utils.MemoryUtils;
 
 public class BlocksTaskInfo {
 	private final static String PATH_BLOCK = "blocks";
-	private final MemorySection section;
+	private final ConfigSection section;
 	private final Task parent;
 	private final BlockChecker checker;
 	
-	public BlocksTaskInfo(MemorySection m,Task parent) {
+	public BlocksTaskInfo(ConfigSection m,Task parent) {
 		this.parent = parent;
 		this.section = m;
-		this.checker = BlockChecker.getBlockChecker(MemoryUtils.getStringList(m, PATH_BLOCK),this);
+		this.checker = BlockChecker.getBlockChecker(section.getStringList(PATH_BLOCK),this);
 	}
 	
 	public boolean isValidBlock(Block block) {

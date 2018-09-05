@@ -12,6 +12,12 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+/**
+ * 
+ * @author emanon
+ * 
+ *
+ */
 public class SpawnReasonTracker implements Listener {
 	SpawnReasonTracker() {
 		Quests.getInstance().registerListener(this);
@@ -32,11 +38,17 @@ public class SpawnReasonTracker implements Listener {
 		event.getEntity().setMetadata(metaName, fixedMetas.get(event.getSpawnReason()));
 	}
 	
-	public static SpawnReason getSpawnReason(Entity en) {
+	
+	/**
+	 * 
+	 * @param entity - target entity
+	 * @return the reason why this entity was spawned, when there is no trace of spawning reason SpawnReason.DEFAULT is returned
+	 */
+	public static SpawnReason getSpawnReason(Entity entity) {
 		try {
-			if (!en.hasMetadata(metaName))
+			if (!entity.hasMetadata(metaName))
 				throw new NullPointerException();
-			List<MetadataValue> list = en.getMetadata(metaName);
+			List<MetadataValue> list = entity.getMetadata(metaName);
 			return SpawnReason.valueOf(list.get(0).asString());
 		} catch (Exception e) {
 			return SpawnReason.DEFAULT;

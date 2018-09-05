@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.HandlerList;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 
 /**
@@ -78,7 +78,7 @@ public class TaskManager {
 		return types.get(key.toUpperCase());
 	}
 	
-	public Task readTask(String type, MemorySection m, Mission mission) {
+	public Task readTask(String type, ConfigSection m, Mission mission) {
 		TaskType info = types.get(type.toUpperCase());
 		if (info == null)
 			throw new IllegalArgumentException("tasktype "+type+" do not exist");

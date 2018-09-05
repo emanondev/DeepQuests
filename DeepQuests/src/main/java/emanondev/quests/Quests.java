@@ -15,6 +15,7 @@ import emanondev.quests.command.CommandQuestItem;
 import emanondev.quests.command.CommandQuestText;
 import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
+import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomGuiHandler;
 import emanondev.quests.inventory.QuestPlayerGuiManager;
@@ -51,6 +52,12 @@ import emanondev.quests.task.type.ShearSheepTaskType;
 import emanondev.quests.task.type.TameMobTaskType;
 import net.md_5.bungee.api.ChatColor;
 
+/**
+ * 
+ * @author emanon
+ *
+ * main class
+ */
 public class Quests extends JavaPlugin {
 	private final String consoleMexBase = "["+this.getName()+"] ";
 	private YMLConfig config;
@@ -65,18 +72,26 @@ public class Quests extends JavaPlugin {
 	private ConfigManager configManager;
 	private static Quests instance;
 
+	
 	public YMLConfig getConfig() {
 		return config;
 	}
 	/**
 	 * 
-	 * @return the file config of the loggers
+	 * @return loggerManager
 	 */
 	public LoggerManager getLoggerManager() {
 		return loggerManager;
 	}
-	public static Logger getLogger(String name) {
-		return getInstance().loggerManager.getLogger(name);
+	/**
+	 * 
+	 * @param fileName - the file associated to the logger <br>
+	 * it may ends with ".log" else ".log" will be added<br>
+	 * to select a file in a sub folder use "/" in the name<br>example "myfolder/mysubfolder/mylogger.log"
+	 * @return the logger associated with selected file
+	 */
+	public static Logger getLogger(String fileName) {
+		return getInstance().loggerManager.getLogger(fileName);
 	}
 	/**
 	 * logs msg on the console
@@ -96,9 +111,7 @@ public class Quests extends JavaPlugin {
 
 	/**
 	 * utility: register a command for this plugin
-	 * @param name - command name used for /commandname
-	 * @param tabExe - the class responsible for the command and the completer
-	 * @param aliases - aliases of the command should be also saved on plugin.yml
+	 * @param cmdManager
 	 */
 	public void registerCommand(CmdManager cmdManager){
 		PluginCommand cmd = getCommand(cmdManager.getName());
@@ -151,6 +164,7 @@ public class Quests extends JavaPlugin {
 	public void onEnable() {
 		questManager = new QuestManager(this,"quests");
 		new SpawnReasonTracker();
+		Language.reload();
 		Defaults.reload();
 		loggerManager = new LoggerManager();
 		config = new YMLConfig(this,"config");

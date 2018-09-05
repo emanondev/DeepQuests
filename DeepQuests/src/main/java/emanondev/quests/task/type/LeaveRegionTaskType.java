@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import com.mewin.WGRegionEvents.events.RegionLeaveEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -43,7 +43,7 @@ public class LeaveRegionTaskType extends TaskType {
 	public class LeaveRegionTask extends AbstractTask {
 		private final RegionTaskInfo regionInfo;
 
-		public LeaveRegionTask(MemorySection m, Mission parent) {
+		public LeaveRegionTask(ConfigSection m, Mission parent) {
 			super(m, parent, LeaveRegionTaskType.this);
 			regionInfo = new RegionTaskInfo(m, this);
 			this.addToEditor(9,regionInfo.getRegionNameEditorButtonFactory());
@@ -52,7 +52,7 @@ public class LeaveRegionTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new LeaveRegionTask(m, parent);
 	}
 

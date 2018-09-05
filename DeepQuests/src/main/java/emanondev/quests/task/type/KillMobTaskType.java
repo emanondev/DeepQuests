@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -54,7 +54,7 @@ public class KillMobTaskType extends TaskType {
 		private final EntityTaskInfo entityInfo;
 		private final DropsTaskInfo drops;
 		
-		public KillMobTask(MemorySection m, Mission parent) {
+		public KillMobTask(ConfigSection m, Mission parent) {
 			super(m, parent, KillMobTaskType.this);
 			entityInfo = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
@@ -66,7 +66,7 @@ public class KillMobTaskType extends TaskType {
 		}
 	}
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new KillMobTask(m,parent);
 	}
 	@Override

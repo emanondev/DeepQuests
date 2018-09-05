@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 
 import com.gmail.nossr50.datatypes.player.McMMOPlayer;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.util.player.UserManager;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.gui.button.AmountEditorButtonFactory;
 import emanondev.quests.gui.button.McmmoSkillEditorButtonFactory;
 import emanondev.quests.player.QuestPlayer;
@@ -27,7 +27,7 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 	}
 
 	@Override
-	public Reward getInstance(MemorySection section, YmlLoadable parent) {
+	public Reward getInstance(ConfigSection section, YmlLoadable parent) {
 		return new McmmoExpReward(section,parent);
 	}
 
@@ -49,7 +49,7 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 		private SkillType skillType;
 		private int exp;
 
-		public McmmoExpReward(MemorySection section, YmlLoadable parent) {
+		public McmmoExpReward(ConfigSection section, YmlLoadable parent) {
 			super(section, parent);
 			try {
 				skillType = SkillType.valueOf(getSection().getString(PATH_SKILLTYPE,null));

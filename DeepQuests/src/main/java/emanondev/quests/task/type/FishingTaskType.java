@@ -4,11 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerFishEvent;
+
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -45,13 +46,13 @@ public class FishingTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new FishingTask(m,parent);
 	}
 	
 	public class FishingTask extends AbstractTask {
 		private final DropsTaskInfo drops;
-		public FishingTask(MemorySection m, Mission parent) {
+		public FishingTask(ConfigSection m, Mission parent) {
 			super(m, parent,FishingTaskType.this);
 			drops = new DropsTaskInfo(m,this);
 			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());

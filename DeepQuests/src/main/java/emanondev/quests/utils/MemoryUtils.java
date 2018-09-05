@@ -1,11 +1,7 @@
 package emanondev.quests.utils;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.Defaults;
@@ -20,7 +16,7 @@ public class MemoryUtils {
 	 * if target is null or list is empty returns null<br>
 	 * else return the list
 	 * 			
-	 */
+	 *//*
 	public static List<String> getStringList(MemorySection m,String path){
 		if (m==null)
 			return null;
@@ -34,7 +30,7 @@ public class MemoryUtils {
 				return null;
 			list = new ArrayList<String>();
 			list.add(res);
-			return list;*/
+			return list;*//*
 		}
 		if (m.isList(path))
 			return m.getStringList(path);
@@ -43,8 +39,8 @@ public class MemoryUtils {
 		if (list==null || list.isEmpty())
 			return null;
 		return list;
-		*/
-	}
+		*//*
+	}*/
 	
 
 	/**

@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityTameEvent;
 
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -46,7 +46,7 @@ public class TameMobTaskType extends TaskType {
 	public class TameMobTask extends AbstractTask {
 		private final EntityTaskInfo entity;
 		//TODO option CHECKTOOL
-		public TameMobTask(MemorySection m, Mission parent) {
+		public TameMobTask(ConfigSection m, Mission parent) {
 			super(m, parent,TameMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			this.addToEditor(9,entity.getEntityTypeEditorButtonFactory());
@@ -57,7 +57,7 @@ public class TameMobTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new TameMobTask(m,parent);
 	}
 	@Override

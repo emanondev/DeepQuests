@@ -4,11 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.inventory.InventoryUtils;
 import emanondev.quests.inventory.InventoryUtils.ExcessManage;
 import emanondev.quests.inventory.InventoryUtils.LackManage;
@@ -55,7 +56,7 @@ public class NPCDeliverTaskType extends TaskType {
 		private final NPCTaskInfo npc;
 		private final ItemTaskInfo itemInfo;
 
-		public NPCDeliverTask(MemorySection m, Mission parent) {
+		public NPCDeliverTask(ConfigSection m, Mission parent) {
 			super(m, parent, NPCDeliverTaskType.this);
 			npc = new NPCTaskInfo(m, this);
 			itemInfo = new ItemTaskInfo(m, this);
@@ -66,7 +67,7 @@ public class NPCDeliverTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new NPCDeliverTask(m, parent);
 	}
 

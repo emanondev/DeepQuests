@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -58,7 +58,7 @@ public class NPCKillTaskType extends TaskType {
 	public class NPCKillTask extends AbstractTask {
 		private final NPCTaskInfo npc;
 		private final DropsTaskInfo drops;
-		public NPCKillTask(MemorySection m, Mission parent) {
+		public NPCKillTask(ConfigSection m, Mission parent) {
 			super(m, parent,NPCKillTaskType.this);
 			npc = new NPCTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
@@ -70,7 +70,7 @@ public class NPCKillTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new NPCKillTask(m,parent);
 	}
 	@Override

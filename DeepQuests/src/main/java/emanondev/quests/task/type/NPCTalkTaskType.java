@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import emanondev.quests.Quests;
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
@@ -45,7 +45,7 @@ public class NPCTalkTaskType extends TaskType {
 	
 	public class NPCTalkTask extends AbstractTask {
 		private final NPCTaskInfo npc;
-		public NPCTalkTask(MemorySection m, Mission parent) {
+		public NPCTalkTask(ConfigSection m, Mission parent) {
 			super(m, parent,NPCTalkTaskType.this);
 			npc = new NPCTaskInfo(m,this);
 			this.addToEditor(9,npc.getIdSelectorButtonFactory());
@@ -54,7 +54,7 @@ public class NPCTalkTaskType extends TaskType {
 	}
 
 	@Override
-	public Task getTaskInstance(MemorySection m, Mission parent) {
+	public Task getTaskInstance(ConfigSection m, Mission parent) {
 		return new NPCTalkTask(m,parent);
 	}
 	@Override

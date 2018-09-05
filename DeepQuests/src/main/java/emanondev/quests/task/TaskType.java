@@ -3,9 +3,9 @@ package emanondev.quests.task;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.event.Listener;
 
+import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 
 public abstract class TaskType implements Listener {
@@ -23,7 +23,7 @@ public abstract class TaskType implements Listener {
 		this.key = key.toUpperCase();
 	}
 
-	public abstract Task getTaskInstance(MemorySection m,Mission parent);
+	public abstract Task getTaskInstance(ConfigSection m,Mission parent);
 	/**
 	 * 
 	 * @return the string value of the TaskType unique key
