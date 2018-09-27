@@ -8,12 +8,13 @@ import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.StringUtils;
 import emanondev.quests.utils.StringUtils.CooldownFormat;
 
 public class Language {
 	
-	private static final YMLConfig config = new YMLConfig(Quests.getInstance(), "language");
+	private static final YMLConfig config = new YMLConfig(Quests.get(), "language");
 	// private static final String PATH_BLOCKS = "blocks.";
 	// private static final String PATH_ENTITY = "entity.";
 	private static final String PATH_TIME = "time.";
@@ -200,6 +201,42 @@ public class Language {
 
 		public static ItemStack getMissionsMenuCloseItem(Player p, int page) {
 			return getItem(p, missionsMenuCloseItem, missionsMenuCloseDesc, H.PAGE_HOLDER, String.valueOf(page));
+		}
+
+		public static ItemStack getDisplayTogglerItem(boolean bool, DisplayState state) {
+			ItemStack item;
+			if (bool==false) {
+				item = new ItemStack(Material.INK_SACK,1,(short) 8);
+				StringUtils.setDescription(item, new ArrayList<String>(
+					Arrays.asList("Mostra "+state.toString().toLowerCase())));
+			}
+			else {
+				switch (state){
+				case COMPLETED:
+					item = new ItemStack(Material.INK_SACK,1,(short) 10);
+					break;
+				case COOLDOWN:
+					item = new ItemStack(Material.INK_SACK,1,(short) 14);
+					break;
+				case FAILED:
+					item = new ItemStack(Material.INK_SACK,1,(short) 0);
+					break;
+				case LOCKED:
+					item = new ItemStack(Material.INK_SACK,1,(short) 1);
+					break;
+				case ONPROGRESS:
+					item = new ItemStack(Material.INK_SACK,1,(short) 6);
+					break;
+				case UNSTARTED:
+					item = new ItemStack(Material.INK_SACK,1,(short) 4);
+					break;
+				default:
+					throw new IllegalArgumentException();
+				}
+				StringUtils.setDescription(item, new ArrayList<String>(
+						Arrays.asList("Nascondi "+state.toString().toLowerCase())));
+			}
+			return item;
 		}
 
 	}

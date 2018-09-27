@@ -20,7 +20,7 @@ import org.bukkit.metadata.MetadataValue;
  */
 public class SpawnReasonTracker implements Listener {
 	SpawnReasonTracker() {
-		Quests.getInstance().registerListener(this);
+		Quests.get().registerListener(this);
 	}
 	private static final String metaName = "SpawnReason";
 	private static final EnumMap<SpawnReason,FixedMetadataValue> fixedMetas = loadMetas();
@@ -28,7 +28,7 @@ public class SpawnReasonTracker implements Listener {
 	private static EnumMap<SpawnReason,FixedMetadataValue> loadMetas(){
 		EnumMap<SpawnReason,FixedMetadataValue> map = new EnumMap<SpawnReason,FixedMetadataValue>(SpawnReason.class);
 		for (SpawnReason reason : SpawnReason.values()) {
-			map.put(reason, new FixedMetadataValue(Quests.getInstance(),reason.toString()));
+			map.put(reason, new FixedMetadataValue(Quests.get(),reason.toString()));
 		}
 		return map;
 	}

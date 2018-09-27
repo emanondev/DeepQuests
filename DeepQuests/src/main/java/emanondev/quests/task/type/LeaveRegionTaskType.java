@@ -11,10 +11,11 @@ import com.mewin.WGRegionEvents.events.RegionLeaveEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.RegionTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.RegionTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -26,10 +27,10 @@ public class LeaveRegionTaskType extends TaskType {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	private void onRegionLeave(RegionLeaveEvent event) {
 		Player p = event.getPlayer();
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		QuestPlayer qPlayer = Quests.get().getPlayerManager().getQuestPlayer(p);
 		if (qPlayer==null)
 			return;
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager().getTaskType(key));
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager().getTaskType(key));
 		if (tasks == null || tasks.isEmpty())
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
@@ -46,7 +47,12 @@ public class LeaveRegionTaskType extends TaskType {
 		public LeaveRegionTask(ConfigSection m, Mission parent) {
 			super(m, parent, LeaveRegionTaskType.this);
 			regionInfo = new RegionTaskInfo(m, this);
-			this.addToEditor(9,regionInfo.getRegionNameEditorButtonFactory());
+		}
+
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, regionInfo.getRegionSelectorButton(gui));
+			return gui;
 		}
 
 	}

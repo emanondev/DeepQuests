@@ -11,11 +11,12 @@ import org.bukkit.event.entity.EntityBreedEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.DropsTaskInfo;
+import emanondev.quests.data.EntityTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
-import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -29,9 +30,9 @@ public class BreedMobTaskType extends TaskType {
 		if (!(event.getBreeder() instanceof Player))
 			return;
 		Player p = (Player) event.getBreeder();
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(p);
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -54,11 +55,14 @@ public class BreedMobTaskType extends TaskType {
 			super(m, parent,BreedMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(9,entity.getEntityTypeEditorButtonFactory());
-			this.addToEditor(10,entity.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(27,drops.getRemoveExpEditorButtonFactory());
 		}
-		
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, entity.getEntityTypeSelectorButton(gui));
+			gui.putButton(10, entity.getIgnoreCitizenButton(gui));
+			gui.putButton(28, drops.getRemoveExpButton(gui));
+			return gui;
+		}
 	}
 
 	@Override

@@ -17,17 +17,31 @@ public class PlayerClickMissionGuiEvent extends AbstractPlayerClickEvent {
 	    return handlers;
 	}
 	private final MissionButton missionButton;
+	private final emanondev.quests.newgui.button.MissionButton missionButton2;
 	public PlayerClickMissionGuiEvent(Player clicker, ClickType click, MissionButton missionButton) {
 		super(clicker,click);
 		if (missionButton == null)
 			throw new NullPointerException();
 		this.missionButton = missionButton;
+		this.missionButton2 = null;
 	}
 
+	public PlayerClickMissionGuiEvent(Player clicker, ClickType click,
+			emanondev.quests.newgui.button.MissionButton missionButton2) {
+		super(clicker,click);
+		if (missionButton2 == null)
+			throw new NullPointerException();
+		this.missionButton2 = missionButton2;
+		this.missionButton = null;
+	}
 	public Mission getMission() {
-		return missionButton.getMission();
+		if (missionButton!=null)
+			return missionButton.getMission();
+		return missionButton2.getQuestComponent();
 	}
 	public QuestPlayer getQuestPlayer() {
-		return missionButton.getParent().getQuestPlayer();
+		if (missionButton!=null)
+			return missionButton.getParent().getQuestPlayer();
+		return missionButton2.getParent().getQuestPlayer();
 	}
 }

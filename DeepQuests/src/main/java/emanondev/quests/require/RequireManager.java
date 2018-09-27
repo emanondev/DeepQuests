@@ -11,7 +11,7 @@ import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.utils.YmlLoadableWithCooldown;
+import emanondev.quests.utils.QCWithCooldown;
 
 public class RequireManager {
 	private final static HashMap<String, RequireType> requiresType = new HashMap<String, RequireType>();
@@ -45,7 +45,7 @@ public class RequireManager {
 						Require rew = missionRequiresType.get(key.toUpperCase())
 								.getInstance(section.loadSection(id), m);
 						if (rew != null)
-							requires.put(rew.getNameID(), rew);
+							requires.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}
@@ -67,7 +67,7 @@ public class RequireManager {
 						Require rew = questRequiresType.get(key.toUpperCase())
 								.getInstance(section.loadSection(id), q);
 						if (rew != null)
-							requires.put(rew.getNameID(), rew);
+							requires.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}
@@ -76,7 +76,7 @@ public class RequireManager {
 		return requires;
 	}
 
-	public LinkedHashMap<String, Require> loadRequires(YmlLoadableWithCooldown loadable, ConfigSection section) {
+	public LinkedHashMap<String, Require> loadRequires(QCWithCooldown loadable, ConfigSection section) {
 		LinkedHashMap<String, Require> requires = new LinkedHashMap<String, Require>();
 		if (section != null) {
 			Set<String> keys = section.getKeys(false);
@@ -89,7 +89,7 @@ public class RequireManager {
 						Require rew = requiresType.get(key.toUpperCase())
 								.getInstance(section.loadSection(id), loadable);
 						if (rew != null)
-							requires.put(rew.getNameID(), rew);
+							requires.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}

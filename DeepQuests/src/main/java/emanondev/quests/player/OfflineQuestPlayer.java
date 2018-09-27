@@ -11,6 +11,7 @@ import java.util.List;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import emanondev.quests.Defaults;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.mission.Mission;
@@ -19,6 +20,7 @@ import emanondev.quests.player.OfflineQuestPlayer.QuestData.MissionData.TaskData
 import emanondev.quests.quest.Quest;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
+import emanondev.quests.utils.DisplayState;
 
 public class OfflineQuestPlayer {
 	/*
@@ -57,6 +59,27 @@ public class OfflineQuestPlayer {
 	private static final String PATH_QUESTS = "quests";
 	private static final String PATH_QUEST_POINTS = "quest-points";
 	
+	private boolean[] seeQuests = new boolean[DisplayState.values().length];
+	private boolean[] seeMissions = new boolean[DisplayState.values().length];
+	
+	public boolean canSeeQuestState(DisplayState state) {
+		return seeQuests[state.ordinal()];
+	}
+	public boolean canSeeMissionState(DisplayState state) {
+		return seeMissions[state.ordinal()];
+	}
+	public void toggleCanSeeQuestState(DisplayState state) {
+		seeQuests[state.ordinal()] = !seeQuests[state.ordinal()];
+		data.set("cansee.quest."+state.toString().toLowerCase(),seeQuests[state.ordinal()]);
+		shouldSave = true;
+	}
+	public void toggleCanSeeMissionState(DisplayState state) {
+		seeMissions[state.ordinal()] = !seeMissions[state.ordinal()];
+		data.set("cansee.mission."+state.toString().toLowerCase(),seeMissions[state.ordinal()]);
+		shouldSave = true;
+	}
+	
+	
 	private final OfflinePlayer p;
 	private HashMap<String,QuestData> questsData = new HashMap<String,QuestData>();
 	private HashMap<TaskType,List<Task>> activeTasks = new HashMap<TaskType,List<Task>>();
@@ -70,14 +93,14 @@ public class OfflineQuestPlayer {
 		return i;
 	}
 	public TaskData getTaskData(Task task) {
-		return getMissionData(task.getParent()).tasksData.get(task.getNameID());
+		return getMissionData(task.getParent()).tasksData.get(task.getID());
 	}
 	public MissionData getMissionData(Mission mission) {
 		return getQuestData(mission.getParent())
-				.missionsData.get(mission.getNameID());
+				.missionsData.get(mission.getID());
 	}
 	public QuestData getQuestData(Quest quest) {
-		return questsData.get(quest.getNameID());
+		return questsData.get(quest.getID());
 	}
 	
 	private int questPoints;
@@ -85,13 +108,16 @@ public class OfflineQuestPlayer {
 		if (p== null)
 			throw new NullPointerException();
 		this.p = p;
-		data = new YMLConfig(Quests.getInstance(),FILE_BASE_PATH+p.getUniqueId().toString());
+		data = new YMLConfig(Quests.get(),FILE_BASE_PATH+p.getUniqueId().toString());
 
-		Quests.getInstance().getQuestManager().getQuests().forEach((quest)->{
-			questsData.put(quest.getNameID(),new QuestData(quest));
+		Quests.get().getQuestManager().getQuests().forEach((quest)->{
+			questsData.put(quest.getID(),new QuestData(quest));
 		});
 		questPoints = data.getInt(PATH_QUEST_POINTS, 0);
-		
+		for (DisplayState state:DisplayState.values()) {
+			seeQuests[state.ordinal()] = data.getBoolean("cansee.quest."+state.toString().toLowerCase(), Defaults.PlayerDef.canSeeQuestDisplay(state));
+			seeMissions[state.ordinal()] = data.getBoolean("cansee.mission."+state.toString().toLowerCase(), Defaults.PlayerDef.canSeeMissionDisplay(state));
+		}
 		
 	}
 	public int getQuestPoints() {
@@ -166,7 +192,7 @@ public class OfflineQuestPlayer {
 		missionData.erase();
 		if (reload) {
 			if (getPlayer() instanceof Player)
-				Quests.getInstance().getPlayerManager().reloadPlayer((Player) getPlayer());
+				Quests.get().getPlayerManager().reloadPlayer((Player) getPlayer());
 			else
 				data.save();
 		}
@@ -177,7 +203,7 @@ public class OfflineQuestPlayer {
 		QuestData questData = getQuestData(quest);
 		questData.erase();
 		if (getPlayer() instanceof Player)
-			Quests.getInstance().getPlayerManager().reloadPlayer((Player) getPlayer());
+			Quests.get().getPlayerManager().reloadPlayer((Player) getPlayer());
 		else
 			data.save();
 	}
@@ -207,9 +233,9 @@ public class OfflineQuestPlayer {
 			if (quest==null)
 				throw new NullPointerException();
 			this.quest = quest;
-			baseQuestPath = PATH_QUESTS+"."+this.quest.getNameID();
+			baseQuestPath = PATH_QUESTS+"."+this.quest.getID();
 			this.quest.getMissions().forEach((mission)->{
-				missionsData.put(mission.getNameID(), new MissionData(mission));
+				missionsData.put(mission.getID(), new MissionData(mission));
 			});
 			this.lastStarted = data.getLong(baseQuestPath+"."+PATH_LAST_STARTED, 0);
 			this.lastCompleted = data.getLong(baseQuestPath+"."+PATH_LAST_COMPLETED, 0);
@@ -243,7 +269,7 @@ public class OfflineQuestPlayer {
 			return completedBefore;
 		}
 		public long getCooldownTimeLeft() {
-			return lastCompleted+quest.getCooldownTime()-new Date().getTime();
+			return lastCompleted+quest.getCooldownData().getCooldownTime()-new Date().getTime();
 		}
 		public boolean isOnCooldown() {
 			return getCooldownTimeLeft()>0;
@@ -266,9 +292,9 @@ public class OfflineQuestPlayer {
 				if (mission==null)
 					throw new NullPointerException();
 				this.mission = mission;
-				baseMissionPath = baseQuestPath+"."+PATH_MISSIONS+"."+this.mission.getNameID();
+				baseMissionPath = baseQuestPath+"."+PATH_MISSIONS+"."+this.mission.getID();
 				this.mission.getTasks().forEach((task)->{
-					tasksData.put(task.getNameID(), new TaskData(task));
+					tasksData.put(task.getID(), new TaskData(task));
 				});
 				this.lastStarted = data.getLong(baseMissionPath+"."+PATH_LAST_STARTED, 0);
 				this.lastCompleted = data.getLong(baseMissionPath+"."+PATH_LAST_COMPLETED, 0);
@@ -305,7 +331,7 @@ public class OfflineQuestPlayer {
 				return completedBefore;
 			}
 			public long getCooldownTimeLeft() {
-				return this.lastCompleted+this.mission.getCooldownTime()-new Date().getTime();
+				return this.lastCompleted+this.mission.getCooldownData().getCooldownTime()-new Date().getTime();
 			}
 			public boolean isOnCooldown() {
 				return this.getCooldownTimeLeft()>0;
@@ -346,7 +372,7 @@ public class OfflineQuestPlayer {
 				end();
 			}
 			protected void fail() {//TODO
-				if (mission.getCooldownTime()<0) {
+				if (mission.getCooldownData().isRepetable()==false) {
 					this.isFailed = true;
 					data.set(baseMissionPath+"."+PATH_IS_FAILED, isFailed);
 				}
@@ -379,7 +405,7 @@ public class OfflineQuestPlayer {
 				private int progress;
 				public TaskData(Task task) {
 					this.task = task;
-					baseTaskPath = baseMissionPath+"."+PATH_TASKS+"."+this.task.getNameID();
+					baseTaskPath = baseMissionPath+"."+PATH_TASKS+"."+this.task.getID();
 					progress = data.getInt(baseTaskPath+"."+PATH_PROGRESS,0);
 				}
 				public int getProgress() {

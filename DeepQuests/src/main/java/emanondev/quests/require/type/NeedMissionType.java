@@ -1,32 +1,21 @@
 package emanondev.quests.require.type;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.CustomMultiPageGui;
-import emanondev.quests.gui.EditorButtonFactory;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.require.AbstractRequire;
 import emanondev.quests.require.AbstractRequireType;
 import emanondev.quests.require.MissionRequire;
 import emanondev.quests.require.MissionRequireType;
-import emanondev.quests.require.Require;
-import emanondev.quests.task.Task;
-import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadableWithCooldown;
+import emanondev.quests.utils.QCWithCooldown;
 
+
+@Deprecated
 public class NeedMissionType extends AbstractRequireType implements MissionRequireType {
 	private final static String ID = "MISSIONCOMPLETED";
 	private final static String PATH_TARGET_MISSION_ID = "target-mission";
@@ -36,7 +25,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 	}
 
 	@Override
-	public MissionRequire getInstance(ConfigSection section, YmlLoadableWithCooldown mission) {
+	public MissionRequire getInstance(ConfigSection section, QCWithCooldown mission) {
 		if (!(mission instanceof Mission))
 			throw new IllegalArgumentException();
 		return new NeedMission(section, (Mission) mission);
@@ -48,7 +37,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 		public NeedMission(ConfigSection section, Mission mission) {
 			super(section, mission);
 			targetMissionID = getSection().getString(PATH_TARGET_MISSION_ID);
-			this.addToEditor(8, new NeedMissionEditorButtonFactory());
+			//this.addToEditor(8, new NeedMissionEditorButtonFactory());
 		}
 
 		public Mission getParent() {
@@ -57,10 +46,10 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 
 		@Override
 		public boolean isAllowed(QuestPlayer p) {// TODO avoid loops
-			Mission target = getParent().getParent().getMissionByNameID(targetMissionID);
+			Mission target = getParent().getParent().getMissionByID(targetMissionID);
 			if (target == null) {
-				Quests.getLogger("errors").log("quest " + getParent().getParent().getNameID() + " -> mission "
-						+ getParent().getNameID() + " -> require unexistent mission " + targetMissionID);
+				Quests.getLogger("errors").log("quest " + getParent().getParent().getID() + " -> mission "
+						+ getParent().getID() + " -> require unexistent mission " + targetMissionID);
 				return false;
 			}
 			switch (p.getDisplayState(target)) {
@@ -82,7 +71,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 			if (mission == null) {
 				targetMissionID = null;
 			} else
-				targetMissionID = mission.getNameID();
+				targetMissionID = mission.getID();
 
 			getSection().set(PATH_TARGET_MISSION_ID, targetMissionID);
 			getParent().setDirty(true);
@@ -90,7 +79,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 			return true;
 		}
 
-		private class NeedMissionEditorButtonFactory implements EditorButtonFactory {
+		/*private class NeedMissionEditorButtonFactory implements EditorButtonFactory {
 			private class NeedMissionEditorButton extends CustomButton {
 				private ItemStack item = new ItemStack(Material.PAPER);
 
@@ -121,7 +110,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 						HashSet<String> blackList = new HashSet<String>();
 
 						// can't select himself
-						blackList.add(NeedMission.this.getParent().getNameID());
+						blackList.add(NeedMission.this.getParent().getID());
 						Mission thisMission = NeedMission.this.getParent();
 
 						// can't select already blocked missions
@@ -134,19 +123,19 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 						}
 
 						for (Mission mission : thisMission.getParent().getMissions()) {
-							if (blackList.contains(mission.getNameID()))
+							if (blackList.contains(mission.getID()))
 								continue;
 							for (Require req : mission.getRequires()) {
 								if (!(req instanceof NeedMission))
 									continue;
 								if (((NeedMission) req).targetMissionID == null)
 									continue;
-								if (((NeedMission) req).targetMissionID.equals(thisMission.getNameID())) {
-									blackList.add(mission.getNameID());
+								if (((NeedMission) req).targetMissionID.equals(thisMission.getID())) {
+									blackList.add(mission.getID());
 									break;
 								}
 							}
-							if (!blackList.contains(mission.getNameID()))
+							if (!blackList.contains(mission.getID()))
 								this.addButton(new TargetMissionButton(mission));
 						}
 						this.reloadInventory();
@@ -189,7 +178,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 			public CustomButton getCustomButton(CustomGui parent) {
 				return new NeedMissionEditorButton(parent);
 			}
-		}
+		}*/
 
 		@Override
 		public String getInfo() {
@@ -198,7 +187,7 @@ public class NeedMissionType extends AbstractRequireType implements MissionRequi
 				mission = null;
 				return "Require an unselected mission";
 			} else
-				mission = getParent().getParent().getMissionByNameID(targetMissionID);
+				mission = getParent().getParent().getMissionByID(targetMissionID);
 			return "Require mission '" + mission.getDisplayName() + "'";
 		}
 	}

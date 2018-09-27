@@ -11,10 +11,11 @@ import org.bukkit.event.entity.EntityTameEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.EntityTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -28,9 +29,9 @@ public class TameMobTaskType extends TaskType {
 		if (!(event.getOwner() instanceof Player))
 			return;
 		Player p = (Player) event.getOwner();
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(p);
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -49,9 +50,14 @@ public class TameMobTaskType extends TaskType {
 		public TameMobTask(ConfigSection m, Mission parent) {
 			super(m, parent,TameMobTaskType.this);
 			entity = new EntityTaskInfo(m,this);
-			this.addToEditor(9,entity.getEntityTypeEditorButtonFactory());
-			this.addToEditor(10,entity.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(27,entity.getIgnoreCitizenNPCEditorButtonFactory());
+		}
+		
+		public TaskEditor createEditorGui(Player p,Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, entity.getEntityTypeSelectorButton(gui));
+			gui.putButton(10, entity.getSpawnReasonSelectorButton(gui));
+			gui.putButton(27, entity.getIgnoreCitizenButton(gui));
+			return gui;
 		}
 		
 	}

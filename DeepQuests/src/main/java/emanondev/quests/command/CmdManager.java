@@ -20,7 +20,7 @@ public class CmdManager extends SubCmdManager implements TabExecutor {
 			throw new IllegalArgumentException("Command Name '"+commandName+"' contains spaces");
 		this.name = commandName.toLowerCase();
 
-		Quests.getInstance().registerCommand(this);
+		Quests.get().registerCommand(this);
 	}
 	private final String name;
 	public String getName() {

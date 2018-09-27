@@ -10,14 +10,15 @@ import org.bukkit.event.EventPriority;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.ItemStackData;
+import emanondev.quests.data.NPCTaskInfo;
 import emanondev.quests.inventory.InventoryUtils;
 import emanondev.quests.inventory.InventoryUtils.ExcessManage;
 import emanondev.quests.inventory.InventoryUtils.LackManage;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.ItemTaskInfo;
-import emanondev.quests.task.NPCTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -34,8 +35,8 @@ public class NPCDeliverTaskType extends TaskType {
 	private void onNPCRightClickEvent(NPCRightClickEvent event) {
 
 		Player p = (Player) event.getClicker();
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager().getTaskType(key));
+		QuestPlayer qPlayer = Quests.get().getPlayerManager().getQuestPlayer(p);
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager().getTaskType(key));
 		if (tasks == null || tasks.isEmpty())
 			return;
 		for (int i = 0; i < tasks.size(); i++) {
@@ -54,14 +55,18 @@ public class NPCDeliverTaskType extends TaskType {
 
 	public class NPCDeliverTask extends AbstractTask {
 		private final NPCTaskInfo npc;
-		private final ItemTaskInfo itemInfo;
+		private final ItemStackData itemInfo;
 
 		public NPCDeliverTask(ConfigSection m, Mission parent) {
 			super(m, parent, NPCDeliverTaskType.this);
 			npc = new NPCTaskInfo(m, this);
-			itemInfo = new ItemTaskInfo(m, this);
-			this.addToEditor(9, npc.getIdSelectorButtonFactory());
-			this.addToEditor(10, itemInfo.getItemEditorButtonFactory());
+			itemInfo = new ItemStackData(m, this);
+		}
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(10, itemInfo.getItemSelectorButton(gui));
+			gui.putButton(9, npc.getNpcSelectorButton(gui));
+			return gui;
 		}
 
 	}

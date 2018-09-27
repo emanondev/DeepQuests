@@ -4,17 +4,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.DropsTaskInfo;
+import emanondev.quests.data.EntityTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
-import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -28,11 +30,11 @@ public class KillMobTaskType extends TaskType {
 	private void onEntityDie(EntityDeathEvent event) {
 		if (event.getEntity().getKiller()==null)
 			return;
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(event.getEntity().getKiller());
 		if (qPlayer==null)
 			return;
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -58,11 +60,15 @@ public class KillMobTaskType extends TaskType {
 			super(m, parent, KillMobTaskType.this);
 			entityInfo = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(9,entityInfo.getEntityTypeEditorButtonFactory());
-			this.addToEditor(10,entityInfo.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(29,entityInfo.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
+		}
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, entityInfo.getEntityTypeSelectorButton(gui));
+			gui.putButton(10, entityInfo.getSpawnReasonSelectorButton(gui));
+			gui.putButton(29, entityInfo.getIgnoreCitizenButton(gui));
+			gui.putButton(27, drops.getRemoveDropsButton(gui));
+			gui.putButton(28, drops.getRemoveExpButton(gui));
+			return gui;
 		}
 	}
 	@Override

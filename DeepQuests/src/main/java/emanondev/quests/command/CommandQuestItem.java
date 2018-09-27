@@ -11,7 +11,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import emanondev.quests.gui.button.ItemEditorButton;
 import emanondev.quests.utils.StringUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -25,9 +24,8 @@ public class CommandQuestItem extends CmdManager implements TabExecutor {
 		this.setPlayersOnly(true);
 		//Quests.getInstance().registerCommand(this);
 	}
-	
-	private static final HashMap<Player,ItemEditorButton> map = new HashMap<Player,ItemEditorButton>();
 
+	
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
 		return new ArrayList<String>();
@@ -44,19 +42,21 @@ public class CommandQuestItem extends CmdManager implements TabExecutor {
 			p.sendMessage(StringUtils.fixColorsAndHolders("&cNo item is requested"));
 			return true;
 		}
+		p.openInventory(map.get(p).getParent().getInventory());
 		ItemStack item = p.getInventory().getItemInMainHand();
 		if (item == null || item.getType()==Material.AIR) {
 			map.get(p).onReicevedItem(null);
 		}
 		else
 			map.get(p).onReicevedItem(item);
-		p.openInventory(map.get(p).getParent().getInventory());
 		map.remove(p);
 		return true;
 	}
-	
-	public static void requestItem(Player p,BaseComponent[] description,ItemEditorButton item) {
-		map.put(p,item);
+	private static final HashMap<Player,emanondev.quests.newgui.button.ItemEditorButton> map = new HashMap<Player,emanondev.quests.newgui.button.ItemEditorButton>();
+
+	public static void requestItem(Player p, BaseComponent[] description,
+			emanondev.quests.newgui.button.ItemEditorButton button) {
+		map.put(p,button);
 		p.closeInventory();
 		ComponentBuilder comp = new ComponentBuilder(
 				ChatColor.GOLD+"*******************************\n"+

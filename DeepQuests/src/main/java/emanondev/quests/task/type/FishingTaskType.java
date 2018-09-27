@@ -4,16 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.DropsTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -26,9 +28,9 @@ public class FishingTaskType extends TaskType {
 	private void onFishing(PlayerFishEvent event) {
 		if (event.getState()!=PlayerFishEvent.State.CAUGHT_FISH)
 			return;
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(event.getPlayer());
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -55,8 +57,13 @@ public class FishingTaskType extends TaskType {
 		public FishingTask(ConfigSection m, Mission parent) {
 			super(m, parent,FishingTaskType.this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
+		}
+
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(27, drops.getRemoveDropsButton(gui));
+			gui.putButton(28, drops.getRemoveExpButton(gui));
+			return gui;
 		}
 		
 	}

@@ -1,7 +1,7 @@
 package emanondev.quests.reward;
 
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.utils.YmlLoadable;
+import emanondev.quests.utils.QuestComponent;
 
 public abstract interface QuestRewardType extends RewardType {
 	/**
@@ -11,5 +11,5 @@ public abstract interface QuestRewardType extends RewardType {
 	 * @return an instance of the Applyable object
 	 */
 	@Override
-	public QuestReward getInstance(ConfigSection section, YmlLoadable parent);
+	public QuestReward getInstance(ConfigSection section, QuestComponent parent);
 }

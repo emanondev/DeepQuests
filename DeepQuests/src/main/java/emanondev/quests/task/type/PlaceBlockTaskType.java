@@ -4,16 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.BlocksTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.BlocksTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -27,9 +29,9 @@ public class PlaceBlockTaskType extends TaskType {
 	private void onBlockPlace(BlockPlaceEvent event) {
 		if (event.getPlayer()==null)
 			return;
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(event.getPlayer());
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -47,7 +49,12 @@ public class PlaceBlockTaskType extends TaskType {
 		public PlaceBlockTask(ConfigSection m, Mission parent) {
 			super(m, parent,PlaceBlockTaskType.this);
 			blocks = new BlocksTaskInfo(m,this);
-			this.addToEditor(9,blocks.getBlocksSelectorButtonFactory());
+		}
+		
+		public TaskEditor createEditorGui(Player p,Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, blocks.getBlockSelectorButton(gui));
+			return gui;
 		}
 
 	}

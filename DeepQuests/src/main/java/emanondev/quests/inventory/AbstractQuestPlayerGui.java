@@ -18,7 +18,7 @@ abstract class AbstractQuestPlayerGui extends CustomMultiPageGui<CustomButton> {
 	}
 
 	public QuestPlayer getQuestPlayer() {
-		return Quests.getInstance().getPlayerManager().getQuestPlayer(getPlayer());
+		return Quests.get().getPlayerManager().getQuestPlayer(getPlayer());
 	}
 
 	protected CustomButton craftCloseButton() {

@@ -20,12 +20,15 @@ import emanondev.quests.gui.CustomGui;
 import emanondev.quests.gui.CustomGuiHandler;
 import emanondev.quests.inventory.QuestPlayerGuiManager;
 import emanondev.quests.mission.MissionManager;
+import emanondev.quests.newgui.GuiConfig;
+import emanondev.quests.newgui.GuiHandler;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.PlayerManager;
 import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
 import emanondev.quests.require.type.JobsLvRequireType;
 import emanondev.quests.require.type.McmmoLvRequireType;
-import emanondev.quests.require.type.NeedAnotherQuestMissionType;
+import emanondev.quests.require.type.NeedCompletedMissionRequireType;
 import emanondev.quests.require.type.NeedMissionType;
 import emanondev.quests.require.type.NeedPermissionType;
 import emanondev.quests.reward.RewardManager;
@@ -91,7 +94,7 @@ public class Quests extends JavaPlugin {
 	 * @return the logger associated with selected file
 	 */
 	public static Logger getLogger(String fileName) {
-		return getInstance().loggerManager.getLogger(fileName);
+		return get().loggerManager.getLogger(fileName);
 	}
 	/**
 	 * logs msg on the console
@@ -133,7 +136,7 @@ public class Quests extends JavaPlugin {
 	public MissionManager getMissionManager() {
 		return missionManager;
 	}
-	public static Quests getInstance() {
+	public static Quests get() {
 		return instance;
 	}
 
@@ -162,6 +165,8 @@ public class Quests extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		GuiConfig.reload();
+		
 		questManager = new QuestManager(this,"quests");
 		new SpawnReasonTracker();
 		Language.reload();
@@ -174,6 +179,7 @@ public class Quests extends JavaPlugin {
 		new CommandQuestsAdmin();
 		new CommandQuestText();
 		new CommandQuestItem();
+		registerListener(new GuiHandler());
 		registerListener(new CustomGuiHandler());
 		guiManager = new QuestPlayerGuiManager();
 		bossBarManager = new BossBarManager();
@@ -187,7 +193,7 @@ public class Quests extends JavaPlugin {
 
 		requireManager.registerRequireType(new NeedPermissionType());
 		requireManager.registerMissionRequireType(new NeedMissionType());
-		requireManager.registerRequireType(new NeedAnotherQuestMissionType());
+		requireManager.registerRequireType(new NeedCompletedMissionRequireType());
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		rewardManager.registerRewardType(new ItemStackRewardType());
 		rewardManager.registerRewardType(new FailMissionRewardType());
@@ -215,7 +221,7 @@ public class Quests extends JavaPlugin {
 			taskManager.registerType(new NPCKillTaskType());
 			taskManager.registerType(new NPCTalkTaskType());
 			taskManager.registerType(new NPCDeliverTaskType());
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Quests.getInstance(), new Runnable() {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				@Override
 				public void run() {
 					citizenBindManager = new CitizenBindManager();
@@ -242,6 +248,8 @@ public class Quests extends JavaPlugin {
 	}
 	
 	public void reload(){
+		GuiConfig.reload();
+		
 		Language.reload();
 		Defaults.reload();
 		loggerManager.reload();
@@ -258,6 +266,12 @@ public class Quests extends JavaPlugin {
 			Inventory inv = p.getOpenInventory().getTopInventory();
 			if (inv != null && inv.getHolder()!=null)
 				if (inv.getHolder() instanceof CustomGui)
+					p.closeInventory();
+		}
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Inventory inv = p.getOpenInventory().getTopInventory();
+			if (inv != null && inv.getHolder()!=null)
+				if (inv.getHolder() instanceof Gui)
 					p.closeInventory();
 		}
 		playerManager.saveAll();

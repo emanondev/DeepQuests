@@ -11,7 +11,7 @@ import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.Quest;
-import emanondev.quests.utils.YmlLoadable;
+import emanondev.quests.utils.QuestComponent;
 
 public class RewardManager {
 	private final static HashMap<String, RewardType> rewardsType = new HashMap<String, RewardType>();
@@ -45,7 +45,7 @@ public class RewardManager {
 						Reward rew = missionRewardsType.get(key.toUpperCase())
 								.getInstance(section.loadSection(id), m);
 						if (rew != null)
-							rewards.put(rew.getNameID(), rew);
+							rewards.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}
@@ -67,7 +67,7 @@ public class RewardManager {
 						Reward rew = questRewardsType.get(key.toUpperCase())
 								.getInstance(section.loadSection(id), q);
 						if (rew != null)
-							rewards.put(rew.getNameID(), rew);
+							rewards.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}
@@ -76,7 +76,7 @@ public class RewardManager {
 		return rewards;
 	}
 
-	public LinkedHashMap<String, Reward> loadRewards(YmlLoadable gui, ConfigSection section) {
+	public LinkedHashMap<String, Reward> loadRewards(QuestComponent gui, ConfigSection section) {
 		LinkedHashMap<String, Reward> rewards = new LinkedHashMap<String, Reward>();
 		if (section != null) {
 			Set<String> keys = section.getKeys(false);
@@ -89,7 +89,7 @@ public class RewardManager {
 						Reward rew = rewardsType.get(key.toUpperCase()).getInstance(section.loadSection(id),
 								gui);
 						if (rew != null)
-							rewards.put(rew.getNameID(), rew);
+							rewards.put(rew.getID(), rew);
 					} catch (Exception e) {
 
 					}

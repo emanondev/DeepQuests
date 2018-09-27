@@ -164,9 +164,9 @@ public abstract class CustomGui implements InventoryHolder {
 	}
 	
 	public void reloadInventory() {
-		if (backButton.getItem()!=null && !backButton.getItem().equals(getInventory().getItem(size()-this.fromEndBackButtonPosition())))
+		if (backButton!=null&&backButton.getItem()!=null && !backButton.getItem().equals(getInventory().getItem(size()-this.fromEndBackButtonPosition())))
 			getInventory().setItem(size()-this.fromEndBackButtonPosition(),getBackButton().getItem());
-		if (closeButton.getItem()!=null && !closeButton.getItem().equals(getInventory().getItem(size()-this.fromEndCloseButtonPosition())))
+		if (closeButton!=null&&closeButton.getItem()!=null && !closeButton.getItem().equals(getInventory().getItem(size()-this.fromEndCloseButtonPosition())))
 			getInventory().setItem(size()-this.fromEndCloseButtonPosition(),getCloseButton().getItem());
 	}
 	

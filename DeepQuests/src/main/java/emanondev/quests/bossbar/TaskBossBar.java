@@ -19,7 +19,7 @@ public class TaskBossBar {
 	private BossBar bar;
 	private TaskData taskData;
 	public TaskBossBar (Player p,Task t,BarColor color,BarStyle style) {
-		this(Quests.getInstance().getPlayerManager().getQuestPlayer(p),t,color,style);
+		this(Quests.get().getPlayerManager().getQuestPlayer(p),t,color,style);
 	}
 	public TaskBossBar (QuestPlayer p,Task task,BarColor color,BarStyle style) {
 		if (p == null || task == null || color == null || style == null)

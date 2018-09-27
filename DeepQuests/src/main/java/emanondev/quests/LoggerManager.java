@@ -18,7 +18,7 @@ import emanondev.quests.configuration.YMLConfig;
 public class LoggerManager{
 	
 	
-	private final YMLConfig data = new YMLConfig(Quests.getInstance(), "loggerConfig");
+	private final YMLConfig data = new YMLConfig(Quests.get(), "loggerConfig");
 	
 	private String defaultDateFormat;
 
@@ -88,14 +88,14 @@ public class LoggerManager{
 		 */
 		public Logger(String fileName) {
 			
-			if (Quests.getInstance()==null||fileName==null)
+			if (Quests.get()==null||fileName==null)
 				throw new NullPointerException();
 			if (fileName.equals("")||fileName.equals(".log"))
 				throw new IllegalArgumentException();
 			if (!fileName.endsWith(".log"))
 				fileName = fileName+ ".log";
 			fileName = fileName.toLowerCase();
-		    file = new File(Quests.getInstance().getDataFolder() , fileName);
+		    file = new File(Quests.get().getDataFolder() , fileName);
 		    if(!file.exists()){
 		    	if(!file.getParentFile().exists()) { // Create parent folders if they don't exist
 	                file.getParentFile().mkdirs();
@@ -135,7 +135,7 @@ public class LoggerManager{
 		 */
 		public void log(String message){
 			String date = dateFormat.format(new Date());
-			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
+			Bukkit.getScheduler().runTaskAsynchronously(Quests.get(), new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -159,7 +159,7 @@ public class LoggerManager{
 			if (messages==null)
 				return;
 			String date = dateFormat.format(new Date());
-			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
+			Bukkit.getScheduler().runTaskAsynchronously(Quests.get(), new Runnable() {
 				@Override
 				public void run() {
 				    try {
@@ -183,7 +183,7 @@ public class LoggerManager{
 			if (messages==null)
 				return;
 			String date = dateFormat.format(new Date());
-			Bukkit.getScheduler().runTaskAsynchronously(Quests.getInstance(), new Runnable() {
+			Bukkit.getScheduler().runTaskAsynchronously(Quests.get(), new Runnable() {
 				@Override
 				public void run() {
 				    try {

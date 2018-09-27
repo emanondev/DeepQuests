@@ -1,17 +1,31 @@
 package emanondev.quests.task;
 
-import org.bukkit.entity.Player;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-import emanondev.quests.gui.CustomGui;
+import org.bukkit.World;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
-import emanondev.quests.utils.Savable;
-import emanondev.quests.utils.WithGui;
-import net.md_5.bungee.api.chat.BaseComponent;
+import emanondev.quests.quest.QuestManager;
+import emanondev.quests.utils.QuestComponent;
 
-public interface Task extends Savable,WithGui {
-	public String getDisplayName();
-	public String getNameID();
+public interface Task extends QuestComponent {
+	public List<String> getInfo();
+	
+	public void setWorldsList(Collection<String> coll);
+
+	public Set<String> getWorldsList();
+
+	public Set<World> getWorldsSet();
+
+	public boolean isWorldListBlacklist();
+
+	public boolean setWorldListBlacklist(boolean isBlacklist);
+
+	public boolean isWorldAllowed(World w);
+	
+	
 	/**
 	 * 
 	 * @return the Mission that holds this task
@@ -29,21 +43,16 @@ public interface Task extends Savable,WithGui {
 	 */
 	public int getMaxProgress();
 	
-	
 	public String getUnstartedDescription();
 	public String getProgressDescription();
 	
 	public boolean onProgress(QuestPlayer p);
 	public boolean onProgress(QuestPlayer p,int amount);
 	
-	public BaseComponent[] toComponent();
+	public boolean toggleWorldFromWorldList(World world);
 	
-	public void openEditorGui(Player p);
-
-	public void openEditorGui(Player p,CustomGui previusHolder);
-	public boolean setDisplayName(String displayName);
-	public boolean setWorldListBlacklist(boolean value);
-	public boolean removeWorldFromWorldList(String string);
-	public boolean addWorldToWorldList(String string);
-	
+	@Override
+	public default QuestManager getQuestManager() {
+		return getParent().getQuestManager();
+	}
 }

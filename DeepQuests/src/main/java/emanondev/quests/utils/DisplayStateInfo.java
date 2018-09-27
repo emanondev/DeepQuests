@@ -10,45 +10,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.QCData;
 
-public abstract class DisplayStateInfo implements Savable {
+public abstract class DisplayStateInfo extends QCData {
 
 	private final static String PATH_DESC = ".desc";
 	private final static String PATH_ITEM = ".item";
 	private final static String PATH_HIDE = ".hide";
 
-	private boolean dirty = false;// utility
-
-	public boolean isDirty() {
-		return dirty;
-	}
-
-	public void setDirty(boolean value) {
-		dirty = value;
-		if (dirty == true)
-			parent.setDirty(true);
-	}
-
 	private EnumMap<DisplayState, Info> infos = new EnumMap<DisplayState, Info>(DisplayState.class);
 
-	private final YmlLoadable parent;
-
-	protected YmlLoadable getParent() {
-		return parent;
-	}
-
-	private final ConfigSection section;
-
-	protected ConfigSection getSection() {
-		return section;
-	}
-
-	public DisplayStateInfo(ConfigSection m, YmlLoadable parent) {
-		if (m == null || parent == null)
-			throw new NullPointerException();
-		m = m.loadSection("display");
-		section = m;
-		this.parent = parent;
+	public DisplayStateInfo(ConfigSection m, QuestComponent parent) {
+		super(m.loadSection("display"),parent);
 		for (int i = 0; i < DisplayState.values().length; i++) {
 			infos.put(DisplayState.values()[i], new Info(m, DisplayState.values()[i]));
 		}
@@ -86,7 +59,7 @@ public abstract class DisplayStateInfo implements Savable {
 				tempStack = defaults;
 				if (autosave) {
 					getSection().set(path, MemoryUtils.getGuiItemString(tempStack));
-					dirty = true;
+					setDirtyLoad();
 				}
 			}
 			item = tempStack;
@@ -99,7 +72,7 @@ public abstract class DisplayStateInfo implements Savable {
 				tempList = defaults;
 				if (tempList != null && autosave) {
 					getSection().set(path, tempList);
-					dirty = true;
+					setDirtyLoad();
 				}
 			}
 			desc = tempList;
@@ -113,7 +86,7 @@ public abstract class DisplayStateInfo implements Savable {
 				tempBool = defaults;
 				if (autosave) {
 					getSection().set(path, tempBool);
-					dirty = true;
+					setDirtyLoad();
 				}
 			}
 			hide = tempBool;
@@ -170,6 +143,7 @@ public abstract class DisplayStateInfo implements Savable {
 	}
 
 	public void setDescription(DisplayState state, List<String> desc) {
+				
 		infos.get(state).desc = desc;
 		getSection().set(state.toString()+PATH_DESC, desc);
 		setDirty(true);

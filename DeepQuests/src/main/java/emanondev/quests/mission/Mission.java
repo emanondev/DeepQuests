@@ -4,35 +4,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.AddApplyableFactory;
-import emanondev.quests.gui.ApplyableExplorerFactory;
-import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomLinkedGui;
-import emanondev.quests.gui.CustomMultiPageGui;
-import emanondev.quests.gui.DeleteApplyableFactory;
-import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.SubExplorerFactory;
-import emanondev.quests.gui.button.StringListEditorButtonFactory;
-import emanondev.quests.gui.button.TextEditorButton;
+import emanondev.quests.newgui.button.SelectOneElementButton;
+import emanondev.quests.newgui.button.StringListEditorButton;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.quest.Quest;
+import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
 import emanondev.quests.reward.Reward;
@@ -41,17 +30,16 @@ import emanondev.quests.task.AbstractTask;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 import emanondev.quests.task.VoidTaskType;
+import emanondev.quests.utils.AQuestComponent;
+import emanondev.quests.utils.ItemBuilder;
 import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadable;
-import emanondev.quests.utils.YmlLoadableWithCooldown;
+import emanondev.quests.utils.QCWithCooldown;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 
-public class Mission extends YmlLoadableWithCooldown {
+public class Mission extends QCWithCooldown {
 
 	private static final String PATH_TASKS = "tasks";
 	private static final String PATH_REQUIRES = "requires";
@@ -65,12 +53,10 @@ public class Mission extends YmlLoadableWithCooldown {
 	private static final String PATH_CAN_PAUSE = "can-pause";
 	private static final TaskType voidTaskType = new VoidTaskType();
 
-	private final Quest parent;
-
-	private final LinkedHashMap<String, Task> tasks = new LinkedHashMap<String, Task>();
-	private final LinkedHashMap<String, Reward> completeRewards = new LinkedHashMap<String, Reward>();
-	private final LinkedHashMap<String, Reward> startRewards = new LinkedHashMap<String, Reward>();
-	private final LinkedHashMap<String, Require> requires = new LinkedHashMap<String, Require>();
+	private final HashMap<String, Task> tasks = new HashMap<String, Task>();
+	private final HashMap<String, Reward> completeRewards = new HashMap<String, Reward>();
+	private final HashMap<String, Reward> startRewards = new HashMap<String, Reward>();
+	private final HashMap<String, Require> requires = new HashMap<String, Require>();
 	private final MissionDisplayInfo displayInfo;
 	private ArrayList<String> onStartText;
 	private ArrayList<String> onCompleteText;
@@ -79,24 +65,21 @@ public class Mission extends YmlLoadableWithCooldown {
 	private ArrayList<String> onFailText;
 
 	public Mission(ConfigSection m, Quest parent) {
-		super(m);
-		if (parent == null)
-			throw new NullPointerException();
-		this.parent = parent;
+		super(m, parent);
 		mayBePaused = getSection().getBoolean(PATH_CAN_PAUSE, false);
-		LinkedHashMap<String, Task> tasks = loadTasks(getSection().loadSection(PATH_TASKS));
+		HashMap<String, Task> tasks = loadTasks(getSection().loadSection(PATH_TASKS));
 		if (tasks != null)
 			this.tasks.putAll(tasks);
 		for (Task task : tasks.values()) {
 			if (isDirty())
 				break;
-			if (task.isDirty())
-				this.dirty = true;
+			if (task.isLoadDirty())
+				setDirtyLoad();
 		}
-		LinkedHashMap<String, Require> req = loadRequires();
+		HashMap<String, Require> req = loadRequires();
 		if (req != null)
 			this.requires.putAll(req);
-		LinkedHashMap<String, Reward> rew = loadStartRewards();
+		HashMap<String, Reward> rew = loadStartRewards();
 		if (rew != null)
 			this.startRewards.putAll(rew);
 		rew = loadCompleteRewards();
@@ -111,81 +94,11 @@ public class Mission extends YmlLoadableWithCooldown {
 
 		this.displayInfo = loadDisplayInfo();
 		if (displayInfo.isDirty())
-			this.dirty = true;
-		this.addToEditor(0, new SubExplorerFactory<Task>(Task.class, getTasks(), "&8Tasks List"));
-		this.addToEditor(1, new AddTaskFactory());
-		this.addToEditor(2, new DeleteTaskFactory());
-		this.addToEditor(18, new RequireExplorerFactory());
-		this.addToEditor(19, new AddRequireFactory());
-		this.addToEditor(20, new DeleteRequireFactory());
-		this.addToEditor(27, new CompleteRewardExplorerFactory());
-		this.addToEditor(28, new AddCompleteRewardFactory());
-		this.addToEditor(29, new DeleteCompleteRewardFactory());
-		this.addToEditor(31, new StartMessageButtonFactory());
-		this.addToEditor(32, new CompleteMessageButtonFactory());
-		this.addToEditor(33, new PauseMessageButtonFactory());
-		this.addToEditor(34, new UnpauseMessageButtonFactory());
-		this.addToEditor(35, new FailMessageButtonFactory());
-	}
-
-	private class CompleteRewardExplorerFactory extends ApplyableExplorerFactory<Reward> {
-		public CompleteRewardExplorerFactory() {
-			super("&9Complete Rewards");
-		}
-
-		@Override
-		protected ArrayList<String> getExplorerButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6&lSelect/Show complete rewards");
-			desc.add("&6Click to Select a reward to edit");
-			if (completeRewards.size() > 0)
-				for (Reward reward : completeRewards.values())
-					desc.add("&7" + reward.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected Collection<Reward> getCollection() {
-			return getCompleteRewards();
-		}
-	}
-
-	private class RequireExplorerFactory extends ApplyableExplorerFactory<Require> {
-		public RequireExplorerFactory() {
-			super("&9Requires");
-		}
-
-		@Override
-		protected ArrayList<String> getExplorerButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6&lSelect/Show requires");
-			desc.add("&6Click to Select a require to edit");
-			if (requires.size() > 0)
-				for (Require require : requires.values())
-					desc.add("&7" + require.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected Collection<Require> getCollection() {
-			return getRequires();
-		}
+			setDirtyLoad();
 	}
 
 	public Quest getParent() {
-		return parent;
-	}
-
-	@Override
-	public void setDirty(boolean value) {
-		super.setDirty(value);
-		if (this.isDirty() == true)
-			parent.setDirty(true);
-		else if (this.isDirty() == false) {
-			for (Task task : tasks.values())
-				task.setDirty(false);
-			this.displayInfo.setDirty(false);
-		}
+		return (Quest) super.getParent();
 	}
 
 	public ArrayList<String> getStartMessage() {
@@ -212,7 +125,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return Collections.unmodifiableCollection(tasks.values());
 	}
 
-	public Task getTaskByNameID(String key) {
+	public Task getTaskByID(String key) {
 		return tasks.get(key);
 	}
 
@@ -232,83 +145,69 @@ public class Mission extends YmlLoadableWithCooldown {
 	public MissionDisplayInfo getDisplayInfo() {
 		return displayInfo;
 	}
+	public List<String> getInfo(){
+		List<String> info = new ArrayList<String>();
+		info.add("&9&lMission: &6"+ this.getDisplayName());
+		info.add("&8ID: "+ this.getID());
+		info.add("");
+		info.add("&9Priority: &e"+getPriority());
+		info.add("&9Quest: &e"+getParent().getDisplayName());
 
-	public BaseComponent[] toComponent() {
-		ComponentBuilder comp = new ComponentBuilder("" + ChatColor.BLUE + ChatColor.BOLD + ChatColor.STRIKETHROUGH
-				+ "-----" + ChatColor.GRAY + ChatColor.BOLD + ChatColor.STRIKETHROUGH + "[--" + ChatColor.BLUE
-				+ "   Mission Info   " + ChatColor.GRAY + ChatColor.BOLD + ChatColor.STRIKETHROUGH + "--]"
-				+ ChatColor.BLUE + ChatColor.BOLD + ChatColor.STRIKETHROUGH + "-----");
-
-		comp.append("\n" + ChatColor.DARK_AQUA + "ID: " + ChatColor.AQUA + this.getNameID() + "");
-		comp.append("\n" + ChatColor.DARK_AQUA + "DisplayName: " + ChatColor.AQUA + this.getDisplayName());
-
-		if (!this.isRepetable())
-			comp.append("\n" + ChatColor.DARK_AQUA + "Repeatable: " + ChatColor.RED + "Disabled");
+		if (!this.getCooldownData().isRepetable())
+			info.add("&9Repeatable: &cFalse");
 		else
-			comp.append("\n" + ChatColor.DARK_AQUA + "Repeatable: " + ChatColor.GREEN + "Enabled");
-
-		comp.append("\n" + ChatColor.DARK_AQUA + "Cooldown: " + ChatColor.YELLOW + (this.getCooldownTime() / 60 / 1000)
-				+ " minutes\n");
+			info.add("&9Repeatable: &aTrue");
+		info.add("&9Cooldown: &e" + StringUtils.getStringCooldown(this.getCooldownData().getCooldownTime()));
 		if (tasks.size() > 0) {
-			comp.append("\n" + ChatColor.DARK_AQUA + "Tasks:");
+			info.add("&9Missions:");
 			for (Task task : tasks.values()) {
-				comp.append("\n" + ChatColor.AQUA + " - " + task.getNameID())
-						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-								"/qa quest " + this.parent.getNameID() + " mission " + this.getNameID() + " task "
-										+ task.getNameID() + " info"))
-						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new ComponentBuilder(ChatColor.YELLOW + "Click for details").create()));
+				info.add("&9 - &e"+task.getDisplayName());
+				info.add("   &7Type: "+task.getTaskType().getKey());
 			}
 		}
 		if (this.getWorldsList().size() > 0) {
-			if (this.isWorldListBlacklist())
-				comp.append("\n" + ChatColor.RED + "Blacklisted " + ChatColor.DARK_AQUA + "Worlds:");
-			else
-				comp.append("\n" + ChatColor.GREEN + "Whitelisted " + ChatColor.DARK_AQUA + "Worlds:");
-			for (String world : this.getWorldsList())
-				comp.append("\n" + ChatColor.AQUA + " - " + world)
-						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-								"/qa quest " + parent.getNameID() + " mission " + this.getNameID() + " worlds remove "
-										+ world))
-						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new ComponentBuilder(ChatColor.YELLOW + "Click to remove").create()));
-		}
-
-		if (requires.size() > 0) {
-			comp.append("\n" + ChatColor.DARK_AQUA + "Requires:");
-			for (Require require : requires.values()) {
-				comp.append("\n" + ChatColor.AQUA + " - " + require.getDescription());
+			if (this.isWorldListBlacklist()) {
+				info.add("&9Blacklisted Worlds:");
+				for (String world : this.getWorldsList())
+					info.add("&9 - &c" + world);
+			}
+			else {
+				info.add("&9WhiteListed Worlds:");
+				for (String world : this.getWorldsList())
+					info.add("&9 - &a" + world);
 			}
 		}
-
-		comp.append("\n" + ChatColor.BLUE + ChatColor.BOLD + ChatColor.STRIKETHROUGH + "-----" + ChatColor.GRAY
-				+ ChatColor.BOLD + ChatColor.STRIKETHROUGH + "[--" + ChatColor.BLUE + "   Mission Info   "
-				+ ChatColor.GRAY + ChatColor.BOLD + ChatColor.STRIKETHROUGH + "--]" + ChatColor.BLUE + ChatColor.BOLD
-				+ ChatColor.STRIKETHROUGH + "-----");
-		return comp.create();
+		if (requires.size() > 0) {
+			info.add("&9Requires:");
+			for (Require require : requires.values()) {
+				info.add("&9 - &e" + require.getDescription());
+				info.add("   &7" + require.getType().getKey());
+			}
+		}
+		return info;
 	}
 
 	public void reloadDisplay() {
 		displayInfo.reloadDisplay();
 	}
 
-	private LinkedHashMap<String, Task> loadTasks(ConfigSection m) {
+	private HashMap<String, Task> loadTasks(ConfigSection m) {
 		if (m == null)
-			return new LinkedHashMap<String, Task>();
+			return new HashMap<String, Task>();
 		Set<String> s = m.getKeys(false);
-		LinkedHashMap<String, Task> map = new LinkedHashMap<String, Task>();
+		HashMap<String, Task> map = new HashMap<String, Task>();
 		s.forEach((key) -> {
 			try {
-				Task task = Quests.getInstance().getTaskManager().readTask(
-						m.getString(key + "." + AbstractTask.PATH_TASK_TYPE), m.loadSection(key), this);
-				map.put(task.getNameID(), task);
+				Task task = Quests.get().getTaskManager().readTask(m.getString(key + "." + AbstractTask.PATH_TASK_TYPE),
+						m.loadSection(key), this);
+				map.put(task.getID(), task);
 			} catch (Exception e) {
 				e.printStackTrace();
-				Quests.getInstance().getLoggerManager().getLogger("errors")
+				Quests.get().getLoggerManager().getLogger("errors")
 						.log("Error while loading Mission on file quests.yml '" + m.getCurrentPath() + "." + key
 								+ "' could not be read as valid task", ExceptionUtils.getStackTrace(e));
 				Task task = voidTaskType.getTaskInstance(m, this);
-				map.put(task.getNameID(), task);
+				map.put(task.getID(), task);
 			}
 		});
 		return map;
@@ -332,8 +231,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadPauseText( ) {
-		List<String> list = getSection().getStringList( PATH_PAUSE_TEXT);
+	private ArrayList<String> loadPauseText() {
+		List<String> list = getSection().getStringList(PATH_PAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultPauseText();
 		if (list == null)
@@ -341,8 +240,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadUnpauseText( ) {
-		List<String> list = getSection().getStringList( PATH_UNPAUSE_TEXT);
+	private ArrayList<String> loadUnpauseText() {
+		List<String> list = getSection().getStringList(PATH_UNPAUSE_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultUnpauseText();
 		if (list == null)
@@ -350,8 +249,8 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private ArrayList<String> loadFailText( ) {
-		List<String> list = getSection().getStringList( PATH_FAIL_TEXT);
+	private ArrayList<String> loadFailText() {
+		List<String> list = getSection().getStringList(PATH_FAIL_TEXT);
 		if (list == null)
 			list = Defaults.MissionDef.getDefaultFailText();
 		if (list == null)
@@ -359,23 +258,20 @@ public class Mission extends YmlLoadableWithCooldown {
 		return StringUtils.fixColorsAndHolders(list);
 	}
 
-	private MissionDisplayInfo loadDisplayInfo( ) {
+	private MissionDisplayInfo loadDisplayInfo() {
 		return new MissionDisplayInfo(getSection(), this);
 	}
 
-	private LinkedHashMap<String, Require> loadRequires() {
-		return Quests.getInstance().getRequireManager().loadRequires(this, 
-				getSection().loadSection(PATH_REQUIRES));
+	private HashMap<String, Require> loadRequires() {
+		return Quests.get().getRequireManager().loadRequires(this, getSection().loadSection(PATH_REQUIRES));
 	}
 
-	private LinkedHashMap<String, Reward> loadStartRewards() {
-		return Quests.getInstance().getRewardManager().loadRewards(this, 
-				getSection().loadSection(PATH_START_REWARDS));
+	private HashMap<String, Reward> loadStartRewards() {
+		return Quests.get().getRewardManager().loadRewards(this, getSection().loadSection(PATH_START_REWARDS));
 	}
 
-	private LinkedHashMap<String, Reward> loadCompleteRewards() {
-		return Quests.getInstance().getRewardManager().loadRewards(this, 
-				getSection().loadSection(PATH_COMPLETE_REWARDS));
+	private HashMap<String, Reward> loadCompleteRewards() {
+		return Quests.get().getRewardManager().loadRewards(this, getSection().loadSection(PATH_COMPLETE_REWARDS));
 	}
 
 	@Override
@@ -394,18 +290,8 @@ public class Mission extends YmlLoadableWithCooldown {
 	}
 
 	@Override
-	protected boolean shouldAutogenDisplayName() {
-		return Defaults.MissionDef.shouldAutogenDisplayName();
-	}
-
-	@Override
 	protected boolean getDefaultCooldownUse() {
 		return Defaults.MissionDef.getDefaultCooldownUse();
-	}
-
-	@Override
-	protected boolean shouldCooldownAutogen() {
-		return Defaults.MissionDef.shouldCooldownAutogen();
 	}
 
 	@Override
@@ -413,424 +299,54 @@ public class Mission extends YmlLoadableWithCooldown {
 		return Defaults.MissionDef.getDefaultCooldownMinutes();
 	}
 
-	public boolean addTask(String id, String displayName, TaskType taskType) {
-		if (taskType == null || id == null || id.isEmpty() || id.contains(" ") || id.contains(".") || id.contains(":"))
-			return false;
+	/**
+	 * 
+	 * @param displayName
+	 * @param taskType
+	 * @return the id of the task or null if the task has failed to be added
+	 */
+	public String addTask(String displayName, TaskType taskType) {
+		return this.addTask(null, displayName, taskType);
+	}
+
+	public String addTask(String id, String displayName, TaskType taskType) {
+		if (taskType == null)
+			return null;
+		
+		if (id==null)
+			id = getQuestManager().getNewTaskID(Mission.this);
+		if (id.isEmpty() || id.contains(" ") || id.contains(".") || id.contains(":"))
+			return null;
 		if (displayName == null)
 			displayName = id.replace("_", " ");
 		id = id.toLowerCase();
 		if (tasks.containsKey(id))
-			return false;
-		getSection().set(PATH_TASKS + "." + id + "." + YmlLoadable.PATH_DISPLAY_NAME, displayName);
+			return null;
+		getSection().set(PATH_TASKS + "." + id + "." + AQuestComponent.PATH_DISPLAY_NAME, displayName);
 		getSection().set(PATH_TASKS + "." + id + "." + AbstractTask.PATH_TASK_TYPE, taskType.getKey());
 		getSection().set(PATH_TASKS + "." + id + "." + AbstractTask.PATH_TASK_MAX_PROGRESS, 1);
-		Task t = Quests.getInstance().getTaskManager().readTask(taskType.getKey(), getSection(), this);
-		tasks.put(t.getNameID(), t);
-		parent.getParent().save();
-		parent.getParent().reload();
-		Quests.getInstance().getPlayerManager().reload();
-		return true;
+		Task t = Quests.get().getTaskManager().readTask(taskType.getKey(), getSection(), this);
+		tasks.put(t.getID(), t);
+		getQuestManager().save();
+		getQuestManager().reload();
+		Quests.get().getPlayerManager().reload();
+		return id;
 	}
 
 	public boolean deleteTask(Task task) {
-		if (task == null || !tasks.containsKey(task.getNameID()))
+		if (task == null || !tasks.containsKey(task.getID()))
 			return false;
-		getSection().set(PATH_TASKS + "." + task.getNameID(), null);
-		tasks.remove(task.getNameID());
-		parent.getParent().save();
-		parent.getParent().reload();
-		Quests.getInstance().getPlayerManager().reload();
+		getSection().set(PATH_TASKS + "." + task.getID(), null);
+		tasks.remove(task.getID());
+		getParent().getParent().save();
+		getParent().getParent().reload();
+		Quests.get().getPlayerManager().reload();
 		return true;
-	}
-
-	private class AddTaskFactory implements EditorButtonFactory {
-
-		private class AddTaskButton extends CustomButton {
-
-			public AddTaskButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lAdd Task");
-				desc.add("&6Click to add a new Task");
-				StringUtils.setDescription(item, desc);
-			}
-
-			private ItemStack item = new ItemStack(Material.GLOWSTONE);
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new CreateTaskGui(clicker, this.getParent()).getInventory());
-			}
-
-			private class CreateTaskGui extends CustomLinkedGui<CustomButton> {
-				private TaskType taskType = null;
-				private String displayName = null;
-
-				public CreateTaskGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6);
-					this.setFromEndCloseButtonPosition(8);
-					this.addButton(20, new SelectTaskTypeButton());
-					this.addButton(24, new CreateTaskButton());
-					reloadInventory();
-				}
-
-				private class CreateTaskButton extends TextEditorButton {
-					private ItemStack item = new ItemStack(Material.WOOL);
-
-					public CreateTaskButton() {
-						super(CreateTaskGui.this);
-						update();
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						if (taskType == null) {
-							item.setDurability((short) 14);
-							desc.add("&cYou need to Select a Task Type");
-						} else {
-							desc.add("&6&lClick Select a Display Name");
-							desc.add("&6Task Type: '&f" + taskType.getKey() + "&6'");
-							item.setDurability((short) 0);
-							item.setType(Material.NAME_TAG);
-						}
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						if (taskType == null)
-							return;
-						if (displayName == null) {
-							this.requestText(clicker, null, setDisplayNameDescription);
-							return;
-						}
-						clicker.performCommand("questadmin quest " + Mission.this.getParent().getNameID() + " mission "
-								+ Mission.this.getNameID() + " task " + key + " editor");
-					}
-
-					private String key = null;
-
-					@Override
-					public void onReicevedText(String text) {
-						if (text == null || text.isEmpty()) {
-							CreateTaskGui.this.getPlayer()
-									.sendMessage(StringUtils.fixColorsAndHolders("&cInvalid Name"));
-							return;
-						}
-						displayName = text;
-						key = Mission.this.getParent().getParent().getNewTaskID(Mission.this);
-						if (!addTask(key, displayName, taskType)) {
-							return;
-						}
-						Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
-							@Override
-							public void run() {
-								CreateTaskGui.this.getPlayer()
-										.performCommand("questadmin quest " + Mission.this.getParent().getNameID()
-												+ " mission " + Mission.this.getNameID() + " task " + key + " editor");
-							}
-						}, 2);
-					}
-				}
-
-				private class SelectTaskTypeButton extends CustomButton {
-
-					public SelectTaskTypeButton() {
-						super(CreateTaskGui.this);
-						update();
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						if (taskType == null) {
-							desc.add("&6Click to select Task Type");
-						} else {
-							desc.add("&6Click to change Task Type");
-							desc.add("&7(CurrentTask Type: '" + taskType.getKey() + "')");
-						}
-						StringUtils.setDescription(item, desc);
-					}
-
-					private ItemStack item = new ItemStack(Material.FIREBALL);
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new TaskTypeSelectorGui(clicker, this.getParent()).getInventory());
-					}
-
-					private class TaskTypeSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-						public TaskTypeSelectorGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6, 1);
-							for (TaskType type : Quests.getInstance().getTaskManager().getTaskTypes()) {
-								this.addButton(new TaskTypeButton(type));
-							}
-							reloadInventory();
-						}
-
-						private class TaskTypeButton extends CustomButton {
-							private TaskType type;
-
-							public TaskTypeButton(TaskType type) {
-								super(TaskTypeSelectorGui.this);
-								this.type = type;
-								item = new ItemStack(type.getGuiItemMaterial());
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&6" + type.getKey());
-								desc.add("");
-								desc.addAll(type.getDescription());
-								StringUtils.setDescription(item, desc);
-							}
-
-							private ItemStack item;
-
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								CreateTaskGui.this.taskType = type;
-								CreateTaskGui.this.update();
-								clicker.openInventory(CreateTaskGui.this.getInventory());
-							}
-						}
-					}
-				}
-			}
-		}
-
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new AddTaskButton(parent);
-		}
-	}
-
-	private class DeleteTaskFactory implements EditorButtonFactory {
-		private class DeleteTaskButton extends CustomButton {
-			private ItemStack item = new ItemStack(Material.NETHERRACK);
-
-			public DeleteTaskButton(CustomGui parent) {
-				super(parent);
-				ArrayList<String> desc = new ArrayList<String>();
-				desc.add("&6&lDelete Task");
-				desc.add("&6Click to select a Task");
-				StringUtils.setDescription(item, desc);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				clicker.openInventory(new DeleteQuestSelectorGui(clicker, getParent()).getInventory());
-			}
-
-			private class DeleteQuestSelectorGui extends CustomMultiPageGui<CustomButton> {
-
-				public DeleteQuestSelectorGui(Player p, CustomGui previusHolder) {
-					super(p, previusHolder, 6, 1);
-					this.setTitle(null, StringUtils.fixColorsAndHolders("&cSelect Task to delete"));
-					for (Task task : getTasks()) {
-						this.addButton(new SelectQuestButton(task));
-					}
-					this.setFromEndCloseButtonPosition(8);
-					this.reloadInventory();
-				}
-
-				private class SelectQuestButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.BOOK);
-					private Task task;
-
-					public SelectQuestButton(Task task) {
-						super(DeleteQuestSelectorGui.this);
-						this.task = task;
-						this.update();
-					}
-
-					@Override
-					public ItemStack getItem() {
-						return item;
-					}
-
-					public void update() {
-						ArrayList<String> desc = new ArrayList<String>();
-						desc.add("&6Task: '&e" + task.getDisplayName() + "&6'");
-						desc.add("&7(" + task.getTaskType().getKey() + ")");
-						StringUtils.setDescription(item, desc);
-					}
-
-					@Override
-					public void onClick(Player clicker, ClickType click) {
-						clicker.openInventory(new DeleteConfirmationGui(clicker, getParent()).getInventory());
-					}
-
-					private class DeleteConfirmationGui extends CustomLinkedGui<CustomButton> {
-
-						public DeleteConfirmationGui(Player p, CustomGui previusHolder) {
-							super(p, previusHolder, 6);
-							this.addButton(22, new ConfirmationButton());
-							this.setFromEndCloseButtonPosition(8);
-							this.setTitle(null, StringUtils.fixColorsAndHolders("&cConfirm Delete?"));
-							reloadInventory();
-						}
-
-						private class ConfirmationButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
-
-							public ConfirmationButton() {
-								super(DeleteConfirmationGui.this);
-								this.item.setDurability((short) 14);
-								ArrayList<String> desc = new ArrayList<String>();
-								desc.add("&cClick to Confirm quest Delete");
-								desc.add("&cQuest delete can't be undone");
-								desc.add("");
-								desc.add("&6Task: '&e" + task.getDisplayName() + "&6'");
-								desc.add("&7(" + task.getTaskType().getKey() + ")");
-								StringUtils.setDescription(item, desc);
-
-							}
-
-							@Override
-							public ItemStack getItem() {
-								return item;
-							}
-
-							@Override
-							public void onClick(Player clicker, ClickType click) {
-								deleteTask(task);
-								clicker.performCommand("questadmin quest " + Mission.this.getParent().getNameID()
-										+ " mission " + Mission.this.getNameID() + " editor");
-							}
-						}
-					}
-				}
-			}
-		}
-
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			if (tasks.size() > 0)
-				return new DeleteTaskButton(parent);
-			return null;
-		}
 	}
 
 	private final static BaseComponent[] setDisplayNameDescription = new ComponentBuilder(
 			ChatColor.GOLD + "Click suggest the command\n\n" + ChatColor.GOLD + "Set the display name for the task\n"
 					+ ChatColor.YELLOW + "/questtext <display name>").create();
-
-	private class AddRequireFactory extends AddApplyableFactory<RequireType> implements EditorButtonFactory {
-		public AddRequireFactory() {
-			super("&8Select a Require Type");
-		}
-
-		@Override
-		protected Collection<RequireType> getCollection() {
-			return Quests.getInstance().getRequireManager().getMissionRequiresTypes();
-		}
-
-		@Override
-		protected ArrayList<String> getAddButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&a&lAdd &6&lNew Require");
-			desc.add("&6Click to create new Require");
-			return desc;
-		}
-
-		@Override
-		protected ArrayList<String> getTypeButtonDescription(RequireType type) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6Click to add a require of type:");
-			desc.add("&e" + type.getKey());
-			desc.addAll(type.getDescription());
-			return desc;
-		}
-
-		@Override
-		protected ItemStack getTypeButtonItemStack(RequireType type) {
-			ItemStack item = new ItemStack(type.getGuiItemMaterial());
-			ItemMeta meta = item.getItemMeta();
-			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			item.setItemMeta(meta);
-			return item;
-		}
-
-		@Override
-		protected void onAdd(RequireType type) {
-			addRequire(type);
-		}
-	}
-
-	private class DeleteRequireFactory extends DeleteApplyableFactory<Require> implements EditorButtonFactory {
-		public DeleteRequireFactory() {
-			super("&cSelect Require to delete", "&cConfirm Delete?");
-		}
-
-		@Override
-		protected Collection<Require> getCollection() {
-			return requires.values();
-		}
-
-		@Override
-		protected ArrayList<String> getDeleteButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&c&lDelete &6&lRequire");
-			desc.add("&6Click to select and delete a Require");
-			return desc;
-		}
-
-		@Override
-		protected ArrayList<String> getSelectButtonDescription(Require req) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6Require:");
-			desc.add("&6" + req.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected ItemStack getSelectedButtonItemStack(Require req) {
-			ItemStack item = new ItemStack(req.getType().getGuiItemMaterial());
-			ItemMeta meta = item.getItemMeta();
-			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			item.setItemMeta(meta);
-			return item;
-		}
-
-		@Override
-		protected ArrayList<String> getConfirmationButtonDescription(Require req) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&cClick to Confirm quest Delete");
-			desc.add("&cRequire delete can't be undone");
-			desc.add("");
-			desc.add("&6Require:");
-			desc.add("&6" + req.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected void onDelete(Require req) {
-			deleteRequire(req);
-		}
-	}
 
 	private final static String PATH_REQUIRE_TYPE = "type";
 	private final static String PATH_REWARD_TYPE = "type";
@@ -846,16 +362,16 @@ public class Mission extends YmlLoadableWithCooldown {
 		} while (requires.containsKey(key));
 		getSection().set(PATH_REQUIRES + "." + key + "." + PATH_REQUIRE_TYPE, type.getKey());
 		Require req = type.getInstance(getSection().loadSection(PATH_REQUIRES + "." + key), this);
-		requires.put(req.getNameID(), req);
+		requires.put(req.getID(), req);
 		setDirty(true);
 		return req;
 	}
 
 	public boolean deleteRequire(Require req) {
-		if (req == null || !requires.containsKey(req.getNameID()) || !requires.get(req.getNameID()).equals(req))
+		if (req == null || !requires.containsKey(req.getID()) || !requires.get(req.getID()).equals(req))
 			return false;
-		getSection().set(PATH_REQUIRES + "." + req.getNameID(), null);
-		requires.remove(req.getNameID());
+		getSection().set(PATH_REQUIRES + "." + req.getID(), null);
+		requires.remove(req.getID());
 		setDirty(true);
 		return true;
 	}
@@ -871,114 +387,18 @@ public class Mission extends YmlLoadableWithCooldown {
 		} while (completeRewards.containsKey(key));
 		getSection().set(PATH_COMPLETE_REWARDS + "." + key + "." + PATH_REWARD_TYPE, type.getKey());
 		Reward rew = type.getInstance(getSection().loadSection(PATH_COMPLETE_REWARDS + "." + key), this);
-		completeRewards.put(rew.getNameID(), rew);
+		completeRewards.put(rew.getID(), rew);
 		setDirty(true);
 		return rew;
 	}
 
 	public boolean deleteCompleteReward(Reward rew) {
-		if (rew == null || !completeRewards.containsKey(rew.getNameID())
-				|| !completeRewards.get(rew.getNameID()).equals(rew))
+		if (rew == null || !completeRewards.containsKey(rew.getID()) || !completeRewards.get(rew.getID()).equals(rew))
 			return false;
-		getSection().set(PATH_COMPLETE_REWARDS + "." + rew.getNameID(), null);
-		completeRewards.put(rew.getNameID(), rew);
+		getSection().set(PATH_COMPLETE_REWARDS + "." + rew.getID(), null);
+		completeRewards.put(rew.getID(), rew);
 		setDirty(true);
 		return true;
-	}
-
-	private class AddCompleteRewardFactory extends AddApplyableFactory<RewardType> implements EditorButtonFactory {
-
-		public AddCompleteRewardFactory() {
-			super("&8Select a CompleteReward Type");
-		}
-
-		@Override
-		protected Collection<RewardType> getCollection() {
-			return Quests.getInstance().getRewardManager().getMissionRewardsTypes();
-		}
-
-		@Override
-		protected ArrayList<String> getAddButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&a&lAdd &6&lNew CompleteReward");
-			desc.add("&6Click to create new CompleteReward");
-			return desc;
-		}
-
-		@Override
-		protected ArrayList<String> getTypeButtonDescription(RewardType type) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6Click to add a reward of type:");
-			desc.add("&e" + type.getKey());
-			desc.addAll(type.getDescription());
-			return desc;
-		}
-
-		@Override
-		protected ItemStack getTypeButtonItemStack(RewardType type) {
-			ItemStack item = new ItemStack(type.getGuiItemMaterial());
-			ItemMeta meta = item.getItemMeta();
-			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			item.setItemMeta(meta);
-			return item;
-		}
-
-		@Override
-		protected void onAdd(RewardType type) {
-			addCompleteReward(type);
-		}
-	}
-
-	private class DeleteCompleteRewardFactory extends DeleteApplyableFactory<Reward> implements EditorButtonFactory {
-		public DeleteCompleteRewardFactory() {
-			super("&cSelect Reward to delete", "&cConfirm Delete?");
-		}
-
-		@Override
-		protected Collection<Reward> getCollection() {
-			return completeRewards.values();
-		}
-
-		@Override
-		protected ArrayList<String> getDeleteButtonDescription() {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&c&lDelete &6&lReward");
-			desc.add("&6Click to select and delete a Reward");
-			return desc;
-		}
-
-		@Override
-		protected ArrayList<String> getSelectButtonDescription(Reward rew) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&6Reward:");
-			desc.add("&6" + rew.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected ItemStack getSelectedButtonItemStack(Reward rew) {
-			ItemStack item = new ItemStack(rew.getType().getGuiItemMaterial());
-			ItemMeta meta = item.getItemMeta();
-			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			item.setItemMeta(meta);
-			return item;
-		}
-
-		@Override
-		protected ArrayList<String> getConfirmationButtonDescription(Reward rew) {
-			ArrayList<String> desc = new ArrayList<String>();
-			desc.add("&cClick to Confirm Delete");
-			desc.add("&cReward delete can't be undone");
-			desc.add("");
-			desc.add("&6Reward:");
-			desc.add("&6" + rew.getInfo());
-			return desc;
-		}
-
-		@Override
-		protected void onDelete(Reward rew) {
-			deleteCompleteReward(rew);
-		}
 	}
 
 	private boolean mayBePaused;
@@ -987,7 +407,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return mayBePaused;
 	}
 
-	public boolean setStartMessage(ArrayList<String> value) {
+	public boolean setStartMessage(List<String> value) {
 		if (value == null)
 			return false;
 		this.onStartText = StringUtils.fixColorsAndHolders(value);
@@ -996,7 +416,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	public boolean setCompleteMessage(ArrayList<String> value) {
+	public boolean setCompleteMessage(List<String> value) {
 		if (value == null)
 			return false;
 		this.onCompleteText = StringUtils.fixColorsAndHolders(value);
@@ -1005,7 +425,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	public boolean setUnpauseMessage(ArrayList<String> value) {
+	public boolean setUnpauseMessage(List<String> value) {
 		if (value == null)
 			return false;
 		this.onUnpauseText = StringUtils.fixColorsAndHolders(value);
@@ -1014,7 +434,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	public boolean setPauseMessage(ArrayList<String> value) {
+	public boolean setPauseMessage(List<String> value) {
 		if (value == null)
 			return false;
 		this.onPauseText = StringUtils.fixColorsAndHolders(value);
@@ -1023,7 +443,7 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	public boolean setFailMessage(ArrayList<String> value) {
+	public boolean setFailMessage(List<String> value) {
 		if (value == null)
 			return false;
 		this.onFailText = StringUtils.fixColorsAndHolders(value);
@@ -1032,95 +452,440 @@ public class Mission extends YmlLoadableWithCooldown {
 		return true;
 	}
 
-	private class StartMessageButtonFactory extends StringListEditorButtonFactory {
-		public StartMessageButtonFactory() {
-			super(startButtonDesc, "&8Start Message editor", Material.STAINED_CLAY, 5);
-		}
-
-		@Override
-		protected List<String> getStringList() {
-			return onStartText;
-		}
-
-		@Override
-		protected void onChange(ArrayList<String> newList) {
-			setStartMessage(newList);
-		}
-	}
-
-	private class CompleteMessageButtonFactory extends StringListEditorButtonFactory {
-		public CompleteMessageButtonFactory() {
-			super(completeButtonDesc, "&8Complete Message editor", Material.STAINED_CLAY, 13);
-		}
-
-		@Override
-		protected List<String> getStringList() {
-			return onCompleteText;
-		}
-
-		@Override
-		protected void onChange(ArrayList<String> newList) {
-			setCompleteMessage(newList);
-		}
-	}
-
-	private class PauseMessageButtonFactory extends StringListEditorButtonFactory {
-		public PauseMessageButtonFactory() {
-			super(pauseButtonDesc, "&8Pause Message editor", Material.STAINED_CLAY, 4);
-		}
-
-		@Override
-		protected List<String> getStringList() {
-			return onPauseText;
-		}
-
-		@Override
-		protected void onChange(ArrayList<String> newList) {
-			setPauseMessage(newList);
-		}
-	}
-
-	private class UnpauseMessageButtonFactory extends StringListEditorButtonFactory {
-		public UnpauseMessageButtonFactory() {
-			super(unpauseButtonDesc, "&8Unpause Message editor", Material.STAINED_CLAY, 1);
-		}
-
-		@Override
-		protected List<String> getStringList() {
-			return onUnpauseText;
-		}
-
-		@Override
-		protected void onChange(ArrayList<String> newList) {
-			setUnpauseMessage(newList);
-		}
-	}
-
-	private class FailMessageButtonFactory extends StringListEditorButtonFactory {
-		public FailMessageButtonFactory() {
-			super(failButtonDesc, "&8Fail Message editor", Material.STAINED_CLAY, 14);
-		}
-
-		@Override
-		protected List<String> getStringList() {
-			return onFailText;
-		}
-
-		@Override
-		protected void onChange(ArrayList<String> newList) {
-			setFailMessage(newList);
-		}
-	}
-
 	private final static List<String> startButtonDesc = Arrays.asList("&6&lStart Message Editor",
 			"&6The message sended when the mission is started", "&6Click to edit", "&6Current value:");
 	private final static List<String> completeButtonDesc = Arrays.asList("&6&lComplete Message Editor",
 			"&6The message sended when the mission is completed", "&6Click to edit", "&6Current value:");
-	private final static List<String> pauseButtonDesc = Arrays.asList("&6&lPause Message Editor",
+	/*private final static List<String> pauseButtonDesc = Arrays.asList("&6&lPause Message Editor",
 			"&6The message sended when the mission is paused", "&6Click to edit", "&6Current value:");
 	private final static List<String> unpauseButtonDesc = Arrays.asList("&6&lUnpause Message Editor",
 			"&6The message sended when the mission is unpaused", "&6Click to edit", "&6Current value:");
+	*/
 	private final static List<String> failButtonDesc = Arrays.asList("&6&lFail Message Editor",
 			"&6The message sended when the mission is failed", "&6Click to edit", "&6Current value:");
 
+	@Override
+	public Gui createEditorGui(Player p, Gui previusHolder) {
+		return new MissionEditor(p, previusHolder);
+	}
+
+	protected class MissionEditor extends QCWithCooldownEditor {
+
+		public MissionEditor(Player p, Gui previusHolder) {
+			super("&8Mission: &9" + Mission.this.getDisplayName(), p, previusHolder);
+			this.putButton(33, new StringListEditorButton("&8Start Message editor",
+					new ItemBuilder(Material.STAINED_CLAY).setDamage(5).setGuiProperty().build(),MissionEditor.this) {
+				public List<String> getCurrentList() {
+					return onStartText;
+				}
+
+				public boolean onStringListChange(List<String> list) {
+					return setStartMessage(list);
+				}
+
+				@Override
+				public List<String> getButtonDescription() {
+					return startButtonDesc;
+				}
+				
+			});
+			this.putButton(34, new StringListEditorButton("&8Complete Message editor",
+					new ItemBuilder(Material.STAINED_CLAY).setDamage(13).setGuiProperty().build(),MissionEditor.this) {
+				public List<String> getCurrentList() {
+					return onCompleteText;
+				}
+
+				public boolean onStringListChange(List<String> list) {
+					return setCompleteMessage(list);
+				}
+
+				@Override
+				public List<String> getButtonDescription() {
+					return completeButtonDesc;
+				}
+				
+			});
+			/*this.putButton(34, new StringListEditorButton("&8Pause Message editor",
+					new ItemBuilder(Material.STAINED_CLAY, 1, (short) 4),MissionEditor.this) {
+				public List<String> getCurrentList() {
+					return onPauseText;
+				}
+
+				public boolean onStringListChange(List<String> list) {
+					return setPauseMessage(list);
+				}
+
+				@Override
+				public List<String> getButtonDescription() {
+					return pauseButtonDesc;
+				}
+			});
+			this.putButton(35, new StringListEditorButton("&8Unpause Message editor",
+					new ItemBuilder(Material.STAINED_CLAY, 1, (short) 1),MissionEditor.this) {
+				public List<String> getCurrentList() {
+					return onUnpauseText;
+				}
+
+				public boolean onStringListChange(List<String> list) {
+					return setUnpauseMessage(list);
+				}
+
+				@Override
+				public List<String> getButtonDescription() {
+					return unpauseButtonDesc;
+				}
+			});*/
+			this.putButton(35, new StringListEditorButton("&8Fail Message editor",
+					new ItemBuilder(Material.STAINED_CLAY).setDamage(14).setGuiProperty().build(),MissionEditor.this) {
+				public List<String> getCurrentList() {
+					return onFailText;
+				}
+
+				public boolean onStringListChange(List<String> list) {
+					return setFailMessage(list);
+				}
+				@Override
+				public List<String> getButtonDescription() {
+					return failButtonDesc;
+				}
+			});
+			this.putButton(0, new TaskExplorerButton());
+			this.putButton(1, new AddTaskButton());
+			this.putButton(2, new DeleteTaskButton());
+			this.putButton(18, new RequireExplorerButton());
+			this.putButton(19, new AddRequireButton());
+			this.putButton(20, new DeleteRequireButton());
+			this.putButton(27, new CompleteRewardExplorerButton());
+			this.putButton(28, new AddCompleteRewardButton());
+			this.putButton(29, new DeleteCompleteRewardButton());
+
+		}
+
+		private class DeleteTaskButton extends SelectOneElementButton<Task> {
+
+			public DeleteTaskButton() {
+				super("&cSelect Task to delete", new ItemBuilder(Material.NETHERRACK).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getTasks(), false, true, true);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lDelete Task", "&6Click to select a Task");
+			}
+
+			@Override
+			public List<String> getElementDescription(Task task) {
+				return Arrays.asList("&6Task: '&e" + task.getDisplayName() + "&6'",
+						"&7(" + task.getTaskType().getKey() + ")");
+			}
+
+			@Override
+			public ItemStack getElementItem(Task element) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Task task) {
+				if (Mission.this.deleteTask(task)) {
+					MissionEditor.this.putButton(0, new TaskExplorerButton());
+					MissionEditor.this.putButton(2, new DeleteTaskButton());
+					getTargetPlayer().openInventory(MissionEditor.this.getInventory());
+				}
+			}
+		}
+
+		private class TaskExplorerButton extends SelectOneElementButton<Task> {
+
+			public TaskExplorerButton() {
+				super("&cSelect Task to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getTasks(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lOpen Task", "&6Click to select a Task");
+			}
+
+			@Override
+			public List<String> getElementDescription(Task task) {
+				return task.getInfo();
+			}
+
+			@Override
+			public ItemStack getElementItem(Task element) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Task task) {
+				this.getTargetPlayer()
+						.openInventory(task.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+		}
+
+		private class AddTaskButton extends SelectOneElementButton<TaskType> {
+			public AddTaskButton() {
+				super("&cSelect TaskType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
+						Quests.get().getTaskManager().getTaskTypes(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lAdd Task", "&6Click to create a new Task");
+			}
+
+			@Override
+			public List<String> getElementDescription(TaskType taskType) {
+				List<String> list = new ArrayList<String>();
+				list.add("&6" + taskType.getKey());
+				list.addAll(taskType.getDescription());
+				return list;
+			}
+
+			@Override
+			public ItemStack getElementItem(TaskType taskType) {
+				return new ItemBuilder(taskType.getGuiItemMaterial()).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(TaskType taskType) {
+				new TaskNameEditor(taskType).onClick(getTargetPlayer(), ClickType.LEFT);
+			}
+
+			private class TaskNameEditor extends emanondev.quests.newgui.button.TextEditorButton {
+				private final TaskType taskType;
+
+				public TaskNameEditor(TaskType taskType) {
+					super(null, MissionEditor.this);
+					this.taskType = taskType;
+				}
+
+				@Override
+				public List<String> getButtonDescription() {
+					return null;
+				}
+
+				@Override
+				public void onReicevedText(String text) {
+					if (text == null) {
+						getTargetPlayer().openInventory(MissionEditor.this.getInventory());
+						return;
+					}
+					String taskId = Mission.this.addTask(text, taskType);
+					if (taskId != null) {
+						String questId = Mission.this.getParent().getID();
+						String missionId = Mission.this.getID();
+						Quest quest = Mission.this.getParent().getParent().getQuestByID(questId);
+						Mission mission = quest.getMissionByID(missionId);
+						Task task = mission.getTaskByID(taskId);
+
+						getTargetPlayer().openInventory(
+							task.createEditorGui(getTargetPlayer(),
+							mission.createEditorGui(getTargetPlayer(),
+							quest.createEditorGui(getTargetPlayer(), 
+								MissionEditor.this.getPreviusGui().getPreviusGui())))
+								.getInventory());
+					}
+
+				}
+
+				@Override
+				public void onClick(Player clicker, ClickType click) {
+					this.requestText(clicker, null, setDisplayNameDescription);
+				}
+			}
+		}
+
+		private class DeleteRequireButton extends SelectOneElementButton<Require> {
+
+			public DeleteRequireButton() {
+				super("&cSelect Require to delete", new ItemBuilder(Material.NETHERRACK).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getRequires(), false, true, true);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lDelete Require", "&6Click to select a Require");
+			}
+
+			@Override
+			public List<String> getElementDescription(Require require) {
+				return Arrays.asList("&6Require:", "&6" + require.getInfo());
+			}
+
+			@Override
+			public ItemStack getElementItem(Require require) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Require require) {
+				if (Mission.this.deleteRequire(require)) {
+					MissionEditor.this.putButton(18, new RequireExplorerButton());
+					MissionEditor.this.putButton(20, new DeleteRequireButton());
+				}
+			}
+		}
+
+		private class RequireExplorerButton extends SelectOneElementButton<Require> {
+
+			public RequireExplorerButton() {
+				super("&cSelect Require to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getRequires(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lOpen require", "&6Click to select a require");
+			}
+
+			@Override
+			public List<String> getElementDescription(Require require) {
+				return Arrays.asList("&6Require:", "&6" + require.getInfo());
+			}
+
+			@Override
+			public ItemStack getElementItem(Require require) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Require require) {
+				this.getTargetPlayer()
+						.openInventory(require.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+		}
+
+		private class AddRequireButton extends SelectOneElementButton<RequireType> {
+			public AddRequireButton() {
+				super("&cSelect RequireType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
+						Quests.get().getRequireManager().getMissionRequiresTypes(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lAdd Require", "&6Click to create a new Require");
+			}
+
+			@Override
+			public List<String> getElementDescription(RequireType requireType) {
+				List<String> list = new ArrayList<String>();
+				list.add("&6" + requireType.getKey());
+				list.addAll(requireType.getDescription());
+				return list;
+			}
+
+			@Override
+			public ItemStack getElementItem(RequireType requireType) {
+				return new ItemBuilder(requireType.getGuiItemMaterial()).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(RequireType requireType) {
+				Require require = Mission.this.addRequire(requireType);
+				if (require != null)
+					this.getTargetPlayer().openInventory(
+							require.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+		}
+
+		private class DeleteCompleteRewardButton extends SelectOneElementButton<Reward> {
+
+			public DeleteCompleteRewardButton() {
+				super("&cSelect Complete Reward to delete", new ItemBuilder(Material.NETHERRACK).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getCompleteRewards(), false, true, true);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lDelete Reward", "&6Click to select a Reward");
+			}
+
+			@Override
+			public List<String> getElementDescription(Reward reward) {
+				return Arrays.asList("&6Require:", "&6" + reward.getInfo());
+			}
+
+			@Override
+			public ItemStack getElementItem(Reward reward) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Reward reward) {
+				if (Mission.this.deleteCompleteReward(reward)) {
+					MissionEditor.this.putButton(27, new CompleteRewardExplorerButton());
+					MissionEditor.this.putButton(29, new DeleteCompleteRewardButton());
+				}
+			}
+		}
+
+		private class CompleteRewardExplorerButton extends SelectOneElementButton<Reward> {
+
+			public CompleteRewardExplorerButton() {
+				super("&cSelect Complete Reward to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
+						Mission.this.getCompleteRewards(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lOpen complete reward", "&6Click to select a complete reward");
+			}
+
+			@Override
+			public List<String> getElementDescription(Reward reward) {
+				return Arrays.asList("&6Reward:", "&6" + reward.getInfo());
+			}
+
+			@Override
+			public ItemStack getElementItem(Reward reward) {
+				return new ItemBuilder(Material.PAPER).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Reward reward) {
+				this.getTargetPlayer()
+						.openInventory(reward.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+		}
+
+		private class AddCompleteRewardButton extends SelectOneElementButton<RewardType> {
+			public AddCompleteRewardButton() {
+				super("&cSelect RewardType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
+						Quests.get().getRewardManager().getMissionRewardsTypes(), false, true, false);
+			}
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lAdd reward when mission is completed",
+						"&6Click to create a new reward when mission is completed");
+			}
+
+			@Override
+			public List<String> getElementDescription(RewardType rewardType) {
+				List<String> list = new ArrayList<String>();
+				list.add("&6" + rewardType.getKey());
+				list.addAll(rewardType.getDescription());
+				return list;
+			}
+
+			@Override
+			public ItemStack getElementItem(RewardType rewardType) {
+				return new ItemBuilder(rewardType.getGuiItemMaterial()).setGuiProperty().build();
+			}
+
+			@Override
+			public void onElementSelectRequest(RewardType rewardType) {
+				Reward reward = Mission.this.addCompleteReward(rewardType);
+				if (reward != null)
+					this.getTargetPlayer().openInventory(
+							reward.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+		}
+	}
+
+	@Override
+	public QuestManager getQuestManager() {
+		return getParent().getQuestManager();
+	}
 }

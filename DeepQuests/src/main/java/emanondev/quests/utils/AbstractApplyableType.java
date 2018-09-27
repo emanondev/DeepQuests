@@ -1,6 +1,6 @@
 package emanondev.quests.utils;
 
-public abstract class AbstractApplyableType<T extends YmlLoadable> implements ApplyableType<T>{
+public abstract class AbstractApplyableType<T extends QuestComponent> implements ApplyableType<T>{
 	private final String key;
 	public AbstractApplyableType(String key) {
 		if (key == null)

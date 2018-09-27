@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-public interface ConfigSection extends ConfigurationSection {
+import emanondev.quests.utils.Savable;
+
+public interface ConfigSection extends ConfigurationSection,Savable {
 
 	/**
 	 * 

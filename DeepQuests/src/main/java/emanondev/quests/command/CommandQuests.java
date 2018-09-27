@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import emanondev.quests.Quests;
+import emanondev.quests.newgui.gui.QuestsMenu;
 
 public class CommandQuests extends CmdManager {
 	public CommandQuests() {
@@ -17,7 +18,7 @@ public class CommandQuests extends CmdManager {
 	@Override
 	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
 		Player p = (Player) sender;
-		p.openInventory(Quests.getInstance().getGuiManager().getQuestsInventory(p, Quests.getInstance().getQuestManager(),false));
+		p.openInventory(new QuestsMenu(p,null,Quests.get().getQuestManager()).getInventory());
 	}
 	
 

@@ -100,6 +100,7 @@ public class YMLConfig extends YamlConfiguration implements ConfigSection {
 	public void save() {
 		try {
 			this.save(file);
+			setDirty(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -243,4 +244,22 @@ public class YMLConfig extends YamlConfiguration implements ConfigSection {
 			return value;
 		throw new IllegalArgumentException();
 	}
+	
+	@Override
+	public YMLConfig getRoot() {
+		return this;
+	}
+
+	private boolean dirty = true;
+	
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	@Override
+	public void setDirty(boolean value) {
+		dirty = value;
+	}
+	
 }

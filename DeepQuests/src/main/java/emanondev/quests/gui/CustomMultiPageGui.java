@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.utils.StringUtils;
 
+@Deprecated
 public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomGui {
 
 	protected final ArrayList<T> items = new ArrayList<T>();
@@ -81,11 +82,11 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 			else
 				getInventory().setItem(i, null);
 
-		if (nextPageButton.getItem()!=null && !nextPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndNextPageButtonPosition())))
+		if (nextPageButton!=null && nextPageButton.getItem()!=null && !nextPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndNextPageButtonPosition())))
 			getInventory().setItem(size() - this.fromEndNextPageButtonPosition(), nextPageButton.getItem());
-		if (prevPageButton.getItem()!=null && !prevPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndPrevPageButtonPosition())))
+		if (prevPageButton!=null &&prevPageButton.getItem()!=null && !prevPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndPrevPageButtonPosition())))
 			getInventory().setItem(size() - this.fromEndPrevPageButtonPosition(), prevPageButton.getItem());
-		if (currPageButton.getItem()!=null && !currPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndCurrentPageButtonPosition())))
+		if (currPageButton!=null&&currPageButton.getItem()!=null && !currPageButton.getItem().equals(getInventory().getItem(size() - this.fromEndCurrentPageButtonPosition())))
 			getInventory().setItem(size() - this.fromEndCurrentPageButtonPosition(), currPageButton.getItem());
 		super.reloadInventory();
 	}
@@ -93,7 +94,8 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 	public void update() {
 		for (T customItem : items)
 			customItem.update();
-		currPageButton.update();
+		if (currPageButton!=null)
+			currPageButton.update();
 		reloadInventory();
 	}
 
@@ -119,7 +121,7 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 
 	protected boolean setFromEndPrevPageButtonPosition(int i) {
 		if (i > 0 && i <= size() && i != prevPageButtonPos) {
-			if (getInventory().getItem(size() - prevPageButtonPos).equals(prevPageButton.getItem()))
+			if (getInventory().getItem(size() - prevPageButtonPos)!=null && getInventory().getItem(size() - prevPageButtonPos).equals(prevPageButton.getItem()))
 				getInventory().setItem(size() - prevPageButtonPos, null);
 			prevPageButtonPos = i;
 
@@ -131,7 +133,7 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 
 	protected boolean setFromEndNextPageButtonPosition(int i) {
 		if (i > 0 && i <= size() && i != nextPageButtonPos) {
-			if (getInventory().getItem(size() - nextPageButtonPos).equals(nextPageButton.getItem()))
+			if (getInventory().getItem(size() - nextPageButtonPos)!=null && getInventory().getItem(size() - nextPageButtonPos).equals(nextPageButton.getItem()))
 				getInventory().setItem(size() - nextPageButtonPos, null);
 			nextPageButtonPos = i;
 
@@ -143,7 +145,7 @@ public abstract class CustomMultiPageGui<T extends CustomButton> extends CustomG
 
 	protected boolean setFromEndCurrentPageButtonPosition(int i) {
 		if (i > 0 && i <= size() && i != currPageButtonPos) {
-			if (getInventory().getItem(size() - currPageButtonPos).equals(currPageButton.getItem()))
+			if (getInventory().getItem(size() - currPageButtonPos)!=null && getInventory().getItem(size() - currPageButtonPos).equals(currPageButton.getItem()))
 				getInventory().setItem(size() - currPageButtonPos, null);
 			currPageButtonPos = i;
 

@@ -85,8 +85,8 @@ public class Completer {
 		String tempPrefix = prefix.toLowerCase();
 		quests.forEach((quest)->{
 			if (l.size()<=MAX_COMPLETES && 
-					quest.getNameID().toLowerCase().startsWith(tempPrefix)){
-				l.add(quest.getNameID());
+					quest.getID().toLowerCase().startsWith(tempPrefix)){
+				l.add(quest.getID());
 			}
 		});
 		return;
@@ -101,8 +101,8 @@ public class Completer {
 		String tempPrefix = prefix.toLowerCase();
 		missions.forEach((mission)->{
 			if (l.size()<=MAX_COMPLETES && 
-					mission.getNameID().toLowerCase().startsWith(tempPrefix)){
-				l.add(mission.getNameID());
+					mission.getID().toLowerCase().startsWith(tempPrefix)){
+				l.add(mission.getID());
 			}
 		});
 		return;
@@ -117,8 +117,8 @@ public class Completer {
 		String tempPrefix = prefix.toLowerCase();
 		tasks.forEach((task)->{
 			if (l.size()<=MAX_COMPLETES && 
-					task.getNameID().toLowerCase().startsWith(tempPrefix)){
-				l.add(task.getNameID());
+					task.getID().toLowerCase().startsWith(tempPrefix)){
+				l.add(task.getID());
 			}
 		});
 		return;

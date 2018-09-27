@@ -48,7 +48,7 @@ public class QuestDisplayInfo extends DisplayStateInfo {
 	}
 
 	public String[] getHolders(Player p, DisplayState state) {
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		QuestPlayer qPlayer = Quests.get().getPlayerManager().getQuestPlayer(p);
 		String[] s;
 		if (state != DisplayState.COOLDOWN) {
 			s = new String[4 * 2];
@@ -67,22 +67,9 @@ public class QuestDisplayInfo extends DisplayStateInfo {
 	}
 
 	@Override
-	protected Quest getParent() {
+	public Quest getParent() {
 		return (Quest) super.getParent();
 	}
-	/*
-	 * @Override protected boolean shouldLoreAutogen(DisplayState state) { return
-	 * Defaults.QuestDef.shouldLoreAutogen(state); }
-	 * 
-	 * @Override protected boolean shouldTitleAutogen(DisplayState state) { return
-	 * Defaults.QuestDef.shouldTitleAutogen(state); }
-	 * 
-	 * @Override protected String getDefaultTitle(DisplayState state) { return
-	 * Defaults.QuestDef.getDefaultTitle(state); }
-	 * 
-	 * @Override protected ArrayList<String> getDefaultLore(DisplayState state) {
-	 * return Defaults.QuestDef.getDefaultLore(state); }
-	 */
 
 	@Override
 	protected boolean shouldDescriptionAutogen(DisplayState state) {
@@ -93,5 +80,4 @@ public class QuestDisplayInfo extends DisplayStateInfo {
 	protected List<String> getDefaultDescription(DisplayState state) {
 		return Defaults.QuestDef.getDefaultDescription(state);
 	}
-
 }

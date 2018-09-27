@@ -20,7 +20,7 @@ public class QuestResetGui extends AbstractQuestPlayerGui {
 
 	private QuestManager questManager;
 	public QuestResetGui(Player target, CustomGui previusHolder,QuestManager questManager) {
-		super(Quests.getInstance().getPlayerManager().getQuestPlayer(target), previusHolder);
+		super(Quests.get().getPlayerManager().getQuestPlayer(target), previusHolder);
 		this.questManager = questManager;
 		this.setTitle(null, ChatColor.RED+"Click to reset Quest for "+target.getPlayer().getName());
 		update();

@@ -4,6 +4,6 @@ import emanondev.quests.configuration.YMLConfig;
 
 public class ConfigManager {
 	@SuppressWarnings("unused")
-	private static YMLConfig config = Quests.getInstance().getConfig();
+	private static YMLConfig config = Quests.get().getConfig();
 
 }

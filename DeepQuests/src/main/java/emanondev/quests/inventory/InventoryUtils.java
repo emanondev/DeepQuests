@@ -71,7 +71,7 @@ public class InventoryUtils {
 
 	private static void updateInventory(HumanEntity h) {
 		if (h instanceof Player)
-			Bukkit.getScheduler().runTaskLater(Quests.getInstance(), new Runnable() {
+			Bukkit.getScheduler().runTaskLater(Quests.get(), new Runnable() {
 				@Override
 				public void run() {
 					((Player) h).updateInventory();

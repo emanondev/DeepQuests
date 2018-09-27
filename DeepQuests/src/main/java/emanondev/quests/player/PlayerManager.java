@@ -28,7 +28,7 @@ public class PlayerManager implements Listener {
 
 	public PlayerManager() {
 		if (!registered) {
-			Quests.getInstance().registerListener(this);
+			Quests.get().registerListener(this);
 			registered = true;
 		}
 		players.clear();

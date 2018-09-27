@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,11 +12,12 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.DropsTaskInfo;
+import emanondev.quests.data.EntityTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
-import emanondev.quests.task.EntityTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 
@@ -26,9 +28,9 @@ public class ShearSheepTaskType extends TaskType {
 	
 	@EventHandler (ignoreCancelled=true,priority = EventPriority.HIGHEST)
 	private void onShear(PlayerShearEntityEvent event) {
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(event.getPlayer());
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -53,9 +55,13 @@ public class ShearSheepTaskType extends TaskType {
 			super(m, parent,ShearSheepTaskType.this);
 			entity = new EntityTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(9,entity.getSpawnReasonEditorButtonFactory());
-			this.addToEditor(28,entity.getIgnoreCitizenNPCEditorButtonFactory());
-			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
+		}
+		public TaskEditor createEditorGui(Player p,Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(9, entity.getEntityTypeSelectorButton(gui));
+			gui.putButton(28, entity.getSpawnReasonSelectorButton(gui));
+			gui.putButton(27, drops.getRemoveDropsButton(gui));
+			return gui;
 		}
 		
 	}

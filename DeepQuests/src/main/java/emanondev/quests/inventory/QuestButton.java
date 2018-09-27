@@ -38,7 +38,7 @@ public class QuestButton extends CustomButton {
 		if (event.isCancelled())
 			return;
 		if (click==ClickType.LEFT)
-			clicker.openInventory(Quests.getInstance().getGuiManager().getMissionsInventory(getParent().getPlayer(),quest,true,getParent().isForcedShow()));
+			clicker.openInventory(Quests.get().getGuiManager().getMissionsInventory(getParent().getPlayer(),quest,true,getParent().isForcedShow()));
 	}
 	public PlayerQuestsGui getParent() {
 		return (PlayerQuestsGui) super.getParent();

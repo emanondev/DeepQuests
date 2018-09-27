@@ -36,7 +36,7 @@ public class BossBarManager {
 		TaskBossBar taskBar = map.get(questPlayer).get(task);
 		taskBar.updateProgress();
 		long lastUpdate = taskBar.getLastUpdate();
-		Bukkit.getScheduler().runTaskLater(Quests.getInstance(),new Runnable() {
+		Bukkit.getScheduler().runTaskLater(Quests.get(),new Runnable() {
 
 			@Override
 			public void run() {

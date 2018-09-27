@@ -10,11 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.DropsTaskInfo;
+import emanondev.quests.data.NPCTaskInfo;
 import emanondev.quests.mission.Mission;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.AbstractTask;
-import emanondev.quests.task.DropsTaskInfo;
-import emanondev.quests.task.NPCTaskInfo;
 import emanondev.quests.task.Task;
 import emanondev.quests.task.TaskType;
 import net.citizensnpcs.api.event.NPCDeathEvent;
@@ -35,9 +36,9 @@ public class NPCKillTaskType extends TaskType {
 			return;
 		Player p = ((LivingEntity) event.getNPC().getEntity()).getKiller();
 		
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager()
+		QuestPlayer qPlayer = Quests.get().getPlayerManager()
 				.getQuestPlayer(p);
-		List<Task> tasks = qPlayer.getActiveTasks(Quests.getInstance().getTaskManager()
+		List<Task> tasks = qPlayer.getActiveTasks(Quests.get().getTaskManager()
 				.getTaskType(key));
 		if (tasks ==null||tasks.isEmpty())
 			return;
@@ -62,9 +63,14 @@ public class NPCKillTaskType extends TaskType {
 			super(m, parent,NPCKillTaskType.this);
 			npc = new NPCTaskInfo(m,this);
 			drops = new DropsTaskInfo(m,this);
-			this.addToEditor(27,drops.getRemoveDropsEditorButtonFactory());
-			this.addToEditor(28,drops.getRemoveExpEditorButtonFactory());
-			this.addToEditor(9,npc.getIdSelectorButtonFactory());
+		}
+
+		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
+			TaskEditor gui = super.createEditorGui(p, previusHolder);
+			gui.putButton(27, drops.getRemoveDropsButton(gui));
+			gui.putButton(28, drops.getRemoveExpButton(gui));
+			gui.putButton(9, npc.getNpcSelectorButton(gui));
+			return gui;
 		}
 		
 	}

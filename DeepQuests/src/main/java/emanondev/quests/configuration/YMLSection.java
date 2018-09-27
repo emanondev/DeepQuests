@@ -414,4 +414,14 @@ public class YMLSection implements ConfigSection {
 		throw new IllegalArgumentException();
 	}
 
+	@Override
+	public boolean isDirty() {
+		return getRoot().isDirty();
+	}
+
+	@Override
+	public void setDirty(boolean value) {
+		getRoot().setDirty(value);
+	}
+
 }

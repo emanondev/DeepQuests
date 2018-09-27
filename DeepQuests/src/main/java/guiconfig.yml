@@ -1,0 +1,145 @@
+generic:
+    next_page:
+        - "&6Vai a pagina %target_page%"
+    previus_page:
+        - "&6Vai a pagina %target_page%"
+    next_page_item: ARROW
+    previus_page_item: ARROW
+    back_inventory:
+        - "&6Torna indietro"
+    close_inventory:
+        - "&9Chiudi"
+    back_inventory_item: WOOD_DOOR
+    close_inventory_item: IRON_DOOR
+    empty_button_item: STAINED_GLASS_PANE:15
+    command_for_players_only: "&cThis command is only for players"
+    lack_of_permission: "&cYou lack of permission %permission%"
+    amount_selector_show:
+        - "&6Amount: &e%amount%"
+    amount_selector_add: 
+        - "&aAdd %amount%"
+    amount_selector_remove: 
+        - "&cRemove %amount%"
+    whitelist_description:
+        - "&fWhitelist"
+    blacklist_description:
+        - "&fBlacklist"
+    null_element:
+        - "&fNone"
+    no_value_set: "&7 - No value is set"
+    invalid_number: "&cNot a number"
+    not_a_number: "&cInvalid number"
+    invalid_input: "&cInvalid input"
+    no_text_changes: "&cText didn't change"
+    confirm_click_gui_title: "&cConfirm?"
+    confirm_button_description:
+        - "&aClicca per confermare"
+    unconfirm_button_description:
+        - "&cCliccca per annullare"
+    confirm_button_item: WOOL:5
+    unconfirm_button_item: WOOL:14
+    
+playerquests:
+    questshowflag:
+        active:
+            locked:
+                item: INK_SACK:1
+                desc:
+                  - "&6Nascondi quest bloccate"
+            unstarted:
+                item: INK_SACK:4
+                desc:
+                  - "&6Nascondi quest da cominciare"
+            onprogress:
+                item: INK_SACK:6
+                desc:
+                  - "&6Nascondi quest in progresso"
+            cooldown:
+                item: INK_SACK:14
+                desc:
+                  - "&6Nascondi quest in ricarica"
+            completed:
+                item: INK_SACK:10
+                desc:
+                  - "&6Nascondi quest completate"
+            failed:
+                item: INK_SACK:0
+                desc:
+                  - "&6Nascondi quest fallite"
+        inactive:
+            locked:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest bloccate"
+            unstarted:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest da cominciare"
+            onprogress:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest in progresso"
+            cooldown:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest in ricarica"
+            completed:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest completate"
+            failed:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra quest fallite"
+    missionshowflag:
+        active:
+            locked:
+                item: INK_SACK:1
+                desc:
+                  - "&6Nascondi missioni bloccate"
+            unstarted:
+                item: INK_SACK:4
+                desc:
+                  - "&6Nascondi missioni da cominciare"
+            onprogress:
+                item: INK_SACK:6
+                desc:
+                  - "&6Nascondi missioni in progresso"
+            cooldown:
+                item: INK_SACK:14
+                desc:
+                  - "&6Nascondi missioni in ricarica"
+            completed:
+                item: INK_SACK:10
+                desc:
+                  - "&6Nascondi missioni completate"
+            failed:
+                item: INK_SACK:0
+                desc:
+                  - "&6Nascondi missioni fallite"
+        inactive:
+            locked:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni bloccate"
+            unstarted:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni da cominciare"
+            onprogress:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni in progresso"
+            cooldown:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni in ricarica"
+            completed:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni completate"
+            failed:
+                item: INK_SACK:8
+                desc:
+                  - "&6Mostra missioni fallite"
+    

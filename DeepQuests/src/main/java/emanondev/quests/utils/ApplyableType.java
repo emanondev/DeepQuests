@@ -6,7 +6,7 @@ import org.bukkit.Material;
 
 import emanondev.quests.configuration.ConfigSection;
 
-public interface ApplyableType<T extends YmlLoadable> {
+public interface ApplyableType<T extends QuestComponent> {
 	
 	/**
 	 * 

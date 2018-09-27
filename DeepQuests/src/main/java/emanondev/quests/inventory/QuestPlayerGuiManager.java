@@ -9,11 +9,11 @@ import emanondev.quests.quest.QuestManager;
 
 public class QuestPlayerGuiManager {
 	public Inventory getMissionsInventory(Player target,Quest quest,boolean backButton,boolean seeAllForced) {
-		QuestPlayer questPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(target);
+		QuestPlayer questPlayer = Quests.get().getPlayerManager().getQuestPlayer(target);
 		return new PlayerMissionsGui(questPlayer,quest,backButton,seeAllForced).getInventory();
 	}
 	public Inventory getQuestsInventory(Player target,QuestManager questManager,boolean seeAllForced) {
-		QuestPlayer questPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(target);
+		QuestPlayer questPlayer = Quests.get().getPlayerManager().getQuestPlayer(target);
 		return new PlayerQuestsGui(questPlayer,questManager,seeAllForced).getInventory();
 	}
 	public Inventory getMissionsResetGui(Player target, QuestManager questManager) {

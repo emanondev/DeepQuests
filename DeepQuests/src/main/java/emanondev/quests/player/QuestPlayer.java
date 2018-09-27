@@ -1,12 +1,12 @@
 package emanondev.quests.player;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.events.PlayerCompleteMissionEvent;
 import emanondev.quests.events.PlayerCompleteTaskEvent;
@@ -43,28 +43,75 @@ public class QuestPlayer extends OfflineQuestPlayer{
 			return DisplayState.FAILED;
 		if (data.isStarted())
 			return DisplayState.ONPROGRESS;
-		if (data.isOnCooldown()&&mission.isRepetable())
+		if (data.isOnCooldown()&&mission.getCooldownData().isRepetable())
 			return DisplayState.COOLDOWN;
-		if (data.hasCompleted()&&!mission.isRepetable())
+		if (data.hasCompleted()&&!mission.getCooldownData().isRepetable())
 			return DisplayState.COMPLETED;
 		if (hasRequires(mission))
 			return DisplayState.UNSTARTED;
 		return DisplayState.LOCKED;
 	}
+	/**
+	 * 
+	 * @param quest
+	 * @return in ordine di checks
+	 * <br>se la Quest è dichiarata Fallita ritorna FAILED
+	 * <br>se QuestPlayer non soddisfa le require la quest è LOCKED
+	 * <br>se la Quest non ha missioni la quest è UNSTARTED
+	 * <br>se la Quest ha missioni in avanzamento (ONPROGRESS) è ONPROGRESS
+	 * <br>se la Quest non ha missioni non iniziate (UNSTARTED) e ha missioni in attesa (COOLDOWN) è in COOLDOWN
+	 * <br>se la Quest non ha missioni non iniziate (UNSTARTED) e ha missioni bloccate (LOCKED) è ONPROGRESS
+	 * <br>se la Quest non ha missioni non iniziate (UNSTARTED) e ha missioni completate (COMPLETED) è COMPLETED
+	 * <br>se la Quest non ha missioni non iniziate (UNSTARTED) è FAILED
+	 * <br>se la Quest ha missioni in attesa o completate o fallite è UNSTARTED
+	 * <br>altrimenti è ONPROGRESS 
+	 */
 	public DisplayState getDisplayState(Quest quest) {
 		QuestData data = getQuestData(quest);
 		if (data.isFailed())
 			return DisplayState.FAILED;
-		if (data.isStarted())
-			return DisplayState.ONPROGRESS;
-		if (data.isOnCooldown()&&quest.isRepetable())
-			return DisplayState.COOLDOWN;
-		if (data.hasCompleted()&&!quest.isRepetable())
-			return DisplayState.COMPLETED;
-		if (hasRequires(quest))
+		if (!hasRequires(quest))
+			return DisplayState.LOCKED;
+		if (quest.getMissions().size()==0)
 			return DisplayState.UNSTARTED;
-		return DisplayState.LOCKED;
+		
+		EnumMap<DisplayState,Integer> values = getMissionsStates(quest);
+		
+		if (values.get(DisplayState.ONPROGRESS)>0)
+			return DisplayState.ONPROGRESS;
+		
+		//ONPROGRESS == 0
+		if (values.get(DisplayState.UNSTARTED)==0) {
+			//onprogress ==0 && unstarted == 0
+			if (values.get(DisplayState.COOLDOWN)>0)
+				return DisplayState.COOLDOWN;
+			//onprogress ==0 && unstarted == 0 && cooldown==0
+			//completed,failed,locked
+			if (values.get(DisplayState.LOCKED)>0)
+				return DisplayState.ONPROGRESS;
+			if (values.get(DisplayState.COMPLETED)>0)
+				return DisplayState.COMPLETED;
+			return DisplayState.FAILED;
+		}
+		//ONPROGRESS == 0 && UNSTARTED >0
+		if (values.get(DisplayState.COOLDOWN)==0
+				&&values.get(DisplayState.COMPLETED)==0
+				&&values.get(DisplayState.FAILED)==0)
+			return DisplayState.UNSTARTED;
+		
+		return DisplayState.ONPROGRESS;
 	}
+	public EnumMap<DisplayState,Integer> getMissionsStates(Quest quest){
+		EnumMap<DisplayState,Integer> values = new EnumMap<DisplayState,Integer>(DisplayState.class);
+		for (DisplayState state: DisplayState.values())
+			values.put(state,0);
+		for(Mission mission:quest.getMissions()) {
+			DisplayState missionState = getDisplayState(mission);
+			values.put(missionState,values.get(missionState)+1);
+		}
+		return values;
+	}
+	
 	
 	public ItemStack getGuiItem(Mission mission) {
 		DisplayState state = getDisplayState(mission);
@@ -178,7 +225,7 @@ public class QuestPlayer extends OfflineQuestPlayer{
 		if (event.isCancelled() || event.getProgressAmount() <=0)
 			return false;
 		taskData.setProgress(taskData.getProgress()+event.getProgressAmount());
-		Quests.getInstance().getBossBarManager().onProgress(this,task);
+		Quests.get().getBossBarManager().onProgress(this,task);
 		for (Reward rew : event.getRewards())
 			for (int i = 0 ; i < event.getProgressAmount() ; i++)
 				rew.applyReward(this);
@@ -202,16 +249,18 @@ public class QuestPlayer extends OfflineQuestPlayer{
 	}
 	
 	public boolean canSee(Quest quest) {
-		if (getPlayer().hasPermission(Perms.GUI_SEE_ALL))
-			return true;
 		if (!quest.isWorldAllowed(getPlayer().getWorld()))
 			return false;
-		return !quest.getDisplayInfo().isHidden(getDisplayState(quest));
+		DisplayState state = getDisplayState(quest);
+		if (quest.getDisplayInfo().isHidden(state))
+			return false;
+		return this.canSeeQuestState(state);
 	}
 	public boolean canSee(Mission mission) {
-		if (getPlayer().hasPermission(Perms.GUI_SEE_ALL))
-			return true;
-		return !mission.getDisplayInfo().isHidden(getDisplayState(mission));
+		DisplayState state = getDisplayState(mission);
+		if (mission.getDisplayInfo().isHidden(state))
+			return false;
+		return this.canSeeMissionState(state);
 	}
 	
 }

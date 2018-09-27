@@ -1,7 +1,8 @@
 package emanondev.quests.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,72 +10,29 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.gui.ApplyableGui;
-import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.button.TextEditorButton;
+import emanondev.quests.newgui.button.BackButton;
+import emanondev.quests.newgui.gui.Gui;
+import emanondev.quests.newgui.gui.MapGui;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class AbstractApplyable<T extends YmlLoadable> implements Applyable<T> {
+public abstract class AbstractApplyable<T extends QuestComponent> extends AQuestComponent implements QuestComponent,Applyable<T> {
 	private static final String PATH_DESCRIPTION = "description";
-	private final String nameID;
 	private String description;
 
 	public AbstractApplyable(ConfigSection section, T parent) {
-		if (section == null || parent == null)
-			throw new NullPointerException();
-		this.nameID = loadName(section).toLowerCase();
-		this.section = section;
-		this.parent = parent;
+		super(section,parent);
 		this.description = section.getString(PATH_DESCRIPTION);
-		this.addToEditor(0, new DescriptionEditorButtonFactory());
 	}
 
-	public String getNameID() {
-		return nameID;
-	}
-
-	/**
-	 * @return the unique name
-	 */
-	private String loadName(ConfigSection m) {
-		String name = m.getName();
-		if (name == null || name.isEmpty())
-			throw new NullPointerException();
-		return name;
-	}
-
-	private final ConfigSection section;
-	private final T parent;
-
+	@SuppressWarnings({ "unchecked" })
 	public T getParent() {
-		return parent;
+		return (T) super.getParent();
 	}
 
-	protected ConfigSection getSection() {
-		return section;
-	}
-
-	private HashMap<Integer, EditorButtonFactory> tools = new HashMap<Integer, EditorButtonFactory>();
-
-	public void openEditorGui(Player p) {
-		openEditorGui(p, null);
-	}
-
-	public void openEditorGui(Player p, CustomGui previusHolder) {
-		p.openInventory(new ApplyableGui<T>(p, this, previusHolder, tools, getEditorTitle()).getInventory());
-	}
-
+	
 	public final String getKey() {
 		return getType().getKey();
 	}
-
-	public void addToEditor(int slot, EditorButtonFactory item) {
-		if (item != null)
-			tools.put(slot, item);
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -85,32 +43,31 @@ public abstract class AbstractApplyable<T extends YmlLoadable> implements Applya
 		if (desc == null && description == null)
 			return false;
 		this.description = desc;
-		section.set(PATH_DESCRIPTION, description);
-		parent.setDirty(true);
+		getSection().set(PATH_DESCRIPTION, description);
+		getParent().setDirty(true);
 		return true;
 	}
 
-	private class DescriptionEditorButtonFactory implements EditorButtonFactory {
-		private class DescriptionEditorButton extends TextEditorButton {
-			private ItemStack item = new ItemStack(Material.NAME_TAG);
+	
+	
+	protected abstract class AbstractApplayableEditor extends MapGui {
 
-			public DescriptionEditorButton(CustomGui parent) {
-				super(parent);
-				update();
+		public AbstractApplayableEditor(String title,Player p, Gui previusHolder) {
+			super(title, 6, p, previusHolder);
+			this.putButton(53, new BackButton(this));
+			this.putButton(0, new DisplayNameButton());
+		}
+		private class DisplayNameButton extends emanondev.quests.newgui.button.TextEditorButton {
+
+			public DisplayNameButton() {
+				super(new ItemStack(Material.NAME_TAG),AbstractApplayableEditor.this);
 			}
 
 			@Override
-			public ItemStack getItem() {
-				return item;
-			}
-
-			public void update() {
-				StringUtils.setDescription(item, getDescriptionButtonDisplay());
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {
-				this.requestText(clicker, StringUtils.revertColors(description), getChangeDescriptionHelp());
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lDescription Editor",
+						"&6Click to edit",
+						"&7Current Description '&r" + getDescription() + "&7'");
 			}
 
 			@Override
@@ -118,24 +75,22 @@ public abstract class AbstractApplyable<T extends YmlLoadable> implements Applya
 				if (text == null)
 					text = "";
 				if (setDescription(text)) {
-					update();
-					getParent().reloadInventory();
+					getParent().updateInventory();
 				} else
-					getOwner().sendMessage(
-							StringUtils.fixColorsAndHolders("&cSelected description was not a valid description"));
+					getTargetPlayer().sendMessage(StringUtils.fixColorsAndHolders("&cSelected description was not a valid description"));
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				this.requestText(clicker, Utils.revertColors(getDescription()), getChangeDescriptionHelp());
 			}
 		}
 
-		@Override
-		public CustomButton getCustomButton(CustomGui parent) {
-			return new DescriptionEditorButton(parent);
-		}
+		protected abstract BaseComponent[] getChangeDescriptionHelp();
+
+		protected abstract ArrayList<String> getDescriptionButtonDisplay();
 	}
 
-	protected abstract String getEditorTitle();
-
-	protected abstract BaseComponent[] getChangeDescriptionHelp();
-
-	protected abstract ArrayList<String> getDescriptionButtonDisplay();
+	
 
 }

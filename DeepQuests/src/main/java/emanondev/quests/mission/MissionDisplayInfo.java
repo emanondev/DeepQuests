@@ -64,7 +64,7 @@ public class MissionDisplayInfo extends DisplayStateInfo {
 	@Override
 	public ItemStack getGuiItem(Player p, DisplayState state) {
 		ItemStack item = getItem(state);
-		QuestPlayer qPlayer = Quests.getInstance().getPlayerManager().getQuestPlayer(p);
+		QuestPlayer qPlayer = Quests.get().getPlayerManager().getQuestPlayer(p);
 		StringUtils.setDescription(item, p, getDescription(state), getHolders(p, state));
 
 		if (!qPlayer.getMissionData(getParent()).isPaused())
@@ -81,7 +81,7 @@ public class MissionDisplayInfo extends DisplayStateInfo {
 			s = new String[progressHolders.size() * 2 + 2];
 			s[s.length - 2] = H.MISSION_COOLDOWN_LEFT;
 			s[s.length - 1] = StringUtils.getStringCooldown(
-					Quests.getInstance().getPlayerManager().getQuestPlayer(p).getCooldown(getParent()));
+					Quests.get().getPlayerManager().getQuestPlayer(p).getCooldown(getParent()));
 		}
 		for (int i = 0; i < progressHolders.size(); i++) {
 			s[i * 2] = progressHolders.get(i).getHolder();
@@ -113,15 +113,15 @@ public class MissionDisplayInfo extends DisplayStateInfo {
 		String[] holders = new String[getParent().getTasks().size() * 5 * 2 + 2];
 		int k = 0;
 		for (Task task : getParent().getTasks()) {
-			holders[k * 10] = H.MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION.replace("<task>", task.getNameID());
+			holders[k * 10] = H.MISSION_GENERIC_TASK_PROGRESS_DESCRIPTION.replace("<task>", task.getID());
 			holders[k * 10 + 1] = task.getProgressDescription();
-			holders[k * 10 + 2] = H.MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION.replace("<task>", task.getNameID());
+			holders[k * 10 + 2] = H.MISSION_GENERIC_TASK_UNSTARTED_DESCRIPTION.replace("<task>", task.getID());
 			holders[k * 10 + 3] = task.getUnstartedDescription();
-			holders[k * 10 + 4] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", task.getNameID());
+			holders[k * 10 + 4] = H.MISSION_GENERIC_TASK_NAME.replace("<task>", task.getID());
 			holders[k * 10 + 5] = task.getDisplayName();
-			holders[k * 10 + 6] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", task.getNameID());
+			holders[k * 10 + 6] = H.MISSION_GENERIC_TASK_TYPE.replace("<task>", task.getID());
 			holders[k * 10 + 7] = task.getTaskType().getKey();
-			holders[k * 10 + 8] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", task.getNameID());
+			holders[k * 10 + 8] = H.MISSION_GENERIC_TASK_MAX_PROGRESS.replace("<task>", task.getID());
 			holders[k * 10 + 9] = task.getMaxProgress() + "";
 			k++;
 		}
@@ -135,7 +135,7 @@ public class MissionDisplayInfo extends DisplayStateInfo {
 					desc.remove(i);
 					int j = 0;
 					for (Task task : getParent().getTasks()) {
-						desc.add(i + j, text.replace("<task>", task.getNameID()));
+						desc.add(i + j, text.replace("<task>", task.getID()));
 						j++;
 					}
 					i = i + j - 1;
@@ -167,11 +167,11 @@ public class MissionDisplayInfo extends DisplayStateInfo {
 		}
 
 		public String getHolder() {
-			return H.MISSION_GENERIC_TASK_PROGRESS.replace("<task>", t.getNameID());
+			return H.MISSION_GENERIC_TASK_PROGRESS.replace("<task>", t.getID());
 		}
 
 		public String getReplacer(Player p) {
-			return "" + Quests.getInstance().getPlayerManager().getQuestPlayer(p).getTaskProgress(t);
+			return "" + Quests.get().getPlayerManager().getQuestPlayer(p).getTaskProgress(t);
 		}
 	}
 

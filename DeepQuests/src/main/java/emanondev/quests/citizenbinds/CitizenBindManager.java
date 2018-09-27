@@ -18,6 +18,8 @@ import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.gui.CustomButton;
 import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
+import emanondev.quests.newgui.gui.Gui;
+import emanondev.quests.newgui.gui.MapGui;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.utils.StringUtils;
 import net.citizensnpcs.api.CitizensAPI;
@@ -28,10 +30,10 @@ import net.md_5.bungee.api.ChatColor;
 
 public class CitizenBindManager implements Listener {
 	public CitizenBindManager() {
-		Quests.getInstance().registerListener(this);
+		Quests.get().registerListener(this);
 	}
 	
-	private YMLConfig data = new YMLConfig(Quests.getInstance(),"CitizenGuiBinds");
+	private YMLConfig data = new YMLConfig(Quests.get(),"CitizenGuiBinds");
 	private HashMap<NPC,Quest> map = new HashMap<>();
 	private final static String PATH_NPC_ID = "npc-id";
 	private final static String PATH_QUEST_ID = "quest-id";
@@ -54,7 +56,7 @@ public class CitizenBindManager implements Listener {
 			NPCRegistry registry = CitizensAPI.getNPCRegistry();
 			try {
 				int id = Integer.valueOf(key);
-				Quest quest = Quests.getInstance().getQuestManager().getQuestByNameID(
+				Quest quest = Quests.get().getQuestManager().getQuestByID(
 						section.getString(key+"."+PATH_QUEST_ID));
 				if (quest==null) 
 					throw new IllegalArgumentException("Invalid quest id "+section.getString(key+"."+PATH_QUEST_ID));
@@ -71,7 +73,7 @@ public class CitizenBindManager implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true)
 	private void event(NPCRightClickEvent evt) {
 		if (map.containsKey(evt.getNPC())) {
-			evt.getClicker().openInventory(Quests.getInstance().getGuiManager()
+			evt.getClicker().openInventory(Quests.get().getGuiManager()
 					.getMissionsInventory(evt.getClicker(), map.get(evt.getNPC()), false, false) );
 			evt.getClicker().playSound(evt.getClicker().getLocation(), Sound.ENTITY_VILLAGER_TRADING, 1, 1);
 		}
@@ -80,7 +82,7 @@ public class CitizenBindManager implements Listener {
 	public void addBind(NPC npc,Quest quest) {
 		if (npc==null || quest == null)
 			throw new NullPointerException();
-		data.set(PATH_NPC_ID+"."+npc.getId()+"."+PATH_QUEST_ID,quest.getNameID());
+		data.set(PATH_NPC_ID+"."+npc.getId()+"."+PATH_QUEST_ID,quest.getID());
 		map.put(npc,quest);
 		data.save();
 	}
@@ -148,7 +150,7 @@ public class CitizenBindManager implements Listener {
 					private class QuestSelectorGui extends CustomMultiPageGui<CustomButton> {
 						public QuestSelectorGui(Player p) {
 							super(p, AddBindGui.this, 6, 1);
-							for (Quest quest : Quests.getInstance().getQuestManager().getQuests()) {
+							for (Quest quest : Quests.get().getQuestManager().getQuests()) {
 								this.addButton(new QuestButton(quest));
 							}
 							reloadInventory();
@@ -232,6 +234,14 @@ public class CitizenBindManager implements Listener {
 				
 			}
 			
+		}
+		
+	}
+	private class CitizenNPCBindEditor extends MapGui {
+
+		public CitizenNPCBindEditor(Player p, Gui previusHolder) {
+			super("Citizen Binds", 6, p, previusHolder);
+			// TODO Auto-generated constructor stub
 		}
 		
 	}

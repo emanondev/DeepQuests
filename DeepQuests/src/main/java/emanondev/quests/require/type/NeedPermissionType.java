@@ -3,61 +3,44 @@ package emanondev.quests.require.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.gui.CustomButton;
-import emanondev.quests.gui.CustomGui;
-import emanondev.quests.gui.EditorButtonFactory;
-import emanondev.quests.gui.button.TextEditorButton;
+import emanondev.quests.data.PermissionData;
+import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.require.AbstractRequire;
 import emanondev.quests.require.AbstractRequireType;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
-import emanondev.quests.utils.StringUtils;
-import emanondev.quests.utils.YmlLoadableWithCooldown;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import emanondev.quests.utils.QCWithCooldown;
 
 public class NeedPermissionType extends AbstractRequireType implements RequireType {
 	private final static String ID = "PERMISSION";
-	private final static String PATH_PERMISSION = "permission";
-	private static final BaseComponent[] changeTitleDesc = new ComponentBuilder(ChatColor.GOLD
-			+ "Click suggest and type the permission\n\n"
-			+ ChatColor.YELLOW 	+ "/questtext <permission>")
-					.create();
 
 	public NeedPermissionType() {
 		super(ID);
 	}
 
 	@Override
-	public Require getInstance(ConfigSection section, YmlLoadableWithCooldown mission) {
+	public Require getInstance(ConfigSection section, QCWithCooldown mission) {
 		return new NeedPermission(section, mission);
 	}
 
 	public class NeedPermission extends AbstractRequire implements Require {
-		private String permission;
+		private PermissionData perm;
 
-		public NeedPermission(ConfigSection section, YmlLoadableWithCooldown gui) {
-			super(section, gui);
-			this.permission = getSection().getString(PATH_PERMISSION);
-			if (this.permission != null)
-				this.permission = this.permission.toLowerCase();
-			this.addToEditor(8, new PermissionEditorButtonFactory());
+		public NeedPermission(ConfigSection section, QCWithCooldown parent) {
+			super(section, parent);
+			this.perm = new PermissionData(section, this);
 		}
 
 		@Override
 		public boolean isAllowed(QuestPlayer p) {
-			if (permission== null || permission.isEmpty())
+			if (perm.getPermission() == null || perm.getPermission().isEmpty())
 				return true;
-			return p.getPlayer().hasPermission(permission);
+			return p.getPlayer().hasPermission(perm.getPermission());
 		}
 
 		@Override
@@ -65,78 +48,20 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 			return NeedPermissionType.this;
 		}
 
-		public String getPermission() {
-			return permission;
-		}
-
-		public boolean setPermission(String permission) {
-			if (!permission.isEmpty() && permission.contains(" "))
-				return false;
-
-			if (permission.isEmpty())
-				permission = null;
-			this.permission = permission;
-			getSection().set(PATH_PERMISSION, this.permission);
-			getParent().setDirty(true);
-			return true;
-		}
-
-		private class PermissionEditorButtonFactory implements EditorButtonFactory {
-			private class PermissionEditorButton extends TextEditorButton {
-				private ItemStack item = new ItemStack(Material.TRIPWIRE_HOOK);
-
-				public PermissionEditorButton(CustomGui parent) {
-					super(parent);
-					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(StringUtils.fixColorsAndHolders("&6&lPermission Editor"));
-					item.setItemMeta(meta);
-					update();
-				}
-
-				@Override
-				public ItemStack getItem() {
-					return item;
-				}
-
-				public void update() {
-					ItemMeta meta = item.getItemMeta();
-					ArrayList<String> lore = new ArrayList<String>();
-					lore.add("&6Click to edit");
-					lore.add("&7Current Permission '&r" + getPermission() + "&7'");
-					meta.setLore(StringUtils.fixColorsAndHolders(lore));
-					item.setItemMeta(meta);
-				}
-
-				@Override
-				public void onClick(Player clicker, ClickType click) {
-					this.requestText(clicker, StringUtils.revertColors(getPermission()), changeTitleDesc);
-				}
-
-				@Override
-				public void onReicevedText(String text) {
-					if (text == null)
-						text = "";
-					if (setPermission(text)) {
-						update();
-						getParent().reloadInventory();
-					} else
-						getOwner().sendMessage(
-								StringUtils.fixColorsAndHolders("&cSelected permission was not a valid permission"));
-
-				}
-			}
-
-			@Override
-			public CustomButton getCustomButton(CustomGui parent) {
-				return new PermissionEditorButton(parent);
-			}
-		}
-
 		@Override
 		public String getInfo() {
-			if (permission == null)
+			if (perm.getPermission() == null)
 				return "Require an unselected permission";
-			return "Require permission '"+permission+"'";
+			return "Require permission '" + perm.getPermission() + "'";
+		}
+		public PermissionData getPermissionData() {
+			return perm;
+		}
+
+		public RequireEditor createEditorGui(Player p,Gui parent) {
+			RequireEditor gui = super.createEditorGui(p, parent);
+			gui.putButton(9, perm.getPermissionEditorButton(gui));
+			return gui;
 		}
 	}
 

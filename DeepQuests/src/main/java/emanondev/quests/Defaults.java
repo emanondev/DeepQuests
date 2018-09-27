@@ -13,7 +13,19 @@ import emanondev.quests.utils.MemoryUtils;
 
 public class Defaults {
 
-	private static YMLConfig data = new YMLConfig(Quests.getInstance(), "defaultConfig");
+	private static YMLConfig data = new YMLConfig(Quests.get(), "defaultConfig");
+	public static class PlayerDef {
+		private static final String BASE_PATH = "players.";
+
+		public static boolean canSeeQuestDisplay(DisplayState state) {
+			return data.getBoolean(BASE_PATH+"quest.cansee."+state.toString().toLowerCase(),true);
+		}
+
+		public static boolean canSeeMissionDisplay(DisplayState state) {
+			return data.getBoolean(BASE_PATH+"mission.cansee."+state.toString().toLowerCase(),true);
+		}
+		
+	}
 
 	public static boolean reload() {
 		if (!data.reload())
