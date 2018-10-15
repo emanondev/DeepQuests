@@ -76,11 +76,15 @@ public class JobsLvRequireType extends AbstractRequireType implements RequireTyp
 			return JobsLvRequireType.this;
 		}
 
-		@Override
-		public String getInfo() {
-			if (jobData.getJob() == null)
-				return "Require Job not set";
-			return "Require Job "+jobData.getJob().getName()+" lv "+levelData.getLevel();
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
+			if (jobData.getJob()==null)
+				info.add("&9Required Job level: &cnot setted");
+			else {
+				info.add("&9Required Level: &e"+levelData.getLevel());
+				info.add("  &9on Job: &e"+jobData.getJob().getName());
+			}
+			return info;
 		}
 		
 		@Override

@@ -8,8 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import emanondev.quests.Quests;
-
 public class CmdManager extends SubCmdManager implements TabExecutor {
 
 	public CmdManager(String commandName, List<String> aliases, String permission, SubCmdManager... subs) {
@@ -19,8 +17,6 @@ public class CmdManager extends SubCmdManager implements TabExecutor {
 		if (commandName.contains(" "))
 			throw new IllegalArgumentException("Command Name '"+commandName+"' contains spaces");
 		this.name = commandName.toLowerCase();
-
-		Quests.get().registerCommand(this);
 	}
 	private final String name;
 	public String getName() {

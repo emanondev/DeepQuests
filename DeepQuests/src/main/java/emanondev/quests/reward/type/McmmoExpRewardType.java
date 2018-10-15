@@ -54,11 +54,16 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 			expData = new ExperienceData(section, this);
 		}
 
-		@Override
-		public String getInfo() {
-			if (skillTypeData.getSkillType() == null)
-				return "Reward Mcmmo experience not set";
-			return "Reward "+expData.getExperience()+" exp on Mcmmo "+skillTypeData.getSkillType().toString();
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
+			if (skillTypeData.getSkillType()==null)
+				info.add("&9Reward Skill exp: &cnot setted");
+			else {
+				info.add("&9Reward exp: &e"+expData.getExperience());
+				info.add("  &9on Skill: &e"+skillTypeData.getSkillType().toString());
+				
+			}
+			return info;
 		}
 
 		@Override

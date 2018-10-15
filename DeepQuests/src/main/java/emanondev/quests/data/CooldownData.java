@@ -1,6 +1,7 @@
 package emanondev.quests.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -8,10 +9,12 @@ import org.bukkit.Material;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.newgui.button.AmountSelectorButton;
 import emanondev.quests.newgui.button.Button;
+import emanondev.quests.newgui.button.StaticFlagButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.utils.ItemBuilder;
 import emanondev.quests.utils.QuestComponent;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.Utils;
 
 public class CooldownData extends QCData {
 	protected final static String PATH_COOLDOWN_IS_ENABLED = "cooldown.enable";
@@ -69,7 +72,7 @@ public class CooldownData extends QCData {
 	 * 
 	 * @return true if the object (mission/quest) is repeatable
 	 */
-	public boolean isRepetable() {
+	public boolean isRepeatable() {
 		return repeatable;
 	}
 	
@@ -79,8 +82,9 @@ public class CooldownData extends QCData {
 	private class CooldownEditorButton extends AmountSelectorButton {
 
 		public CooldownEditorButton(Gui gui) {
-			super("&8Cooldown Editor", new ItemBuilder(Material.WATCH).setGuiProperty().build(),
-					gui);
+			super("&8Cooldown Editor", new ItemBuilder(Material.WATCH).setGuiProperty().build(),gui,
+					//1min, 15 min, 2h,24h,1w,1mo,1y
+					1L,15L,120L,1440,10080,43200,525600);
 		}
 
 		@Override
@@ -88,7 +92,7 @@ public class CooldownData extends QCData {
 			ArrayList<String> desc = new ArrayList<String>();
 			desc.add("&6&lCooldown Editor");
 			desc.add("&6Click to edit");
-			if (isRepetable()) {
+			if (isRepeatable()) {
 				desc.add("&eCooldown is &aEnabled");
 				desc.add("&eTime &a" + StringUtils.getStringCooldown(getCooldownTime()));
 			} else {
@@ -110,6 +114,30 @@ public class CooldownData extends QCData {
 
 	}
 	
-	
+	public Button getCooldownTogglerButton(Gui gui) {
+		return new CooldownTogglerButton(gui);
+	}
+	private class CooldownTogglerButton extends StaticFlagButton {
+
+		public CooldownTogglerButton(Gui parent) {
+			super(Utils.setDescription(
+					new ItemBuilder(Material.WOOL).setDamage(15).setGuiProperty().build(),
+					Arrays.asList("&6Cooldown is &cDisabled"),null,true),
+					Utils.setDescription(
+					new ItemBuilder(Material.WOOL).setGuiProperty().build(),
+					Arrays.asList("&6Cooldown is &aEnabled"),null,true),parent);
+		}
+
+		@Override
+		public boolean getCurrentValue() {
+			return isRepeatable();
+		}
+
+		@Override
+		public boolean onValueChangeRequest(boolean value) {
+			return setRepeatable(value);
+		}
+		
+	}
 
 }

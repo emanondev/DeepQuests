@@ -48,11 +48,15 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 			return NeedPermissionType.this;
 		}
 
+		
 		@Override
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			if (perm.getPermission() == null)
-				return "Require an unselected permission";
-			return "Require permission '" + perm.getPermission() + "'";
+				info.add("&9Permission &cnot setted");
+			else
+				info.add("&9Permission &e" + perm.getPermission());
+			return info;
 		}
 		public PermissionData getPermissionData() {
 			return perm;

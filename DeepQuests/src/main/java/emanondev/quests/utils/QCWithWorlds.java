@@ -11,10 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.newgui.button.AButton;
 import emanondev.quests.newgui.button.CollectionElementsSelectorButton;
 import emanondev.quests.newgui.gui.Gui;
 
@@ -153,38 +151,12 @@ public abstract class QCWithWorlds extends AQuestComponent implements QuestCompo
 	protected abstract boolean shouldWorldsAutogen();
 
 	protected abstract boolean getUseWorldsAsBlacklistDefault();
-	
-	public abstract List<String> getInfo();
 
 	protected class QCWithWorldsEditor extends QCEditor {
 
 		public QCWithWorldsEditor(String title, Player p, Gui previusHolder) {
 			super(title, p, previusHolder);
 			this.putButton(7, new WorldsSelectorButton());
-			this.putButton(4, new InfoButton());
-		}
-		
-		private class InfoButton extends AButton {
-			private ItemStack item = new ItemBuilder(Material.GOLD_BLOCK).setGuiProperty().build();
-
-			public InfoButton() {
-				super(QCWithWorldsEditor.this);
-			}
-
-			@Override
-			public ItemStack getItem() {
-				Utils.updateDescription(item, getInfo(), null, true);
-				return item;
-			}
-
-			@Override
-			public boolean update() {
-				return true;
-			}
-
-			@Override
-			public void onClick(Player clicker, ClickType click) {}
-			
 		}
 
 		private class WorldsSelectorButton extends CollectionElementsSelectorButton<World> {

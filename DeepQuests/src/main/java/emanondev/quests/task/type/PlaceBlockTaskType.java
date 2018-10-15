@@ -53,7 +53,7 @@ public class PlaceBlockTaskType extends TaskType {
 		
 		public TaskEditor createEditorGui(Player p,Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, blocks.getBlockSelectorButton(gui));
+			gui.putButton(0, blocks.getBlockSelectorButton(gui));
 			return gui;
 		}
 

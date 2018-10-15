@@ -14,35 +14,32 @@ import org.bukkit.metadata.MetadataValue;
 
 /**
  * 
- * @author emanon
- * 
+ * @author emanon This class keeps tracks of mob spawning reasons
  *
  */
 public class SpawnReasonTracker implements Listener {
-	SpawnReasonTracker() {
-		Quests.get().registerListener(this);
-	}
 	private static final String metaName = "SpawnReason";
-	private static final EnumMap<SpawnReason,FixedMetadataValue> fixedMetas = loadMetas();
-	
-	private static EnumMap<SpawnReason,FixedMetadataValue> loadMetas(){
-		EnumMap<SpawnReason,FixedMetadataValue> map = new EnumMap<SpawnReason,FixedMetadataValue>(SpawnReason.class);
+	private static final EnumMap<SpawnReason, FixedMetadataValue> fixedMetas = loadMetas();
+
+	private static EnumMap<SpawnReason, FixedMetadataValue> loadMetas() {
+		EnumMap<SpawnReason, FixedMetadataValue> map = new EnumMap<SpawnReason, FixedMetadataValue>(SpawnReason.class);
 		for (SpawnReason reason : SpawnReason.values()) {
-			map.put(reason, new FixedMetadataValue(Quests.get(),reason.toString()));
+			map.put(reason, new FixedMetadataValue(Quests.get(), reason.toString()));
 		}
 		return map;
 	}
-	
-	@EventHandler (ignoreCancelled=true,priority=EventPriority.MONITOR)
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	private static void handler(CreatureSpawnEvent event) {
 		event.getEntity().setMetadata(metaName, fixedMetas.get(event.getSpawnReason()));
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param entity - target entity
-	 * @return the reason why this entity was spawned, when there is no trace of spawning reason SpawnReason.DEFAULT is returned
+	 * @param entity
+	 *            - target entity
+	 * @return the reason why this entity was spawned, when there is no trace of
+	 *         spawning reason SpawnReason.DEFAULT is returned
 	 */
 	public static SpawnReason getSpawnReason(Entity entity) {
 		try {

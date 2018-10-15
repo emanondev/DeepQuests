@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.newgui.button.Button;
+import emanondev.quests.newgui.button.ItemEditorButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.utils.QuestComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -44,13 +45,15 @@ public class ItemStackData extends QCData {
 	}
 
 	public ItemStack getItem() {
+		if (item == null)
+			return null;
 		return new ItemStack(item);
 	}
 
 	public Button getItemSelectorButton(Gui parent) {
 		return new ItemSelectorButton(parent);
 	}
-	private class ItemSelectorButton extends emanondev.quests.newgui.button.ItemEditorButton {
+	private class ItemSelectorButton extends ItemEditorButton {
 
 		public ItemSelectorButton(Gui parent) {
 			super(parent);
@@ -63,7 +66,8 @@ public class ItemStackData extends QCData {
 
 		@Override
 		public void onReicevedItem(ItemStack item) {
-			ItemStackData.this.setItem(item);
+			if (ItemStackData.this.setItem(item))
+				getParent().updateInventory();
 		}
 
 		@Override

@@ -9,15 +9,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import emanondev.quests.Defaults;
+import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.newgui.button.SelectOneElementButton;
+import emanondev.quests.newgui.button.SelectQuestElementButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.require.Require;
 import emanondev.quests.require.RequireType;
@@ -25,6 +28,7 @@ import emanondev.quests.utils.AQuestComponent;
 import emanondev.quests.utils.ItemBuilder;
 import emanondev.quests.utils.QCWithCooldown;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -85,7 +89,7 @@ public class Quest extends QCWithCooldown {
 		info.add("");
 		info.add("&9Priority: &e"+getPriority());
 
-		if (!this.getCooldownData().isRepetable())
+		if (!this.getCooldownData().isRepeatable())
 			info.add("&9Repeatable: &cFalse");
 		else
 			info.add("&9Repeatable: &aTrue");
@@ -269,7 +273,12 @@ public class Quest extends QCWithCooldown {
 			public ItemStack getElementItem(Mission mission) {
 				return new ItemStack(Material.PAPER);
 			}
-
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_MISSION))
+					return;
+				super.onClick(clicker, click);
+			}
 			@Override
 			public void onElementSelectRequest(Mission mission) {
 				if (Quest.this.deleteMission(mission)) {
@@ -281,7 +290,7 @@ public class Quest extends QCWithCooldown {
 			}
 		}
 
-		private class MissionExplorerButton extends SelectOneElementButton<Mission> {
+		private class MissionExplorerButton extends SelectQuestElementButton<Mission> {
 
 			public MissionExplorerButton() {
 				super("&cSelect Mission to open", new ItemStack(Material.PAINTING), QuestEditor.this,
@@ -296,6 +305,14 @@ public class Quest extends QCWithCooldown {
 			@Override
 			public List<String> getElementDescription(Mission mission) {
 				return mission.getInfo();
+			}
+			
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
 			}
 
 			@Override
@@ -331,7 +348,8 @@ public class Quest extends QCWithCooldown {
 					return;
 				}
 				String missionId = Quest.this.addMission(text);
-				if (missionId != null) {
+				Bukkit.getScheduler().runTaskLater(Quests.get(),new Runnable() {public void run() {
+					if (missionId != null) {
 					String questId = Quest.this.getID();
 					Quest quest = getQuestManager().getQuestByID(questId);
 					Mission mission = quest.getMissionByID(missionId);
@@ -341,11 +359,13 @@ public class Quest extends QCWithCooldown {
 							QuestEditor.this.getPreviusGui()))
 							.getInventory());
 				}
+				}},1);
 
 			}
-
 			@Override
 			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_MISSION))
+					return;
 				this.requestText(clicker, null, setDisplayNameDescription);
 			}
 		}
@@ -379,13 +399,28 @@ public class Quest extends QCWithCooldown {
 					QuestEditor.this.putButton(20, new DeleteRequireButton());
 				}
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_REQUIRE))
+					return;
+				super.onClick(clicker, click);
+			}
 		}
 
-		private class RequireExplorerButton extends SelectOneElementButton<Require> {
+		private class RequireExplorerButton extends SelectQuestElementButton<Require> {
 
 			public RequireExplorerButton() {
 				super("&cSelect Require to open", new ItemStack(Material.PAINTING), QuestEditor.this,
 						Quest.this.getRequires(), false, true, false);
+			}
+			
+
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
 			}
 
 			@Override
@@ -413,7 +448,7 @@ public class Quest extends QCWithCooldown {
 		private class AddRequireButton extends SelectOneElementButton<RequireType> {
 			public AddRequireButton() {
 				super("&cSelect RequireType to create", new ItemStack(Material.GLOWSTONE), QuestEditor.this,
-						Quests.get().getRequireManager().getQuestRequiresTypes(), false, true, false);
+						Quests.get().getRequireManager().getSafeQuestRequiresTypes(), false, true, false);
 			}
 
 			@Override
@@ -440,6 +475,12 @@ public class Quest extends QCWithCooldown {
 				if (require != null)
 					this.getTargetPlayer()
 							.openInventory(require.createEditorGui(getTargetPlayer(), QuestEditor.this).getInventory());
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_REQUIRE))
+					return;
+				super.onClick(clicker, click);
 			}
 		}
 

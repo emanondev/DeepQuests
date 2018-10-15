@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.quest.QuestManager;
@@ -24,6 +27,14 @@ public interface Task extends QuestComponent {
 	public boolean setWorldListBlacklist(boolean isBlacklist);
 
 	public boolean isWorldAllowed(World w);
+
+	public default BarStyle getBossBarStyle() {
+		return BarStyle.SEGMENTED_20;
+	}
+
+	public default BarColor getBossBarColor() {
+		return BarColor.BLUE;
+	}
 	
 	
 	/**

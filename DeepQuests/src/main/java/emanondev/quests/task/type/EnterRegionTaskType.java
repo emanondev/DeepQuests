@@ -50,7 +50,7 @@ public class EnterRegionTaskType extends TaskType {
 		}
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, regionInfo.getRegionSelectorButton(gui));
+			gui.putButton(0, regionInfo.getRegionSelectorButton(gui));
 			return gui;
 		}
 	}

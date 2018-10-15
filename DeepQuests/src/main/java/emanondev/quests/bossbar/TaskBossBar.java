@@ -18,14 +18,14 @@ public class TaskBossBar {
 	
 	private BossBar bar;
 	private TaskData taskData;
-	public TaskBossBar (Player p,Task t,BarColor color,BarStyle style) {
-		this(Quests.get().getPlayerManager().getQuestPlayer(p),t,color,style);
+	public TaskBossBar (Player p,Task t) {
+		this(Quests.get().getPlayerManager().getQuestPlayer(p),t);
 	}
-	public TaskBossBar (QuestPlayer p,Task task,BarColor color,BarStyle style) {
-		if (p == null || task == null || color == null || style == null)
+	public TaskBossBar (QuestPlayer p,Task task) {
+		if (p == null || task == null)
 			throw new NullPointerException();
 		taskData = p.getTaskData(task);
-		bar = Bukkit.createBossBar("", color, style);
+		bar = Bukkit.createBossBar("", task.getBossBarColor(), task.getBossBarStyle());
 		updateProgress();
 		bar.addPlayer(p.getPlayer());
 	}

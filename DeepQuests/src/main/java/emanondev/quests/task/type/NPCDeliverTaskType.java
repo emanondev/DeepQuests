@@ -64,8 +64,8 @@ public class NPCDeliverTaskType extends TaskType {
 		}
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(10, itemInfo.getItemSelectorButton(gui));
-			gui.putButton(9, npc.getNpcSelectorButton(gui));
+			gui.putButton(1, itemInfo.getItemSelectorButton(gui));
+			gui.putButton(0, npc.getNpcSelectorButton(gui));
 			return gui;
 		}
 

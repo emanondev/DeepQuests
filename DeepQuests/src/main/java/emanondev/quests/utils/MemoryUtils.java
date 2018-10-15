@@ -6,6 +6,8 @@ import org.bukkit.inventory.ItemStack;
 
 import emanondev.quests.Defaults;
 
+
+@Deprecated
 public class MemoryUtils {
 	
 	/**

@@ -32,10 +32,16 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 		public RewardType getType() {
 			return ConsoleCommandRewardType.this;
 		}
-		@Override
-		public String getInfo() {
-			return "'"+cmd.getCommand()+"'";
+		
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
+			if (cmd.getCommand() == null)
+				info.add("&9Command: &cnot setted");
+			else
+				info.add("&9Command: &e/" + cmd.getCommand());
+			return info;
 		}
+		
 		@Override
 		public void applyReward(QuestPlayer qPlayer, int amount) {
 			if (cmd.getCommand()==null)

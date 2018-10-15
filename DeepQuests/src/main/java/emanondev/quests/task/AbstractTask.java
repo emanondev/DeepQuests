@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import emanondev.quests.Defaults;
 import emanondev.quests.configuration.ConfigSection;
+import emanondev.quests.data.BossBarData;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.newgui.button.AmountSelectorButton;
 import emanondev.quests.newgui.gui.Gui;
@@ -59,6 +62,16 @@ public abstract class AbstractTask extends QCWithWorlds implements Task {
 			throw new IllegalArgumentException("task max progress must be always > 0");
 		this.descUnstarted = loadDescUnstarted();
 		this.descProgress = loadDescProgress();
+		bossBarData = new BossBarData(m,this);
+	}
+	private final BossBarData bossBarData;
+	
+
+	public BarStyle getBossBarStyle() {
+		return bossBarData.getStyle();
+	}
+	public BarColor getBossBarColor() {
+		return bossBarData.getColor();
 	}
 	private String loadDescUnstarted() {
 		if (!getSection().isString(PATH_TASK_DESCRIPTION_UNSTARTED)) {
@@ -250,6 +263,8 @@ public abstract class AbstractTask extends QCWithWorlds implements Task {
 			this.putButton(16, new UnstartedDescriptionButton());
 			this.putButton(17, new ProgressDescriptionButton());
 			this.putButton(15, AbstractTask.this.getPriorityData().getPriorityEditorButton(this));
+			this.putButton(25, bossBarData.getStyleSelectorButton(this));
+			this.putButton(26, bossBarData.getColorSelectorButton(this));
 		}
 		private class UnstartedDescriptionButton extends emanondev.quests.newgui.button.TextEditorButton {
 

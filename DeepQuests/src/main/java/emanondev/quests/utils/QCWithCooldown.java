@@ -54,6 +54,7 @@ public abstract class QCWithCooldown extends QCWithWorlds {
 			super(title, p, previusHolder);
 			putButton(8, cooldownData.getCooldownEditorButton(this));
 			putButton(15, new DisplayEditorButton());
+			putButton(17, cooldownData.getCooldownTogglerButton(this));
 		}
 
 		private class DisplayEditorButton extends AButton {

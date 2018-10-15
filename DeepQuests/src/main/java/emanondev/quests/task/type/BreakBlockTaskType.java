@@ -64,11 +64,11 @@ public class BreakBlockTaskType extends TaskType {
 
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, blocks.getBlockSelectorButton(gui));
-			gui.putButton(27, drops.getRemoveDropsButton(gui));
-			gui.putButton(28, drops.getRemoveExpButton(gui));
+			gui.putButton(0, blocks.getBlockSelectorButton(gui));
+			gui.putButton(9, drops.getRemoveDropsButton(gui));
+			gui.putButton(10, drops.getRemoveExpButton(gui));
 			if (Hooks.isVirginBlockPluginEnabled())
-				gui.putButton(29, virginBlockData.getVirginCheckButton(gui));
+				gui.putButton(11, virginBlockData.getVirginCheckButton(gui));
 			return gui;
 		}
 		

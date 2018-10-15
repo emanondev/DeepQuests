@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.data.IntegerPositiveAmountData;
@@ -34,12 +37,49 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 			this.itemData = new ItemStackData(section,this);
 			this.amount = new IntegerPositiveAmountData(section,this);
 		}
-		public String getInfo() {
-			if (itemData.getItem()==null)
-				return "&cno Item is set";
-			if (itemData.getItem().hasItemMeta() && itemData.getItem().getItemMeta().hasDisplayName())
-				return itemData.getItem().getItemMeta().getDisplayName()+" ("+itemData.getItem().getType()+") &ex"+amount;
-			return itemData.getItem().getType()+" &ex"+amount;
+		
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
+			ItemStack item = itemData.getItem();
+			if (item == null)
+				info.add("&9Item: &cnot setted");
+			else {
+				info.add("&9Item:");
+				info.add("  &9Type: &e"+item.getType());
+				info.add("  &9Amount: &e"+amount.getAmount());
+				if (item.hasItemMeta()) {
+					ItemMeta meta = item.getItemMeta();
+					if (meta.hasDisplayName())
+						info.add("  &9Title: &f"+meta.getDisplayName());
+					if (meta.hasLore()) {
+						info.add("  &9Lore:");
+						for(String str: meta.getLore()) {
+							info.add("    &5"+str);
+						}
+					}
+					if (meta.hasEnchants()) {
+						info.add("  &9Enchants:");
+						meta.getEnchants().forEach((ench,lv)->{
+							info.add("    &e"+ench.getName()+" &9lv &e"+lv);
+						});
+					}
+					if (meta.isUnbreakable())
+						info.add("  &9Unbreakable: &etrue");
+					if (meta.getItemFlags()!= null && !meta.getItemFlags().isEmpty()) {
+						info.add("  &9Flags:");
+						meta.getItemFlags().forEach((flag)->{
+							info.add("    &e"+flag);
+						});
+					}
+					if (meta instanceof SkullMeta && ((SkullMeta) meta).hasOwner()) {
+						info.add("  &9Skull Owner: &e"+((SkullMeta) meta).getOwningPlayer().getName());
+					}
+				}
+				if (item.getDurability()!=0)
+					info.add("  &9Damage: &e"+item.getDurability());
+				
+			}
+			return info;
 		}
 
 		@Override
@@ -63,8 +103,8 @@ public class ItemStackRewardType extends AbstractRewardType implements RewardTyp
 
 		public RewardEditor createEditorGui(Player p,Gui parent) {
 			RewardEditor gui = super.createEditorGui(p, parent);
-			gui.putButton(9, amount.getAmountEditorButton(gui));
-			gui.putButton(10, itemData.getItemSelectorButton(gui));
+			gui.putButton(0, amount.getAmountEditorButton(gui));
+			gui.putButton(1, itemData.getItemSelectorButton(gui));
 			return gui;
 		}
 	}

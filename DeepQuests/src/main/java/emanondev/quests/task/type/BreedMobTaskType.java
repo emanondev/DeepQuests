@@ -58,9 +58,9 @@ public class BreedMobTaskType extends TaskType {
 		}
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, entity.getEntityTypeSelectorButton(gui));
-			gui.putButton(10, entity.getIgnoreCitizenButton(gui));
-			gui.putButton(28, drops.getRemoveExpButton(gui));
+			gui.putButton(0, entity.getEntityTypeSelectorButton(gui));
+			gui.putButton(9, entity.getIgnoreCitizenButton(gui));
+			gui.putButton(10, drops.getRemoveExpButton(gui));
 			return gui;
 		}
 	}

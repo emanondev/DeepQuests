@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import emanondev.quests.utils.StringUtils;
 
+@Deprecated
 public abstract class CustomGui implements InventoryHolder {
 	private final Player player;
 	private final CustomGui previusHolder;

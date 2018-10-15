@@ -20,6 +20,7 @@ import emanondev.quests.gui.CustomLinkedGui;
 import emanondev.quests.gui.CustomMultiPageGui;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.newgui.gui.MapGui;
+import emanondev.quests.newgui.gui.MissionsMenu;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.utils.StringUtils;
 import net.citizensnpcs.api.CitizensAPI;
@@ -29,9 +30,6 @@ import net.citizensnpcs.api.npc.NPCRegistry;
 import net.md_5.bungee.api.ChatColor;
 
 public class CitizenBindManager implements Listener {
-	public CitizenBindManager() {
-		Quests.get().registerListener(this);
-	}
 	
 	private YMLConfig data = new YMLConfig(Quests.get(),"CitizenGuiBinds");
 	private HashMap<NPC,Quest> map = new HashMap<>();
@@ -73,8 +71,8 @@ public class CitizenBindManager implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true)
 	private void event(NPCRightClickEvent evt) {
 		if (map.containsKey(evt.getNPC())) {
-			evt.getClicker().openInventory(Quests.get().getGuiManager()
-					.getMissionsInventory(evt.getClicker(), map.get(evt.getNPC()), false, false) );
+			evt.getClicker().openInventory(new MissionsMenu(evt.getClicker(),null,
+					map.get(evt.getNPC())).getInventory());
 			evt.getClicker().playSound(evt.getClicker().getLocation(), Sound.ENTITY_VILLAGER_TRADING, 1, 1);
 		}
 	}

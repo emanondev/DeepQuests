@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+@Deprecated
 public abstract class CustomButton {
 	private CustomGui parent;
 	public CustomButton(CustomGui parent) {

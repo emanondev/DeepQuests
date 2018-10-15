@@ -17,7 +17,7 @@ import emanondev.quests.newgui.gui.MapGui;
 public abstract class SelectOneElementButton<E> extends AButton {
 	private ItemStack item;
 	private final String subGuiTitle;
-	private final Collection<E> possibleValues;
+	protected final Collection<E> possibleValues;
 	private final boolean allowNull;
 	private final boolean allowBack;
 	private final boolean requireConfirm;
@@ -25,6 +25,8 @@ public abstract class SelectOneElementButton<E> extends AButton {
 	public SelectOneElementButton(String subGuiTitle, ItemStack item, Gui parent, Collection<E> possibleValues,
 			boolean allowNull, boolean allowBack, boolean requireConfirm) {
 		super(parent);
+		if (possibleValues==null)
+			throw new NullPointerException();
 		this.allowNull = allowNull;
 		this.allowBack = allowBack;
 		this.item = item;

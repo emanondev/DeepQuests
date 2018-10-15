@@ -3,10 +3,12 @@ package emanondev.quests.reward;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
@@ -22,14 +24,17 @@ public class RewardManager {
 		rewardsType.put(type.getKey(), type);
 		missionRewardsType.put(type.getKey(), type);
 		questRewardsType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Reward Type "+type.getKey());
 	}
 
 	public void registerMissionRewardType(MissionRewardType type) {
 		missionRewardsType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Mission Reward Type "+type.getKey());
 	}
 
 	public void registerQuestRewardType(QuestRewardType type) {
 		questRewardsType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Quest Reward Type "+type.getKey());
 	}
 
 	public LinkedHashMap<String, Reward> loadRewards(Mission m, ConfigSection section) {
@@ -113,4 +118,25 @@ public class RewardManager {
 		return Collections.unmodifiableCollection(missionRewardsType.values());
 	}
 
+	public Collection<RewardType> getSafeQuestRewardsTypes() {
+		HashSet<RewardType> set = new HashSet<RewardType>();
+		for (RewardType type:questRewardsType.values()) {
+			if (type.getClass().getAnnotations().length>0)
+				if (type.getClass().getAnnotation(Deprecated.class)!=null)
+					continue;
+			set.add(type);
+		}
+		return set;
+	}
+
+	public Collection<RewardType> getSafeMissionRewardsTypes() {
+		HashSet<RewardType> set = new HashSet<RewardType>();
+		for (RewardType type: missionRewardsType.values()) {
+			if (type.getClass().getAnnotations().length>0)
+				if (type.getClass().getAnnotation(Deprecated.class)!=null)
+					continue;
+			set.add(type);
+		}
+		return set;
+	}
 }

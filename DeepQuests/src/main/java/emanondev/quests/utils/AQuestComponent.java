@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.data.PriorityData;
+import emanondev.quests.newgui.button.AButton;
 import emanondev.quests.newgui.button.BackButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.newgui.gui.MapGui;
@@ -151,10 +152,35 @@ public abstract class AQuestComponent implements QuestComponent {
 		public QCEditor(String title, Player p, Gui previusHolder) {
 			super(title, 6, p, previusHolder);
 			this.putButton(53, new BackButton(this));
+			this.putButton(4, new InfoButton());
 			this.putButton(6, new DisplayNameButton());
 			this.putButton(16, priorityData.getPriorityEditorButton(this));
+			
 		}
 
+		private class InfoButton extends AButton {
+			private ItemStack item = new ItemBuilder(Material.GOLD_BLOCK).setGuiProperty().build();
+
+			public InfoButton() {
+				super(QCEditor.this);
+			}
+
+			@Override
+			public ItemStack getItem() {
+				Utils.updateDescription(item, getInfo(), null, true);
+				return item;
+			}
+
+			@Override
+			public boolean update() {
+				return true;
+			}
+
+			@Override
+			public void onClick(Player clicker, ClickType click) {}
+			
+		}
+		
 		private class DisplayNameButton extends emanondev.quests.newgui.button.TextEditorButton {
 
 			public DisplayNameButton() {

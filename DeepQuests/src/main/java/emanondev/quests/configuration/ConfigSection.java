@@ -32,5 +32,7 @@ public interface ConfigSection extends ConfigurationSection,Savable {
 	public ConfigSection getDefaultSection();
 	
 	public ConfigSection loadSection(String path);
+	
+	
 
 }

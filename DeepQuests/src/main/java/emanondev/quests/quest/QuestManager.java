@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,18 +19,21 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.configuration.YMLConfig;
-import emanondev.quests.gui.CustomGui;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.newgui.button.BackButton;
 import emanondev.quests.newgui.button.SelectOneElementButton;
+import emanondev.quests.newgui.button.SelectQuestElementButton;
+import emanondev.quests.newgui.gui.AdminPlayerManagerGui;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.newgui.gui.MapGui;
 import emanondev.quests.utils.AQuestComponent;
 import emanondev.quests.utils.ItemBuilder;
 import emanondev.quests.utils.Savable;
+import emanondev.quests.utils.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
@@ -136,26 +140,33 @@ public class QuestManager implements Savable {
 
 	public void save() {
 		data.save();
-		setDirty(false);
 	}
 
 	public void reload() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Inventory inv = p.getOpenInventory().getTopInventory();
-			if (inv != null && inv.getHolder() != null)
-				if (inv.getHolder() instanceof CustomGui)
-					p.closeInventory();
-		}
 		quests.clear();
 		data.reload();
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Inventory inv = p.getOpenInventory().getTopInventory();
+			if (inv != null && inv.getHolder()!=null)
+				if (inv.getHolder() instanceof Gui)
+					p.closeInventory();
+		}
+		
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Inventory inv = p.getOpenInventory().getTopInventory();
+			if (inv != null && inv.getHolder()!=null)
+				if (inv.getHolder() instanceof Gui)
+					p.closeInventory();
+		}
 		ConfigSection section = data.loadSection(PATH_QUESTS);
+		boolean dirty = false;
 		Set<String> s = section.getValues(false).keySet();
-		s.forEach((key) -> {
-			boolean dirty = false;
+		for (String key: s) {
 			try {
 				Quest quest = new Quest(section.loadSection(key), this);
 				quests.put(quest.getID(), quest);
-				if (quest.isDirty())
+				if (quest.isLoadDirty())
 					dirty = true;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -163,16 +174,10 @@ public class QuestManager implements Savable {
 						"Error while loading Quests on file quests.yml '" + key + "' could not be read as valid quest",
 						ExceptionUtils.getStackTrace(e));
 			}
-			for (Quest quest : quests.values()) {
-				if (isDirty())
-					break;
-				if (quest.isLoadDirty())
-					setDirty(true);
-			}
-			if (dirty)
-				data.save();
-		});
+		}
 
+		if (dirty)
+			setDirty(true);
 	}
 
 	public Quest getQuestByID(String key) {
@@ -243,6 +248,7 @@ public class QuestManager implements Savable {
 			this.putButton(2, new DeleteQuestButton());
 			this.putButton(0, new QuestExplorerButton());
 			this.putButton(1, new AddQuestButton());
+			this.putButton(8, new PlayerButton());
 		}
 
 		private class DeleteQuestButton extends SelectOneElementButton<Quest> {
@@ -275,15 +281,31 @@ public class QuestManager implements Savable {
 					getTargetPlayer().openInventory(QuestsEditor.this.getInventory());
 				}
 			}
+			
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_QUEST))
+					return;
+				super.onClick(clicker, click);
+			}
+			
 		}
 
-		private class QuestExplorerButton extends SelectOneElementButton<Quest> {
+		private class QuestExplorerButton extends SelectQuestElementButton<Quest> {
 
 			public QuestExplorerButton() {
 				super("&cSelect Quest to open", new ItemStack(Material.PAINTING), QuestsEditor.this,
 						QuestManager.this.getQuests(), false, true, false);
 			}
 
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
+			}
+			
 			@Override
 			public List<String> getButtonDescription() {
 				return Arrays.asList("&6&lOpen Quest", "&6Click to select a Quest");
@@ -338,9 +360,42 @@ public class QuestManager implements Savable {
 				}
 			}
 
+			
 			@Override
 			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_QUEST))
+					return;
 				this.requestText(clicker, null, setDisplayNameDescription);
+			}
+		}
+		private class PlayerButton extends SelectOneElementButton<Player> {
+
+			public PlayerButton() {
+				super("&8Select a Player", new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().setDamage(3).build(),
+						QuestsEditor.this, new HashSet<Player>( Bukkit.getOnlinePlayers()), false, true, false);
+				
+			}
+			
+		
+
+			@Override
+			public List<String> getButtonDescription() {
+				return Arrays.asList("&6&lPlayer Manager","&6Click to select a player","&6and open his stats gui");
+			}
+
+			@Override
+			public List<String> getElementDescription(Player element) {
+				return Arrays.asList("&b"+element.getName(),"&7"+element.getUniqueId().toString());
+			}
+
+			@Override
+			public ItemStack getElementItem(Player element) {
+				return new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().setDamage(3).build();
+			}
+
+			@Override
+			public void onElementSelectRequest(Player element) {
+				getTargetPlayer().openInventory(new AdminPlayerManagerGui(getTargetPlayer(),getParent(),element).getInventory());
 			}
 		}
 	}

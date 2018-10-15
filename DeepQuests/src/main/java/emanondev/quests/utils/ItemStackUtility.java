@@ -5,11 +5,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+@Deprecated
 public class ItemStackUtility {
 	public static ItemStack craftBase(Material m,short damage,boolean unbreakable) {
 		return craftBase(m,damage,null,unbreakable);
 	}
-	@SuppressWarnings("deprecation")
+	
 	public static ItemStack craftBase(Material m,short damage,Byte data,boolean unbreakable) {
 		ItemStack item;
 		if (data == null)

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
+@Deprecated
 public abstract class CustomLinkedGui<T extends CustomButton> extends CustomGui{
 
 	private final LinkedHashMap<Integer,T> items = new LinkedHashMap<Integer,T>();

@@ -62,9 +62,9 @@ public class MythicMobKillTaskType extends TaskType{
 		}
 		public TaskEditor createEditorGui(Player p,Gui parent) {
 			TaskEditor gui = super.createEditorGui(p, parent);
-			gui.putButton(27, drops.getRemoveDropsButton(gui));
-			gui.putButton(28, drops.getRemoveExpButton(gui));
-			gui.putButton(9, mythicMobData.getMythicMobSelectorButton(gui));
+			gui.putButton(9, drops.getRemoveDropsButton(gui));
+			gui.putButton(10, drops.getRemoveExpButton(gui));
+			gui.putButton(0, mythicMobData.getMythicMobSelectorButton(gui));
 			return gui;
 		}
 		

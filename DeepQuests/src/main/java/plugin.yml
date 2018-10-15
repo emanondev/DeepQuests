@@ -1,6 +1,6 @@
 name: DeepQuests
 main: emanondev.quests.Quests
-version: 1.0.1-ALPHA
+version: 2.2.2-ALPHA
 author: emanon
 softdepend: [Factions,Towny,SuperVanish,PremiumVanish,Mcmmo,VirginBlock,WorldGuard,PlaceHolderAPI,Citizens,MythicMobs,WGRegionEvents,Jobs]
 
@@ -30,25 +30,9 @@ permissions:
         default: op
     quests.admin.quest:
         default: op
-    quests.admin.quest.listmission:
-        default: op
-    quests.admin.quest.mission:
-        default: op
-    quests.admin.quest.mission.info:
-        default: op
     quests.admin.deletequest:
         default: op
     quests.admin.addquest:
-        default: op
-    quests.admin.quest.info:
-        default: op
-    quests.admin.quest.deletemission:
-        default: op
-    quests.admin.quest.addmission:
-        default: op
-    quests.admin.quest.mission.task:
-        default: op
-    quests.admin.quest.mission.task.info:
         default: op
     quests.admin.editor:
         default: op

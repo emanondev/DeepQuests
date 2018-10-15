@@ -58,9 +58,9 @@ public class ShearSheepTaskType extends TaskType {
 		}
 		public TaskEditor createEditorGui(Player p,Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, entity.getEntityTypeSelectorButton(gui));
-			gui.putButton(28, entity.getSpawnReasonSelectorButton(gui));
-			gui.putButton(27, drops.getRemoveDropsButton(gui));
+			gui.putButton(0, entity.getEntityTypeSelectorButton(gui));
+			gui.putButton(1, entity.getSpawnReasonSelectorButton(gui));
+			gui.putButton(9, drops.getRemoveDropsButton(gui));
 			return gui;
 		}
 		

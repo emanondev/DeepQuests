@@ -1,9 +1,9 @@
 package emanondev.quests.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -64,11 +64,12 @@ public class NPCTaskInfo extends QCData {
 		setDirty(true);
 		return true;
 	}
-	private static Set<Integer> getIdSet() {
-		Set<Integer> set = new HashSet<Integer>();
+	private static List<Integer> getIdList() {
+		List<Integer> list = new ArrayList<Integer>();
 		for (NPC npc : CitizensAPI.getNPCRegistry().sorted())
-			set.add(npc.getId());
-		return set;
+			list.add(npc.getId());
+		Collections.sort(list);
+		return list;
 	}
 	public Button getNpcSelectorButton(Gui parent) {
 		return new NPCSelectorButton(parent);
@@ -78,7 +79,7 @@ public class NPCTaskInfo extends QCData {
 		public NPCSelectorButton(Gui parent) {
 			super("&8NPC Selector", 
 				new ItemBuilder(Material.SKULL_ITEM).setDamage(3).setGuiProperty().build(), 
-				parent, getIdSet(), false);
+				parent, getIdList(), false);
 		}
 
 		@Override

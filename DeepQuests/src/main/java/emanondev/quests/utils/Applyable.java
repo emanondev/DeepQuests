@@ -28,11 +28,13 @@ public interface Applyable<T extends QuestComponent> extends QuestComponent {
 	 * @return
 	 */
 	public String getID();
+	
+	/*
 	/**
 	 * @return util for display purpose
 	 * should descript what this object does
-	 */
-	public String getInfo();
+	 *//*
+	public String getInfo();*/
 
 	@Override
 	public default QuestManager getQuestManager() {

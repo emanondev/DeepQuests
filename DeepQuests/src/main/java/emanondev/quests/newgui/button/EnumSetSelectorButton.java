@@ -1,6 +1,5 @@
 package emanondev.quests.newgui.button;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
@@ -46,7 +45,7 @@ public abstract class EnumSetSelectorButton<E extends Enum<E>> extends AButton {
 
 	public abstract ItemStack getElementItem(E element);
 
-	public abstract Collection<E> getCurrentCollection();
+	public abstract boolean currentCollectionContains(E element);
 
 	public abstract boolean getIsWhitelist();
 
@@ -60,7 +59,7 @@ public abstract class EnumSetSelectorButton<E extends Enum<E>> extends AButton {
 	}
 
 	public boolean update() {
-		Utils.setDescription(item, getButtonDescription(), getParent().getTargetPlayer(), true);
+		Utils.updateDescription(item, getButtonDescription(), getParent().getTargetPlayer(), true);
 		return true;
 	}
 
@@ -95,19 +94,16 @@ public abstract class EnumSetSelectorButton<E extends Enum<E>> extends AButton {
 			public WhitelistFlagButton() {
 				super(createBlacklistItem(), createWhitelistItem(), ListEditorGui.this);
 			}
-
 			@Override
 			public List<String> getButtonDescription() {
 				if (getIsWhitelist())
 					return GuiConfig.Generic.WHITELIST_DESCRIPTION;
 				return GuiConfig.Generic.BLACKLIST_DESCRIPTION;
 			}
-
 			@Override
 			public boolean getCurrentValue() {
 				return EnumSetSelectorButton.this.getIsWhitelist();
 			}
-
 			@Override
 			public boolean onValueChangeRequest(boolean value) {
 				return EnumSetSelectorButton.this.onWhiteListChangeRequest(value);
@@ -129,7 +125,10 @@ public abstract class EnumSetSelectorButton<E extends Enum<E>> extends AButton {
 
 			@Override
 			public boolean getCurrentValue() {
-				return getCurrentCollection().contains(element);
+				if (currentCollectionContains(element))
+					return getIsWhitelist();
+				else
+					return !getIsWhitelist();
 			}
 
 			@Override

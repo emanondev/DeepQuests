@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,7 +12,10 @@ import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.citizenbinds.CitizenBindManager;
 import emanondev.quests.hooks.Hooks;
+import emanondev.quests.newgui.gui.AdminPlayerManagerGui;
 import emanondev.quests.newgui.gui.Gui;
+import emanondev.quests.newgui.gui.QuestsMenu;
+import emanondev.quests.player.OfflineQuestPlayer;
 import emanondev.quests.utils.Completer;
 import net.md_5.bungee.api.ChatColor;
 
@@ -28,22 +32,10 @@ public class CommandQuestsAdmin extends CmdManager {
 	 * qa
 	 * 		player
 	 * 			<player>
-	 * 				reset
+	 * 				resetQuest
+	 * 				resetMission
 	 * 				erase
-	 * 				quest
-	 * 					<questid>
-	 * 						erase
-	 * 						reset
-	 * 						mission
-	 * 							<missionid>
-	 * 								erase
-	 * 								reset
-	 * 								task
-	 * 									<taskid>
-	 * 										reset
-	 * 						liststartedmissions
-	 * 						listcompletedmissions
-	 * 						missionpoint
+	 * 				opengui
 	 * 				questpoint
 	 * 				liststartedquests
 	 * 				listcompletedquests
@@ -53,10 +45,11 @@ public class CommandQuestsAdmin extends CmdManager {
 
 class SubPlayer extends SubCmdManager {
 	SubPlayer() {
-		super("player",Perms.ADMIN_QUEST,
+		super("player",Perms.ADMIN_PLAYER,
 				new SubPlayerOpenGui(),
-				new SubPlayerResetQuest(),
-				new SubPlayerResetMission()
+				//new SubPlayerResetQuest(),
+				new SubPlayerResetMission(),
+				new SubPlayerSwap()
 				);
 		this.setDescription(ChatColor.GOLD+"commands related to players");
 		this.setParams("<player>");
@@ -85,7 +78,76 @@ class SubPlayer extends SubCmdManager {
 			sender.sendMessage(ChatColor.RED+"Player '"+args[1]+"' not found");
 			return;
 		}
-		onHelp(params, sender, label, args);
+		//onHelp(params, sender, label, args);
+		if (!(sender instanceof Player)) {
+			CmdUtils.playersOnly(sender);
+			return;
+		}
+		((Player) sender).openInventory(new AdminPlayerManagerGui(
+				(Player) sender,
+				Quests.get().getQuestManager().getQuestsEditor((Player) sender, null),
+				player).getInventory());
+		return;
+	}
+	@Override
+	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.size()==0)
+			return new ArrayList<String>();
+		if (params.size()==1) {
+			ArrayList<String> list = new ArrayList<String>();
+			Completer.completePlayerNames(list, params.get(0));
+			return list;
+		}
+		params.remove(0);
+		return super.onTab(params, sender, label, args);	
+	}
+}
+class SubPlayerSwap extends SubCmdManager {
+	SubPlayerSwap() {
+		super("swap",null);
+		this.setDescription(ChatColor.GOLD+"command to move quest data of player1 to player2");
+		this.setParams("<player>");
+	}
+	
+	//qa 	player	<player> 	pass 	<player>
+	//		0		1			2		3
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onCmd(ArrayList<String> params,CommandSender sender, String label, String[] args) {
+		if (params.isEmpty()) {
+			String[] args2 = new String[args.length+1];
+			for (int i = 0; i< args.length;i++)
+				args2[i]= args[i];
+			args2[args2.length-1]= "<player>";
+				
+			onHelp( params, sender, label, args2);
+			return;
+		}
+		params.remove(0);
+		if (params.size()>0) {
+			super.onCmd( params, sender, label, args);
+			return;
+		}
+		OfflinePlayer player1 = Bukkit.getOfflinePlayer(args[1]);
+		if (player1==null) {
+			sender.sendMessage(ChatColor.RED+"Player '"+args[1]+"' not found");
+			return;
+		}
+		OfflinePlayer player2 = Bukkit.getOfflinePlayer(args[3]);
+		if (player2==null) {
+			sender.sendMessage(ChatColor.RED+"Player '"+args[3]+"' not found");
+			return;
+		}
+		if (player1==player2) {
+			sender.sendMessage(ChatColor.RED+"Can't Swap Quest Data for "+ChatColor.YELLOW+player1.getName()+ChatColor.RED+" and himself");
+			return;
+		}
+		OfflineQuestPlayer off1 = Quests.get().getPlayerManager().getOfflineQuestPlayer(player1);
+		OfflineQuestPlayer off2 = Quests.get().getPlayerManager().getOfflineQuestPlayer(player2);
+		if (off1.passTo(off2))
+			sender.sendMessage(ChatColor.GREEN+"Swapped Quest Data for "+ChatColor.YELLOW+player1.getName()+ChatColor.GREEN+" and "+ChatColor.YELLOW+player2.getName());
+		else
+			sender.sendMessage(ChatColor.RED+"Unable to Swap Quest Data for "+ChatColor.YELLOW+player1.getName()+ChatColor.RED+" and "+ChatColor.YELLOW+player2.getName());
 		return;
 	}
 	@Override
@@ -117,10 +179,10 @@ class SubPlayerOpenGui extends SubCmdManager {
 			return;
 		}
 		Player p = (Player) sender;
-		p.openInventory(Quests.get().getGuiManager().getQuestsInventory(target, Quests.get().getQuestManager(), false));
+		p.openInventory(new QuestsMenu(target, null, Quests.get().getQuestManager()).getInventory());
 		return;
 	}
-}
+}/*
 class SubPlayerResetQuest extends SubCmdManager {
 
 	SubPlayerResetQuest() {
@@ -140,7 +202,7 @@ class SubPlayerResetQuest extends SubCmdManager {
 		p.openInventory(Quests.get().getGuiManager().getQuestsResetGui(target, Quests.get().getQuestManager()));
 		return;
 	}
-}
+}*/
 class SubPlayerResetMission extends SubCmdManager {
 
 	SubPlayerResetMission() {
@@ -163,7 +225,7 @@ class SubPlayerResetMission extends SubCmdManager {
 }
 class SubCitizen extends SubCmdManager {
 	SubCitizen() {
-		super("citizen",Perms.ADMIN_QUEST,
+		super("citizen",Perms.ADMIN_CITIZEN,
 				new SubCitizenBindQuest()
 				);
 		this.setDescription(ChatColor.GOLD+"Edit/show info of the selected quest");
@@ -179,7 +241,7 @@ class SubCitizen extends SubCmdManager {
 }
 class SubCitizenBindQuest extends SubCmdManager {
 	SubCitizenBindQuest() {
-		super("bindquest",Perms.ADMIN_QUEST);
+		super("bindquest",null);
 		this.setDescription(ChatColor.GOLD+"Bind a quest to an npc");
 		this.setPlayersOnly(true);
 	}

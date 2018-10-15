@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -105,6 +106,13 @@ public class Utils {
 		if (s == null)
 			return null;
 		return s.replace("§", "&");
+	}
+	
+	public static boolean checkPermission(CommandSender target,String permission) {
+		if (permission== null || target.hasPermission(permission))
+			return true;
+		target.sendMessage(fixString("&cYou lack of permission '"+permission+"'",null,true));
+		return false;
 	}
 
 	/*

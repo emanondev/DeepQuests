@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
+@Deprecated
 public class CustomGuiHandler implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled = true)
 	private void onClick(InventoryClickEvent event) {

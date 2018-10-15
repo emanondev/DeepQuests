@@ -22,36 +22,8 @@ conjunctions:
 gui:
     quests-menu:
         title: "&9Quests menu"
-        page:
-            item: "NAME_TAG"
-            desc:
-              - "&9&lPage <&5&l{page}&9&l>"
-        previus-page:
-            item: "TRIPWIRE_HOOK"
-            desc: "&9&l<<<<<<<"
-        next-page: 
-            item: "TRIPWIRE_HOOK"
-            desc: "&9&l>>>>>>>"
-        back:
-            item: "WOOD_DOOR"
-            desc: "&c&lGo Back"
-        close:
-            item: "IRON_DOOR"
-            desc: "&c&lClose Gui"
     missions-menu:
         title: "&9Quest: {quest-name}"
-        page:
-            item: "NAME_TAG"
-            desc: "&9&lPage <&5&l{page}&9&l>"
-        previus-page:
-            item: "TRIPWIRE_HOOK"
-            desc: "&9&l<<<<<<<"
-        next-page: 
-            item: "TRIPWIRE_HOOK"
-            desc: "&9&l>>>>>>>"
-        back:
-            item: "WOOD_DOOR"
-            desc: "&c&lGo Back"
         close:
             item: "IRON_DOOR"
             desc: "&c&lClose Gui"

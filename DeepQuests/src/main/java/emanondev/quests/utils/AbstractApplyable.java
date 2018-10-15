@@ -1,19 +1,8 @@
 package emanondev.quests.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-
 import emanondev.quests.configuration.ConfigSection;
-import emanondev.quests.newgui.button.BackButton;
 import emanondev.quests.newgui.gui.Gui;
-import emanondev.quests.newgui.gui.MapGui;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class AbstractApplyable<T extends QuestComponent> extends AQuestComponent implements QuestComponent,Applyable<T> {
 	private static final String PATH_DESCRIPTION = "description";
@@ -50,13 +39,13 @@ public abstract class AbstractApplyable<T extends QuestComponent> extends AQuest
 
 	
 	
-	protected abstract class AbstractApplayableEditor extends MapGui {
+	protected abstract class AbstractApplayableEditor extends QCEditor {
 
 		public AbstractApplayableEditor(String title,Player p, Gui previusHolder) {
-			super(title, 6, p, previusHolder);
-			this.putButton(53, new BackButton(this));
-			this.putButton(0, new DisplayNameButton());
-		}
+			super(title, p, previusHolder);
+			//this.putButton(53, new BackButton(this));
+			//this.putButton(0, new DisplayNameButton());
+		}/*
 		private class DisplayNameButton extends emanondev.quests.newgui.button.TextEditorButton {
 
 			public DisplayNameButton() {
@@ -88,7 +77,7 @@ public abstract class AbstractApplyable<T extends QuestComponent> extends AQuest
 
 		protected abstract BaseComponent[] getChangeDescriptionHelp();
 
-		protected abstract ArrayList<String> getDescriptionButtonDisplay();
+		protected abstract ArrayList<String> getDescriptionButtonDisplay();*/
 	}
 
 	

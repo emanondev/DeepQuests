@@ -9,15 +9,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import emanondev.quests.Defaults;
 import emanondev.quests.H;
+import emanondev.quests.Perms;
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.newgui.button.SelectOneElementButton;
+import emanondev.quests.newgui.button.SelectQuestElementButton;
 import emanondev.quests.newgui.button.StringListEditorButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.quest.Quest;
@@ -33,6 +36,7 @@ import emanondev.quests.task.VoidTaskType;
 import emanondev.quests.utils.AQuestComponent;
 import emanondev.quests.utils.ItemBuilder;
 import emanondev.quests.utils.StringUtils;
+import emanondev.quests.utils.Utils;
 import emanondev.quests.utils.QCWithCooldown;
 
 import net.md_5.bungee.api.ChatColor;
@@ -45,6 +49,7 @@ public class Mission extends QCWithCooldown {
 	private static final String PATH_REQUIRES = "requires";
 	private static final String PATH_START_REWARDS = "start-rewards";
 	private static final String PATH_COMPLETE_REWARDS = "complete-rewards";
+	private static final String PATH_FAIL_REWARDS = "fail-rewards";
 	private static final String PATH_START_TEXT = "start-text";
 	private static final String PATH_COMPLETE_TEXT = "complete-text";
 	private static final String PATH_PAUSE_TEXT = "pause-text";
@@ -56,6 +61,7 @@ public class Mission extends QCWithCooldown {
 	private final HashMap<String, Task> tasks = new HashMap<String, Task>();
 	private final HashMap<String, Reward> completeRewards = new HashMap<String, Reward>();
 	private final HashMap<String, Reward> startRewards = new HashMap<String, Reward>();
+	private final HashMap<String, Reward> failRewards = new HashMap<String, Reward>();
 	private final HashMap<String, Require> requires = new HashMap<String, Require>();
 	private final MissionDisplayInfo displayInfo;
 	private ArrayList<String> onStartText;
@@ -85,6 +91,9 @@ public class Mission extends QCWithCooldown {
 		rew = loadCompleteRewards();
 		if (rew != null)
 			this.completeRewards.putAll(rew);
+		rew = loadFailRewards();
+		if (rew != null)
+			this.failRewards.putAll(rew);
 
 		onStartText = loadStartText();
 		onCompleteText = loadCompleteText();
@@ -153,7 +162,7 @@ public class Mission extends QCWithCooldown {
 		info.add("&9Priority: &e"+getPriority());
 		info.add("&9Quest: &e"+getParent().getDisplayName());
 
-		if (!this.getCooldownData().isRepetable())
+		if (!this.getCooldownData().isRepeatable())
 			info.add("&9Repeatable: &cFalse");
 		else
 			info.add("&9Repeatable: &aTrue");
@@ -272,6 +281,9 @@ public class Mission extends QCWithCooldown {
 
 	private HashMap<String, Reward> loadCompleteRewards() {
 		return Quests.get().getRewardManager().loadRewards(this, getSection().loadSection(PATH_COMPLETE_REWARDS));
+	}
+	private HashMap<String, Reward> loadFailRewards() {
+		return Quests.get().getRewardManager().loadRewards(this, getSection().loadSection(PATH_FAIL_REWARDS));
 	}
 
 	@Override
@@ -592,9 +604,15 @@ public class Mission extends QCWithCooldown {
 					getTargetPlayer().openInventory(MissionEditor.this.getInventory());
 				}
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_TASK))
+					return;
+				super.onClick(clicker, click);
+			}
 		}
 
-		private class TaskExplorerButton extends SelectOneElementButton<Task> {
+		private class TaskExplorerButton extends SelectQuestElementButton<Task> {
 
 			public TaskExplorerButton() {
 				super("&cSelect Task to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
@@ -621,6 +639,14 @@ public class Mission extends QCWithCooldown {
 				this.getTargetPlayer()
 						.openInventory(task.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
 			}
+
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
+			}
 		}
 
 		private class AddTaskButton extends SelectOneElementButton<TaskType> {
@@ -628,7 +654,7 @@ public class Mission extends QCWithCooldown {
 				super("&cSelect TaskType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
 						Quests.get().getTaskManager().getTaskTypes(), false, true, false);
 			}
-
+			
 			@Override
 			public List<String> getButtonDescription() {
 				return Arrays.asList("&6&lAdd Task", "&6Click to create a new Task");
@@ -651,6 +677,12 @@ public class Mission extends QCWithCooldown {
 			public void onElementSelectRequest(TaskType taskType) {
 				new TaskNameEditor(taskType).onClick(getTargetPlayer(), ClickType.LEFT);
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_TASK))
+					return;
+				super.onClick(clicker, click);
+			}
 
 			private class TaskNameEditor extends emanondev.quests.newgui.button.TextEditorButton {
 				private final TaskType taskType;
@@ -672,6 +704,7 @@ public class Mission extends QCWithCooldown {
 						return;
 					}
 					String taskId = Mission.this.addTask(text, taskType);
+					Bukkit.getScheduler().runTaskLater(Quests.get(),new Runnable() {public void run() {
 					if (taskId != null) {
 						String questId = Mission.this.getParent().getID();
 						String missionId = Mission.this.getID();
@@ -686,6 +719,7 @@ public class Mission extends QCWithCooldown {
 								MissionEditor.this.getPreviusGui().getPreviusGui())))
 								.getInventory());
 					}
+					}},1);
 
 				}
 
@@ -725,13 +759,27 @@ public class Mission extends QCWithCooldown {
 					MissionEditor.this.putButton(20, new DeleteRequireButton());
 				}
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_REQUIRE))
+					return;
+				super.onClick(clicker, click);
+			}
 		}
 
-		private class RequireExplorerButton extends SelectOneElementButton<Require> {
+		private class RequireExplorerButton extends SelectQuestElementButton<Require> {
 
 			public RequireExplorerButton() {
 				super("&cSelect Require to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
 						Mission.this.getRequires(), false, true, false);
+			}
+			
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
 			}
 
 			@Override
@@ -759,7 +807,7 @@ public class Mission extends QCWithCooldown {
 		private class AddRequireButton extends SelectOneElementButton<RequireType> {
 			public AddRequireButton() {
 				super("&cSelect RequireType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
-						Quests.get().getRequireManager().getMissionRequiresTypes(), false, true, false);
+						Quests.get().getRequireManager().getSafeMissionRequiresTypes(), false, true, false);
 			}
 
 			@Override
@@ -787,6 +835,12 @@ public class Mission extends QCWithCooldown {
 					this.getTargetPlayer().openInventory(
 							require.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_REQUIRE))
+					return;
+				super.onClick(clicker, click);
+			}
 		}
 
 		private class DeleteCompleteRewardButton extends SelectOneElementButton<Reward> {
@@ -803,7 +857,7 @@ public class Mission extends QCWithCooldown {
 
 			@Override
 			public List<String> getElementDescription(Reward reward) {
-				return Arrays.asList("&6Require:", "&6" + reward.getInfo());
+				return Arrays.asList("&6Reward:", "&6" + reward.getInfo());
 			}
 
 			@Override
@@ -818,15 +872,29 @@ public class Mission extends QCWithCooldown {
 					MissionEditor.this.putButton(29, new DeleteCompleteRewardButton());
 				}
 			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_DELETE_REWARD))
+					return;
+				super.onClick(clicker, click);
+			}
 		}
 
-		private class CompleteRewardExplorerButton extends SelectOneElementButton<Reward> {
+		private class CompleteRewardExplorerButton extends SelectQuestElementButton<Reward> {
 
 			public CompleteRewardExplorerButton() {
 				super("&cSelect Complete Reward to open", new ItemBuilder(Material.PAINTING).setGuiProperty().build(), MissionEditor.this,
 						Mission.this.getCompleteRewards(), false, true, false);
 			}
 
+			@Override
+			public ItemStack getItem() {
+				ItemStack result = super.getItem();
+				if (result!=null)
+					result.setAmount(Math.min(Math.max(1,this.possibleValues.size()),127));
+				return result;
+			}
+			
 			@Override
 			public List<String> getButtonDescription() {
 				return Arrays.asList("&6&lOpen complete reward", "&6Click to select a complete reward");
@@ -852,7 +920,7 @@ public class Mission extends QCWithCooldown {
 		private class AddCompleteRewardButton extends SelectOneElementButton<RewardType> {
 			public AddCompleteRewardButton() {
 				super("&cSelect RewardType to create", new ItemBuilder(Material.GLOWSTONE).setGuiProperty().build(), MissionEditor.this,
-						Quests.get().getRewardManager().getMissionRewardsTypes(), false, true, false);
+						Quests.get().getRewardManager().getSafeMissionRewardsTypes(), false, true, false);
 			}
 
 			@Override
@@ -880,6 +948,12 @@ public class Mission extends QCWithCooldown {
 				if (reward != null)
 					this.getTargetPlayer().openInventory(
 							reward.createEditorGui(getTargetPlayer(), MissionEditor.this).getInventory());
+			}
+			@Override
+			public void onClick(Player clicker, ClickType click) {
+				if (!Utils.checkPermission(clicker,Perms.ADMIN_EDITOR_ADD_REWARD))
+					return;
+				super.onClick(clicker, click);
 			}
 		}
 	}

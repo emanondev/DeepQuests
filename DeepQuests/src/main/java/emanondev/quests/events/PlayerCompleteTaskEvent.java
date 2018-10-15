@@ -2,7 +2,6 @@ package emanondev.quests.events;
 
 import org.bukkit.event.HandlerList;
 
-import emanondev.quests.Quests;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.task.Task;
 
@@ -16,11 +15,9 @@ public class PlayerCompleteTaskEvent extends QuestPlayerEvent {
 	}
 	private final Task task;
 	
-	public PlayerCompleteTaskEvent(QuestPlayer questPlayer, Task t) {
+	public PlayerCompleteTaskEvent(QuestPlayer questPlayer, Task task) {
 		super(questPlayer);
-		this.task = t;
-		Quests.getLogger("debug").log("PlayerCompleteTaskEvent "+questPlayer.getPlayer().getName()
-				+" "+task.getDisplayName());
+		this.task = task;
 	}
 	public Task getTask() {
 		return task;

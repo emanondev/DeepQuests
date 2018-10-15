@@ -22,7 +22,7 @@ import emanondev.quests.utils.QCWithCooldown;
 public class NeedCompletedMissionRequireType extends AbstractRequireType implements RequireType {
 
 	public NeedCompletedMissionRequireType() {
-		super("NEEDANOTHERQUESTMISSION");
+		super("NEEDCOMPLETEDMISSION");
 	}
 
 	public class NeedCompletedMissionRequire extends AbstractRequire implements Require,NoLoopQC {
@@ -36,12 +36,16 @@ public class NeedCompletedMissionRequireType extends AbstractRequireType impleme
 			missionData = new TargetMissionData(getSection(),this);
 		}
 
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			Mission m = missionData.getTargetMission();
 			if (m == null)
-				return "Quest ??? Mission ???";
-			return "Quest " + m.getParent().getDisplayName() + " Mission "
-				+ m.getDisplayName();
+				info.add("&9Required Mission: &cnot setted");
+			else {
+				info.add("&9Required Mission: &e" + m.getDisplayName());
+				info.add("  &9of Quest: &e"+m.getParent().getDisplayName());
+			}
+			return info;
 		}
 
 		@Override

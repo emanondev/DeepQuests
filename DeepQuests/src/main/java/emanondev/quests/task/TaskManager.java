@@ -44,9 +44,8 @@ public class TaskManager {
 			throw new IllegalArgumentException("The TaskType "+type.toString()
 						+" is already registered");
 		types.put(type.getKey(), type);
-		Quests.get().registerListener(type);
-		Quests.get().getLoggerManager().getLogger("log")
-			.log("Registered Task Type "+type.getKey());
+		Quests.get().getServer().getPluginManager().registerEvents(type, Quests.get());
+		Quests.get().consoleLog("Registered Task Type "+type.getKey());
 	}
 	/**
 	 * 

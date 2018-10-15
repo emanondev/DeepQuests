@@ -23,6 +23,12 @@ public abstract class ItemEditorButton extends AButton {
 
 	@Override
 	public ItemStack getItem() {
+		ItemStack current = getCurrentItem();
+		if (current==null || current.getType()==Material.AIR)
+			item.setType(Material.BARRIER);
+		else
+			item.setType(current.getType());
+		Utils.updateDescription(item, getButtonDescription(), getTargetPlayer(), true);
 		return item;
 	}
 	
@@ -30,12 +36,6 @@ public abstract class ItemEditorButton extends AButton {
 
 	@Override
 	public boolean update() {
-		ItemStack current = getCurrentItem();
-		if (current==null || current.getType()==Material.AIR)
-			item.setType(Material.BARRIER);
-		else
-			item.setType(current.getType());
-		Utils.updateDescription(item, getButtonDescription(), getTargetPlayer(), true);
 		return true;
 	}
 	protected void requestItem(Player p,BaseComponent[] description) {

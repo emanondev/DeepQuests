@@ -2,12 +2,10 @@ package emanondev.quests.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Material;
@@ -19,6 +17,7 @@ import emanondev.quests.Quests;
 import emanondev.quests.SpawnReasonTracker;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.newgui.button.Button;
+import emanondev.quests.newgui.button.CollectionElementsSelectorButton;
 import emanondev.quests.newgui.button.EnumSetSelectorButton;
 import emanondev.quests.newgui.button.StaticFlagButton;
 import emanondev.quests.newgui.gui.Gui;
@@ -170,19 +169,12 @@ public class EntityTaskInfo {
 		return new EntityTypeSelectorButton(parent);
 	}
 
-	private class EntityTypeSelectorButton extends EnumSetSelectorButton<EntityType> {
+	private class EntityTypeSelectorButton extends CollectionElementsSelectorButton<EntityType> {
 
 		public EntityTypeSelectorButton(Gui parent) {
-			super(EntityType.class, "&6&lEntityType Selector",
-					new ItemBuilder(Material.MONSTER_EGG).setGuiProperty().build(), parent,
-					new Predicate<EntityType>() {
-
-						@Override
-						public boolean test(EntityType type) {
-							return ALLOWED_ENTITY_TYPES.contains(type);
-						}
-
-					}, true);
+			super("&6&lEntityType Selector",
+					new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().build(), 
+					parent, ALLOWED_ENTITY_TYPES, true);
 		}
 
 		@Override
@@ -230,12 +222,7 @@ public class EntityTaskInfo {
 
 		@Override
 		public ItemStack getElementItem(EntityType type) {
-			return new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(getWoolColor(type)).build();
-		}
-
-		@Override
-		public Collection<EntityType> getCurrentCollection() {
-			return getListedEntityType();
+			return getGuiItem(type);
 		}
 
 		@Override
@@ -245,79 +232,81 @@ public class EntityTaskInfo {
 
 		@Override
 		public boolean onToggleElementRequest(EntityType element) {
-			if (getCurrentCollection().contains(element))
+			if (currentCollectionContains(element))
 				return removeEntityTypeFromList(element);
 			return addEntityTypeToList(element);
 		}
 
 		@Override
 		public boolean onWhiteListChangeRequest(boolean isWhitelist) {
-			return setSpawnReasonListWhitelist(isWhitelist);
+			return setEntityTypeListWhitelist(isWhitelist);
+		}
+
+		@Override
+		public boolean currentCollectionContains(EntityType element) {
+			return getListedEntityType().contains(element);
 		}
 
 	}
 
-	private final static EnumSet<EntityType> ALLOWED_ENTITY_TYPES = loadAllowedTypes();
+	private final static List<EntityType> ALLOWED_ENTITY_TYPES = loadAllowedTypes();
 
-	private static EnumSet<EntityType> loadAllowedTypes() {
-		EnumSet<EntityType> list = EnumSet.noneOf(EntityType.class);
+	private static List<EntityType> loadAllowedTypes() {
+		ArrayList<EntityType> list = new ArrayList<EntityType>();
 		try {
-			list.add(EntityType.ZOMBIE);
-			list.add(EntityType.WOLF);
-			list.add(EntityType.WITCH);
-			list.add(EntityType.WITHER);
-			list.add(EntityType.VILLAGER);
-			list.add(EntityType.SQUID);
-			list.add(EntityType.SPIDER);
-			list.add(EntityType.SNOWMAN);
-			list.add(EntityType.SLIME);
-			list.add(EntityType.SKELETON);
-			list.add(EntityType.SILVERFISH);
-			list.add(EntityType.SHEEP);
-			list.add(EntityType.RABBIT);
 			list.add(EntityType.PLAYER);
-			list.add(EntityType.BAT);
-			list.add(EntityType.PIG);
-			list.add(EntityType.PIG_ZOMBIE);
-			list.add(EntityType.OCELOT);
-			list.add(EntityType.MUSHROOM_COW);
-			list.add(EntityType.COW);
-			list.add(EntityType.MAGMA_CUBE);
-			list.add(EntityType.IRON_GOLEM);
-			list.add(EntityType.HORSE);
-			list.add(EntityType.GUARDIAN);
+			list.add(EntityType.ZOMBIE);
+			list.add(EntityType.ZOMBIE_VILLAGER);// 1.8
+			list.add(EntityType.HUSK);// 1.10
 			list.add(EntityType.GIANT);
-			list.add(EntityType.GHAST);
-			list.add(EntityType.ENDERMITE);
-			list.add(EntityType.ENDERMAN);
-			list.add(EntityType.ENDER_DRAGON);
-			list.add(EntityType.WITHER_SKELETON);
-			list.add(EntityType.CREEPER);
+			list.add(EntityType.SKELETON);
+			list.add(EntityType.STRAY);// 1.10
+			list.add(EntityType.WITCH);
+			list.add(EntityType.SPIDER);
 			list.add(EntityType.CAVE_SPIDER);
-			list.add(EntityType.CHICKEN);
+			list.add(EntityType.CREEPER);
+			list.add(EntityType.SILVERFISH);
+			list.add(EntityType.GUARDIAN);//1.8
+			list.add(EntityType.ELDER_GUARDIAN);// 1.8
+			
+			list.add(EntityType.VINDICATOR);// 1.11
+			list.add(EntityType.VEX);// 1.11
+			list.add(EntityType.EVOKER);// 1.11
+			list.add(EntityType.ILLUSIONER);// 1.12
+			
+			list.add(EntityType.SLIME);
+			list.add(EntityType.MAGMA_CUBE);
+			list.add(EntityType.PIG_ZOMBIE);
 			list.add(EntityType.BLAZE);
-			// 1.8
-
-			list.add(EntityType.DONKEY);
-			list.add(EntityType.ELDER_GUARDIAN);
-			list.add(EntityType.MULE);
-			list.add(EntityType.SKELETON_HORSE);
-			list.add(EntityType.ZOMBIE_HORSE);
-			list.add(EntityType.ZOMBIE_VILLAGER);
-			// 1.9
-			list.add(EntityType.SHULKER);
-			// 1.10
-			list.add(EntityType.POLAR_BEAR);
-			list.add(EntityType.HUSK);
-			list.add(EntityType.STRAY);
-			// 1.11
-			list.add(EntityType.LLAMA);
-			list.add(EntityType.EVOKER);
-			list.add(EntityType.VEX);
-			list.add(EntityType.VINDICATOR);
-			// 1.12
-			list.add(EntityType.PARROT);
-			list.add(EntityType.ILLUSIONER);
+			list.add(EntityType.GHAST);
+			list.add(EntityType.WITHER_SKELETON);
+			list.add(EntityType.WITHER);
+			
+			list.add(EntityType.ENDERMAN);
+			list.add(EntityType.ENDERMITE);
+			list.add(EntityType.SHULKER);// 1.9
+			list.add(EntityType.ENDER_DRAGON);
+			list.add(EntityType.VILLAGER);
+			list.add(EntityType.IRON_GOLEM);
+			list.add(EntityType.SNOWMAN);
+			list.add(EntityType.HORSE);
+			list.add(EntityType.DONKEY);// 1.8
+			list.add(EntityType.MULE);// 1.8
+			list.add(EntityType.SKELETON_HORSE);// 1.8
+			list.add(EntityType.ZOMBIE_HORSE);// 1.8
+			list.add(EntityType.PIG);
+			list.add(EntityType.CHICKEN);
+			list.add(EntityType.SHEEP);
+			list.add(EntityType.COW);
+			list.add(EntityType.MUSHROOM_COW);
+			list.add(EntityType.WOLF);
+			list.add(EntityType.OCELOT);
+			list.add(EntityType.RABBIT);
+			list.add(EntityType.LLAMA);// 1.11
+			list.add(EntityType.POLAR_BEAR);// 1.10
+			list.add(EntityType.SQUID);
+			list.add(EntityType.PARROT);// 1.12
+			list.add(EntityType.BAT);
 			// 1.13
 			/*
 			 * list.add(TURTLE); list.add(PHANTOM); list.add(COD); list.add(SALMON);
@@ -329,82 +318,113 @@ public class EntityTaskInfo {
 		return list;
 	}
 
-	private static short getWoolColor(EntityType type) {
+	private static ItemStack getGuiItem(EntityType type) {
 		try {
 			switch (type) {
 			case ZOMBIE:
+				return new ItemBuilder(Material.ROTTEN_FLESH).setGuiProperty().build();
 			case WITCH:
+				return new ItemBuilder(Material.GLASS_BOTTLE).setGuiProperty().build();
 			case SPIDER:
-			case SLIME:
-			case SKELETON:
-			case SILVERFISH:
-			case GIANT:
-			case ENDERMITE:
-			case ENDERMAN:
-			case CREEPER:
 			case CAVE_SPIDER:
-				return 14;
+				return new ItemBuilder(Material.SPIDER_EYE).setGuiProperty().build();
+			case SLIME:
+				return new ItemBuilder(Material.SLIME_BALL).setGuiProperty().build();
+			case SKELETON:
+				return new ItemBuilder(Material.BONE).setGuiProperty().build();
+			case SILVERFISH:
+				return new ItemBuilder(Material.SMOOTH_BRICK).setGuiProperty().build();
+			case GIANT:
+				return new ItemBuilder(Material.BONE_BLOCK).setGuiProperty().build();
+			case ENDERMITE:
+				return new ItemBuilder(Material.ENDER_PEARL).setAmount(2).setGuiProperty().build();
+			case ENDERMAN:
+				return new ItemBuilder(Material.ENDER_PEARL).setGuiProperty().build();
+			case CREEPER:
+				return new ItemBuilder(Material.SULPHUR).setGuiProperty().build();
 			case WOLF:
 			case VILLAGER:
+				return new ItemBuilder(Material.EMERALD).setGuiProperty().build();
 			case SNOWMAN:
+				return new ItemBuilder(Material.SNOW_BALL).setGuiProperty().build();
 			case IRON_GOLEM:
-				return 0;
+				return new ItemBuilder(Material.IRON_BLOCK).setGuiProperty().build();
 			case WITHER:
+				return new ItemBuilder(Material.NETHER_STAR).setGuiProperty().build();
 			case ENDER_DRAGON:
-				return 15;
+				return new ItemBuilder(Material.DRAGON_EGG).setGuiProperty().build();
 			case SQUID:
+				return new ItemBuilder(Material.INK_SACK).setGuiProperty().build();
 			case GUARDIAN:
-				return 11;
+				return new ItemBuilder(Material.PRISMARINE_SHARD).setGuiProperty().build();
 			case BAT:
+				return new ItemBuilder(Material.STONE).setGuiProperty().build();
 			case OCELOT:
+				return new ItemBuilder(Material.RAW_FISH).setGuiProperty().build();
 			case PIG:
+				return new ItemBuilder(Material.PORK).setGuiProperty().build();
 			case SHEEP:
+				return new ItemBuilder(Material.WOOL).setGuiProperty().build();
 			case RABBIT:
+				return new ItemBuilder(Material.RABBIT_FOOT).setGuiProperty().build();
 			case MUSHROOM_COW:
+				return new ItemBuilder(Material.RED_MUSHROOM).setGuiProperty().build();
 			case COW:
-			case HORSE:
+				return new ItemBuilder(Material.MILK_BUCKET).setGuiProperty().build();
 			case CHICKEN:
-				return 5;
+				return new ItemBuilder(Material.RAW_CHICKEN).setGuiProperty().build();
 			case PLAYER:
-				return 4;
+				return new ItemBuilder(Material.SKULL_ITEM).setDamage(3).setGuiProperty().build();
 			case BLAZE:
+				return new ItemBuilder(Material.BLAZE_ROD).setGuiProperty().build();
 			case PIG_ZOMBIE:
+				return new ItemBuilder(Material.GOLD_NUGGET).setGuiProperty().build();
 			case MAGMA_CUBE:
+				return new ItemBuilder(Material.MAGMA_CREAM).setGuiProperty().build();
 			case GHAST:
+				return new ItemBuilder(Material.GHAST_TEAR).setGuiProperty().build();
 			case WITHER_SKELETON:
-				return 1;
+				return new ItemBuilder(Material.NETHER_BRICK).setGuiProperty().build();
 			// 1.8
 
+			case HORSE:
+				return new ItemBuilder(Material.SADDLE).setGuiProperty().build();
 			case DONKEY:
+				return new ItemBuilder(Material.SADDLE).setAmount(2).setGuiProperty().build();
 			case MULE:
+				return new ItemBuilder(Material.SADDLE).setAmount(3).setGuiProperty().build();
 			case SKELETON_HORSE:
+				return new ItemBuilder(Material.SADDLE).setAmount(4).setGuiProperty().build();
 			case ZOMBIE_HORSE:
-				return 5;
+				return new ItemBuilder(Material.SADDLE).setAmount(5).setGuiProperty().build();
 			case ELDER_GUARDIAN:
-				return 11;
+				return new ItemBuilder(Material.PRISMARINE_CRYSTALS).setGuiProperty().build();
 			case ZOMBIE_VILLAGER:
-				return 14;
+				return new ItemBuilder(Material.ROTTEN_FLESH).setAmount(2).setGuiProperty().build();
 			// 1.9
 			case SHULKER:
-				return 14;
+				return new ItemBuilder(Material.PURPLE_SHULKER_BOX).setGuiProperty().build();
 			// 1.10
 			case POLAR_BEAR:
-				return 5;
+				return new ItemBuilder(Material.SNOW_BLOCK).setGuiProperty().build();
 			case HUSK:
+				return new ItemBuilder(Material.ROTTEN_FLESH).setAmount(3).setGuiProperty().build();
 			case STRAY:
-				return 14;
+				return new ItemBuilder(Material.BONE).setAmount(2).setGuiProperty().build();
 			// 1.11
 			case LLAMA:
-				return 5;
+				return new ItemBuilder(Material.CARPET).setGuiProperty().build();
 			case EVOKER:
+				return new ItemBuilder(Material.MONSTER_EGG).setGuiProperty().build();
 			case VEX:
+				return new ItemBuilder(Material.IRON_SWORD).setGuiProperty().build();
 			case VINDICATOR:
-				return 14;
+				return new ItemBuilder(Material.IRON_AXE).setGuiProperty().build();
 			// 1.12
 			case PARROT:
-				return 5;
+				return new ItemBuilder(Material.NOTE_BLOCK).setGuiProperty().build();
 			case ILLUSIONER:
-				return 14;
+				return new ItemBuilder(Material.LINGERING_POTION).setGuiProperty().build();
 			// 1.13
 			/*
 			 * case TURTLE: case PHANTOM: case COD: case SALMON: case PUFFER_FISH: case
@@ -414,7 +434,7 @@ public class EntityTaskInfo {
 			}
 		} catch (Exception e) {
 		}
-		return 0;
+		return new ItemBuilder(Material.BARRIER).setGuiProperty().build();
 
 	}
 
@@ -522,18 +542,13 @@ public class EntityTaskInfo {
 		}
 
 		@Override
-		public Collection<SpawnReason> getCurrentCollection() {
-			return getListedSpawnReason();
-		}
-
-		@Override
 		public boolean getIsWhitelist() {
 			return isSpawnReasonListWhitelist();
 		}
 
 		@Override
 		public boolean onToggleElementRequest(SpawnReason element) {
-			if (getCurrentCollection().contains(element))
+			if (currentCollectionContains(element))
 				return removeSpawnReasonFromList(element);
 			return addSpawnReasonToList(element);
 		}
@@ -541,6 +556,11 @@ public class EntityTaskInfo {
 		@Override
 		public boolean onWhiteListChangeRequest(boolean isWhitelist) {
 			return setSpawnReasonListWhitelist(isWhitelist);
+		}
+
+		@Override
+		public boolean currentCollectionContains(SpawnReason element) {
+			return getListedSpawnReason().contains(element);
 		}
 
 	}

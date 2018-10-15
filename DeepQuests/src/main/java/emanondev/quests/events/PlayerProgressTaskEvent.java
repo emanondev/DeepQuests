@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-import emanondev.quests.Quests;
 import emanondev.quests.player.QuestPlayer;
 import emanondev.quests.reward.Reward;
 import emanondev.quests.task.Task;
@@ -28,8 +27,6 @@ public class PlayerProgressTaskEvent extends QuestPlayerEvent implements Cancell
 		super(questPlayer);
 		this.task = t;
 		this.progressAmount = amount;//TODO rewards
-		Quests.getLogger("debug").log("PlayerProgressTaskEvent "+questPlayer.getPlayer().getName()
-				+" "+task.getDisplayName()+" +"+amount);
 	}
 	public int getProgressAmount() {
 		return progressAmount;

@@ -37,7 +37,7 @@ public class RegionTaskInfo extends QCData {
 	}
 
 	public boolean setRegionName(String name) {
-		if (name.isEmpty())
+		if (name!=null && name.isEmpty())
 			name = null;
 		if (regionName == name || (regionName != null && regionName.equals(name)))
 			return false;

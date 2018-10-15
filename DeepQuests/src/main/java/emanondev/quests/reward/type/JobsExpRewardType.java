@@ -45,7 +45,7 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 		return desc;
 	}
 	
-	public class JobsExpReward extends AbstractReward implements Reward {
+	public class JobsExpReward extends AbstractReward {
 		private JobTypeData jobData;
 		private ExperienceData expData;
 
@@ -63,11 +63,15 @@ public class JobsExpRewardType extends AbstractRewardType implements RewardType 
 		}
 		
 
-		@Override
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			if (jobData.getJob()==null)
-				return "Job reward not set";
-			return "Reward "+expData.getExperience()+" experience on Job "+jobData.getJob().getName();
+				info.add("&9Reward Job Exp: &cnot setted");
+			else {
+				info.add("&9Reward Exp: &e"+expData.getExperience());
+				info.add("  &9on Job: &e"+jobData.getJob().getName());
+			}
+			return info;
 		}
 
 		@Override

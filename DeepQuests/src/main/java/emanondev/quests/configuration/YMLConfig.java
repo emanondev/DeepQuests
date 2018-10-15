@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
@@ -54,6 +56,8 @@ public class YMLConfig extends YamlConfiguration implements ConfigSection {
 	 *         won't be overriden
 	 */
 	public boolean reload() {
+		System.out.println("Reloading file "+file.getPath());
+		System.out.println("Dirty "+dirty);
 		// boolean existed = file.exists();
 		if (!file.exists()) {
 
@@ -98,6 +102,8 @@ public class YMLConfig extends YamlConfiguration implements ConfigSection {
 	 * this just override the file on disk with his copy on the ram
 	 */
 	public void save() {
+		System.out.println("Saving file "+file.getPath());
+		System.out.println("Dirty "+dirty);
 		try {
 			this.save(file);
 			setDirty(false);
@@ -250,16 +256,25 @@ public class YMLConfig extends YamlConfiguration implements ConfigSection {
 		return this;
 	}
 
-	private boolean dirty = true;
+	private boolean dirty = false;
 	
 	@Override
 	public boolean isDirty() {
 		return dirty;
 	}
 
+	
 	@Override
 	public void setDirty(boolean value) {
 		dirty = value;
+		if (value==true)
+			Bukkit.getScheduler().runTaskLaterAsynchronously(pl,new Runnable(){
+				public void run() {
+					if (isDirty()) {
+						save();
+					}
+				}
+			},100L);
 	}
 	
 }

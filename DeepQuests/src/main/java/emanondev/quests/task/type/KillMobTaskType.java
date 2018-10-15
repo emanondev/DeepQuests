@@ -63,11 +63,11 @@ public class KillMobTaskType extends TaskType {
 		}
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(9, entityInfo.getEntityTypeSelectorButton(gui));
-			gui.putButton(10, entityInfo.getSpawnReasonSelectorButton(gui));
-			gui.putButton(29, entityInfo.getIgnoreCitizenButton(gui));
-			gui.putButton(27, drops.getRemoveDropsButton(gui));
-			gui.putButton(28, drops.getRemoveExpButton(gui));
+			gui.putButton(0, entityInfo.getEntityTypeSelectorButton(gui));
+			gui.putButton(1, entityInfo.getSpawnReasonSelectorButton(gui));
+			gui.putButton(9, entityInfo.getIgnoreCitizenButton(gui));
+			gui.putButton(10, drops.getRemoveDropsButton(gui));
+			gui.putButton(11, drops.getRemoveExpButton(gui));
 			return gui;
 		}
 	}

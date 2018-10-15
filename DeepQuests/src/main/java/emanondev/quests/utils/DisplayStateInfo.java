@@ -23,12 +23,12 @@ public abstract class DisplayStateInfo extends QCData {
 	public DisplayStateInfo(ConfigSection m, QuestComponent parent) {
 		super(m.loadSection("display"),parent);
 		for (int i = 0; i < DisplayState.values().length; i++) {
-			infos.put(DisplayState.values()[i], new Info(m, DisplayState.values()[i]));
+			infos.put(DisplayState.values()[i], new Info(DisplayState.values()[i]));
 		}
 	}
 
 	private class Info {
-		public Info(ConfigSection m, DisplayState state) {
+		public Info(DisplayState state) {
 			String basePath = state.toString();
 			craftDisplayItem(basePath + PATH_ITEM, getDefaultItem(state), shouldItemAutogen(state));
 			craftDisplayDescription(basePath + PATH_DESC, getDefaultDescription(state),

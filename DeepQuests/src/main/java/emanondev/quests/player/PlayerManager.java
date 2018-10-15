@@ -11,8 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import emanondev.quests.Quests;
-
 /**
  * This class is responsible to keep load players files when they login or when required<br>
  * also this class is responsible of saving players files when they log out or when saveAll() is called<br>
@@ -24,13 +22,8 @@ import emanondev.quests.Quests;
  */
 public class PlayerManager implements Listener {
 	private static final HashMap<Player,QuestPlayer> players = new HashMap<Player,QuestPlayer>();
-	private static boolean registered = false;
 
 	public PlayerManager() {
-		if (!registered) {
-			Quests.get().registerListener(this);
-			registered = true;
-		}
 		players.clear();
 		Bukkit.getOnlinePlayers().forEach((p)->{
 			players.put(p, new QuestPlayer(p));

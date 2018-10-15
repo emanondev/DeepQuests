@@ -18,10 +18,10 @@ import emanondev.quests.reward.MissionRewardType;
 import emanondev.quests.utils.NoLoopQC;
 import emanondev.quests.utils.QuestComponent;
 
-public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType implements MissionRewardType {
+public class StartMissionRewardType  extends AbstractRewardType implements MissionRewardType {
 
-	public ForceStartAnotherQuestMissionRewardType() {
-		super("FORCESTARTANOTHERQUESTMISSION");
+	public StartMissionRewardType() {
+		super("STARTMISSION");
 	}
 
 	public class ForceStartAnotherQuestMissionReward extends AbstractReward implements NoLoopQC,MissionReward {
@@ -32,12 +32,16 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 			missionData = new TargetMissionData(getSection(),this);
 		}
 
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			Mission m = missionData.getTargetMission();
 			if (m == null)
-				return "Quest ??? Mission ???";
-			return "Quest " + m.getParent().getDisplayName() + " Mission "
-					+ m.getDisplayName();
+				info.add("&9Start Mission: &cnot setted");
+			else {
+				info.add("&9Start Mission: &e" + m.getDisplayName());
+				info.add("  &9of Quest: &e"+m.getParent().getDisplayName());
+			}
+			return info;
 		}
 
 		public Mission getParent() {
@@ -46,7 +50,7 @@ public class ForceStartAnotherQuestMissionRewardType extends AbstractRewardType 
 
 		@Override
 		public MissionRewardType getType() {
-			return ForceStartAnotherQuestMissionRewardType.this;
+			return StartMissionRewardType.this;
 		}
 
 		@Override

@@ -75,11 +75,16 @@ public class McmmoLvRequireType extends AbstractRequireType implements RequireTy
 			return McmmoLvRequireType.this;
 		}
 
-		@Override
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			if (skillTypeData.getSkillType()==null)
-				return "Require Mcmmo Level not set";
-			return "Require Level "+levelData.getLevel()+" on "+skillTypeData.getSkillType().toString()+" Mcmmo skill";
+				info.add("&9Required Skill level: &cnot setted");
+			else {
+				info.add("&9Required Level: &e"+levelData.getLevel());
+				info.add("  &9on Skill: &e"+skillTypeData.getSkillType().toString());
+				
+			}
+			return info;
 		}
 
 		public MCMMOSkillTypeData getSkillTypeData() {

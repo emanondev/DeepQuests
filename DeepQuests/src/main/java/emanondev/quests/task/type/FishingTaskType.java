@@ -61,8 +61,8 @@ public class FishingTaskType extends TaskType {
 
 		public TaskEditor createEditorGui(Player p, Gui previusHolder) {
 			TaskEditor gui = super.createEditorGui(p, previusHolder);
-			gui.putButton(27, drops.getRemoveDropsButton(gui));
-			gui.putButton(28, drops.getRemoveExpButton(gui));
+			gui.putButton(9, drops.getRemoveDropsButton(gui));
+			gui.putButton(10, drops.getRemoveExpButton(gui));
 			return gui;
 		}
 		

@@ -3,10 +3,12 @@ package emanondev.quests.require;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.player.QuestPlayer;
@@ -22,14 +24,17 @@ public class RequireManager {
 		requiresType.put(type.getKey(), type);
 		missionRequiresType.put(type.getKey(), type);
 		questRequiresType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Require Type "+type.getKey());
 	}
 
 	public void registerMissionRequireType(MissionRequireType type) {
 		missionRequiresType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Mission Require Type "+type.getKey());
 	}
 
 	public void registerQuestRequireType(QuestRequireType type) {
 		questRequiresType.put(type.getKey(), type);
+		Quests.get().consoleLog("Registered Quest Require Type "+type.getKey());
 	}
 
 	public LinkedHashMap<String, Require> loadRequires(Mission m, ConfigSection section) {
@@ -114,5 +119,27 @@ public class RequireManager {
 
 	public Collection<RequireType> getMissionRequiresTypes() {
 		return Collections.unmodifiableCollection(missionRequiresType.values());
+	}
+
+	public Collection<RequireType> getSafeQuestRequiresTypes() {
+		HashSet<RequireType> set = new HashSet<RequireType>();
+		for (RequireType type:questRequiresType.values()) {
+			if (type.getClass().getAnnotations().length>0)
+				if (type.getClass().getAnnotation(Deprecated.class)!=null)
+					continue;
+			set.add(type);
+		}
+		return set;
+	}
+
+	public Collection<RequireType> getSafeMissionRequiresTypes() {
+		HashSet<RequireType> set = new HashSet<RequireType>();
+		for (RequireType type:missionRequiresType.values()) {
+			if (type.getClass().getAnnotations().length>0)
+				if (type.getClass().getAnnotation(Deprecated.class)!=null)
+					continue;
+			set.add(type);
+		}
+		return set;
 	}
 }

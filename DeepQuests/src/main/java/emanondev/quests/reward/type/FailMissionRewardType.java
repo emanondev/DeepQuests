@@ -34,12 +34,16 @@ public class FailMissionRewardType extends AbstractRewardType implements RewardT
 			missionData = new TargetMissionData(getSection(),this);
 		}
 
-		public String getInfo() {
+		public List<String> getInfo() {
+			List<String> info = super.getInfo();
 			Mission m = missionData.getTargetMission();
 			if (m == null)
-				return "Quest ??? Mission ???";
-			return "Quest " + m.getParent().getDisplayName() + " Mission "
-				+ m.getDisplayName();
+				info.add("&9Fail Mission: &cnot setted");
+			else {
+				info.add("&9Fail Mission: &e" + m.getDisplayName());
+				info.add("  &9of Quest: &e"+m.getParent().getDisplayName());
+			}
+			return info;
 		}
 
 		@Override

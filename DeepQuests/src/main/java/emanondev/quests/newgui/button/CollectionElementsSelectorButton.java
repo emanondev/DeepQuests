@@ -114,7 +114,10 @@ public abstract class CollectionElementsSelectorButton<E> extends AButton {
 			}
 			@Override
 			public boolean getCurrentValue() {
-				return currentCollectionContains(element);
+				if (currentCollectionContains(element))
+					return getIsWhitelist();
+				else
+					return !getIsWhitelist();
 			}
 			@Override
 			public boolean onValueChangeRequest(boolean value) {

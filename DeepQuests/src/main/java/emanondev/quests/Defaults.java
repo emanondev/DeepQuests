@@ -11,6 +11,11 @@ import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.utils.DisplayState;
 import emanondev.quests.utils.MemoryUtils;
 
+/**
+ * utility class to load default values, refears to file defaultConfig.yml
+ * @author utente
+ *
+ */
 public class Defaults {
 
 	private static YMLConfig data = new YMLConfig(Quests.get(), "defaultConfig");
@@ -24,7 +29,6 @@ public class Defaults {
 		public static boolean canSeeMissionDisplay(DisplayState state) {
 			return data.getBoolean(BASE_PATH+"mission.cansee."+state.toString().toLowerCase(),true);
 		}
-		
 	}
 
 	public static boolean reload() {

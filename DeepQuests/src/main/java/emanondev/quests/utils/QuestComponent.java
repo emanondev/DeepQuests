@@ -1,5 +1,7 @@
 package emanondev.quests.utils;
 
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import emanondev.quests.newgui.gui.Gui;
@@ -71,4 +73,6 @@ public interface QuestComponent extends Savable, WithGui,Comparable<QuestCompone
 	 * the load of the quest component has changed some of it's variables?
 	 */
 	public boolean isLoadDirty();
+	
+	public abstract List<String> getInfo();
 }

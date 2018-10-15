@@ -1,0 +1,49 @@
+#20 ticks = 1 second
+duration:
+    task:
+        ticks: 70
+# BarColor :
+# BLUE 	 GREEN 	 PINK 	 PURPLE 	 RED 	 WHITE 	 YELLOW
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
+barcolor:
+    default: "BLUE"
+    task:
+        enterregion: BLUE
+        leaveregion: BLUE
+        breakblock: BLUE
+        placeblock: BLUE
+        interactat: BLUE
+        farmertask: BLUE
+        breedmob: BLUE
+        fishing: BLUE
+        killmob: BLUE
+        shearsheep: BLUE
+        tamemob: BLUE
+        killnpc: BLUE
+        talknpc: BLUE
+        delivertonpc: BLUE
+    
+# BarStyle : 
+#  SEGMENTED_10 	Splits the boss bar into 10 segments
+#  SEGMENTED_12 	Splits the boss bar into 12 segments
+#  SEGMENTED_20 	Splits the boss bar into 20 segments
+#  SEGMENTED_6  	Splits the boss bar into 6 segments
+#  SOLID            Makes the boss bar solid (no segments)
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
+barstyle:
+    default: "SEGMENTED_20"
+    task:
+        enterregion: SEGMENTED_20
+        leaveregion: SEGMENTED_20
+        breakblock: SEGMENTED_20
+        placeblock: SEGMENTED_20
+        interactat: SEGMENTED_20
+        farmertask: SEGMENTED_20
+        breedmob: SEGMENTED_20
+        fishing: SEGMENTED_20
+        killmob: SEGMENTED_20
+        shearsheep: SEGMENTED_20
+        tamemob: SEGMENTED_20
+        killnpc: SEGMENTED_20
+        talknpc: SEGMENTED_20
+        delivertonpc: SEGMENTED_20

@@ -7,29 +7,43 @@ package emanondev.quests;
  * contains all permission constants
  */
 public class Perms {
+	
 	/**
-	 * use GUI_SEE_ALL
+	 * allows to use /qa help
 	 */
-	
-	
-	public final static String GUI_SEE_ALL = 			"quests.gui.seeall";
-	
-	public static final String ADMIN_HELP = 						"quests.admin.help";
-	public static final String ADMIN_RELOAD = 						"quests.admin.reload";
-	public static final String ADMIN_LISTQUEST = 					"quests.admin.listquest";
-	public static final String ADMIN_QUEST = 						"quests.admin.quest";
-	public static final String ADMIN_QUEST_LISTMISSION =	 		"quests.admin.quest.listmission";
-	public static final String ADMIN_QUEST_MISSION = 				"quests.admin.quest.mission";
-	public static final String ADMIN_QUEST_MISSION_INFO = 			"quests.admin.quest.mission.info";
-	public static final String ADMIN_DELETEQUEST =					"quests.admin.deletequest";
-	public static final String ADMIN_ADDQUEST =						"quests.admin.addquest";
-	public static final String ADMIN_QUEST_INFO = 					"quests.admin.quest.info";
-	public static final String ADMIN_QUEST_DELETEMISSION = 			"quests.admin.quest.deletemission";
-	public static final String ADMIN_QUEST_ADDMISSION = 			"quests.admin.quest.addmission";
-	public static final String ADMIN_QUEST_MISSION_TASK = 			"quests.admin.quest.mission.task";
-	public static final String ADMIN_QUEST_MISSION_TASK_INFO = 		"quests.admin.quest.mission.task.info";
-	public static final String ADMIN_EDITOR = 						"quests.admin.editor";
+	public static final String ADMIN_HELP = 			"quests.admin.help";
+	/**
+	 * allows to use /qa reload
+	 */
+	public static final String ADMIN_RELOAD = 			"quests.admin.reload";
+	/**
+	 * allows to use /qa editor
+	 */
+	public static final String ADMIN_EDITOR = 			"quests.admin.editor";
+	public static final String ADMIN_EDITOR_ADD_TASK = 			"quests.admin.editor.add.task";
+	public static final String ADMIN_EDITOR_ADD_MISSION = 		"quests.admin.editor.add.mission";
+	public static final String ADMIN_EDITOR_ADD_QUEST = 		"quests.admin.editor.add.quest";
+	public static final String ADMIN_EDITOR_ADD_REWARD = 		"quests.admin.editor.add.reward";
+	public static final String ADMIN_EDITOR_ADD_REQUIRE = 		"quests.admin.editor.add.require";
+	public static final String ADMIN_EDITOR_DELETE_TASK = 		"quests.admin.editor.delete.task";
+	public static final String ADMIN_EDITOR_DELETE_MISSION = 	"quests.admin.editor.delete.mission";
+	public static final String ADMIN_EDITOR_DELETE_QUEST = 		"quests.admin.editor.delete.quest";
+	public static final String ADMIN_EDITOR_DELETE_REWARD = 	"quests.admin.editor.delete.reward";
+	public static final String ADMIN_EDITOR_DELETE_REQUIRE = 	"quests.admin.editor.delete.require";
+	/**
+	 * allows to use /qa citizen
+	 */
+	public static final String ADMIN_CITIZEN = 			"quests.admin.citizen";
+	/**
+	 * allows to use /qa citizen
+	 */
+	public static final String ADMIN_PLAYER = 			"quests.admin.player";
 
-
-	public static final String SEE_TASK_BOSSBAR = "quests.bossbar.seetask";
+	/**
+	 * allows to see BossBar when task make progress
+	 */
+	public static final String SEE_TASK_BOSSBAR =		"quests.bossbar.seetask";
+	public static final String ADMIN_SWAP_PLAYERS = "quests.admin.swap.player";
+	public static final String ADMIN_RESET_PLAYER_QUEST = "quests.admin.reset.quest";
+	public static final String ADMIN_RESET_PLAYER_MISSION = "quests.admin.reset.mission";
 }

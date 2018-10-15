@@ -54,6 +54,45 @@ public class OfflineQuestPlayer {
 		data.save();
 		shouldSave = false;
 	}
+	public boolean passTo(OfflineQuestPlayer offQP) {
+		if (offQP.getPlayer().getName().equals(getPlayer().getName()))
+			return false;
+		save();
+		
+		offQP.save();
+		if (getPlayer().isOnline())
+			getPlayer().getPlayer().kickPlayer("Changing Quest Database");
+		if (offQP.getPlayer().isOnline())
+			offQP.getPlayer().getPlayer().kickPlayer("Changing Quest Database");
+		try {
+			String data1 = data.saveToString();
+			String data2 = offQP.data.saveToString();
+
+			data.getKeys(false).forEach((key) -> data.set(key,null));
+			offQP.data.getKeys(false).forEach((key) -> offQP.data.set(key,null));
+			
+			data.loadFromString(data2);
+			offQP.data.loadFromString(data1);
+			
+			data.save();
+			offQP.data.save();
+			/*
+			File temp = new File(Quests.get().getDataFolder(),FILE_BASE_PATH+"tempFile");
+			File player1 = new File(Quests.get().getDataFolder(),FILE_BASE_PATH+getPlayer().getUniqueId().toString());
+			File player2 = new File(Quests.get().getDataFolder(),FILE_BASE_PATH+offQP.getPlayer().getUniqueId().toString());
+			
+			if(!data.getFile().renameTo(temp))
+					throw new IOException();
+			if(!offQP.data.getFile().renameTo(player1))
+					throw new IOException();
+			if(!data.getFile().renameTo(player2))
+					throw new IOException();*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	private static final String FILE_BASE_PATH = "playerdatabase"+File.separator;
 	private static final String PATH_QUESTS = "quests";
@@ -372,7 +411,7 @@ public class OfflineQuestPlayer {
 				end();
 			}
 			protected void fail() {//TODO
-				if (mission.getCooldownData().isRepetable()==false) {
+				if (mission.getCooldownData().isRepeatable()==false) {
 					this.isFailed = true;
 					data.set(baseMissionPath+"."+PATH_IS_FAILED, isFailed);
 				}
