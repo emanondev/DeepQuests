@@ -9,8 +9,6 @@ public abstract class AButton implements Button {
 	private Gui parent;
 	
 	public AButton(Gui parent) {
-		/*if (parent==null)
-			throw new NullPointerException();*/
 		this.parent = parent;
 	}
 	

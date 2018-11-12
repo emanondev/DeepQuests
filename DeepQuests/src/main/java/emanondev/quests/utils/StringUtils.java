@@ -1,5 +1,7 @@
 package emanondev.quests.utils;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +17,20 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class StringUtils {
+	private static DecimalFormat format = loadDecimalFormat();
+	private static DecimalFormat loadDecimalFormat() {
+		DecimalFormat format = new DecimalFormat();
+		format.setMaximumFractionDigits(2);
+		format.setMinimumFractionDigits(2);
+		format.setRoundingMode(RoundingMode.FLOOR);
+		return format;
+	}
+	
+	
+	public static DecimalFormat getDecimalFormat() {
+		return format;
+	}
+	
 	public static String applyHolder(String target, String holder,String replacer){
 		if (target==null)
 			return null;

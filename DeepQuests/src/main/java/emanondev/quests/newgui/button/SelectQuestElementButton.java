@@ -79,6 +79,7 @@ public abstract class SelectQuestElementButton<E extends QuestComponent> extends
 				this.setControlButton(0, new NullElementButton());
 			if (allowBack)
 				this.setControlButton(8, new BackButton(this));
+			updateInventory();
 		}
 
 		@Override
@@ -175,12 +176,12 @@ public abstract class SelectQuestElementButton<E extends QuestComponent> extends
 
 		@Override
 		public ItemStack getItem() {
-			return item;
+			return Utils.setDescription(item,getQuestComponent().getInfo(),null,true);
 		}
 
 		@Override
 		public boolean update() {
-			return false;
+			return true;
 		}
 	}
 

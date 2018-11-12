@@ -1,0 +1,55 @@
+package emanondev.quests.interfaces;
+
+import java.util.regex.Pattern;
+
+public class Paths {
+	public static final Pattern ALPHANUMERIC = Pattern.compile("[a-zA-Z_0-9]*");
+	public static final String KEY = "unique-key";
+	public static final String USERDATA_LAST_STARTED = "last-started";
+	//public static final String USERDATA_IS_STARTED = "is-started";
+	public static final String USERDATA_LAST_COMPLETED = "last-sompleted";
+	public static final String USERDATA_COMPLETED_TIMES = "completed-times";
+	//public static final String USERDATA_IS_FAILED = "is-failed";
+	public static final String USERDATA_FAILED_TIMES = "failed-times";
+	public static final String USERDATA_LAST_FAILED = "last-failed";
+	public static final String USERDATA_MISSION_POINTS = "mission-points";
+	public static final String USERDATA_QUEST_POINTS = "quest-points";
+	public static final String USERDATA_MISSION_DATA_LIST = "mission-data-list";
+	public static final String USERDATA_QUEST_DATA_LIST = "quest-data-list";
+	public static final String USERDATA_TASK_DATA_LIST = "task-data-list";
+	//public static final String USERDATA_IS_COMPLETED = "is-completed";
+	public static final String USERDATA_TASK_PROGRESS = "progress";
+	public static final String USERDATA_SEE_QUEST = "can-see-quest";
+	public static final String USERDATA_SEE_MISSION = "can-see-mission";
+	public static final String PRIORITY = "priority";
+	public static final String WORLDS = "worlds";
+	public static final String WORLDS_LIST = "list";
+	public static final String WORLDS_IS_WHITELIST = "is-whitelist";
+	public static final String TASK_PROGRESS_CHANCE = "progress-chance";
+	public static final String TASK_MAX_PROGRESS = "max-progress";
+	public static final String TASK_BAR_STYLE = "bossbar-style";
+	public static final String TASK_BAR_COLOR = "bossbar-color";
+	public static final String TASK_REWARDS = "rewards";
+	public static final String DISPLAY_NAME = "display-name";
+	public static final String TASK_PROGRESS_DESCRIPTION = "progress-description";
+	public static final String TASK_UNSTARTED_DESCRIPTION = "unstarted-description";
+	public static final String TASK_SHOW_BOSSBAR = "show-bossbar";
+	public static final String REPEATABLE = "is-repeatable";
+	public static final String COOLDOWN_MINUTES = "cooldown-minutes";
+	public static final String MISSION_TASKS = "tasks";
+	public static final String MISSION_START_REWARDS = "start-rewards";
+	public static final String MISSION_FAIL_REWARDS = "fail-rewards";
+	public static final String MISSION_COMPLETE_REWARDS = "complete-rewards";
+	public static final String MISSION_REQUIRES = "requires";
+	public static final String QUEST_REQUIRES = "requires";
+	public static final String QUEST_MISSIONS = "missions";
+	public static final String QUEST_IS_DEVELOPED = "is-developed";
+	public static final String QUESTCONTAINER_QUEST_COUNTER = "quest-counter";
+	public static final String QUESTCONTAINER_MISSION_COUNTER = "mission-counter";
+	public static final String QUESTCONTAINER_TASK_COUNTER = "task-counter";
+	public static final String QUESTCONTAINER_REWARD_COUNTER = "reward-counter";
+	public static final String QUESTCONTAINER_REQUIRE_COUNTER = "require-counter";
+	public static final String USERDATA_BASE = "userdata";
+	public static final String TYPE_NAME = "type-name";
+	public static final String QUESTCONTAINER_BASE = "questcontainer";
+}

@@ -37,13 +37,22 @@ import emanondev.quests.utils.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
+
 public class QuestManager implements Savable {
 	private final static String PATH_QUESTS = "quests";
 	private final static String PATH_QUEST_COUNTER = "quest-counter";
 	private final static String PATH_MISSION_COUNTER = "mission-counter";
-	private final static String PATH_TASK_COUNTER = "task-counter";
+	private final static String PATH_TASK_COUNTER = "task-counter";/*
+	private final static String PATH_REWARD_COUNTER = "reward-counter";
+	private final static String PATH_REQUIRE_COUNTER = "require-counter";
+	private int questCounter = 0;
+	private int missionCounter = 0;
+	private int taskCounter = 0;
+	private int rewardCounter = 0;
+	private int requireCounter = 0;*/
 
 	private final YMLConfig data;
+	
 
 	public String getNewTaskID(Mission m) {
 		long i = data.getLong(PATH_TASK_COUNTER, 0);
@@ -376,8 +385,6 @@ public class QuestManager implements Savable {
 				
 			}
 			
-		
-
 			@Override
 			public List<String> getButtonDescription() {
 				return Arrays.asList("&6&lPlayer Manager","&6Click to select a player","&6and open his stats gui");

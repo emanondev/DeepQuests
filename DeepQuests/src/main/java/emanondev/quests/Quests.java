@@ -27,8 +27,10 @@ import emanondev.quests.quest.QuestManager;
 import emanondev.quests.require.RequireManager;
 import emanondev.quests.require.type.JobsLvRequireType;
 import emanondev.quests.require.type.McmmoLvRequireType;
+import emanondev.quests.require.type.MissionPointRequireType;
 import emanondev.quests.require.type.NeedCompletedMissionRequireType;
 import emanondev.quests.require.type.NeedPermissionType;
+import emanondev.quests.require.type.QuestPointRequireType;
 import emanondev.quests.reward.RewardManager;
 import emanondev.quests.reward.type.CompleteMissionRewardType;
 import emanondev.quests.reward.type.ConsoleCommandRewardType;
@@ -36,6 +38,8 @@ import emanondev.quests.reward.type.FailMissionRewardType;
 import emanondev.quests.reward.type.ItemStackRewardType;
 import emanondev.quests.reward.type.JobsExpRewardType;
 import emanondev.quests.reward.type.McmmoExpRewardType;
+import emanondev.quests.reward.type.MissionPointRewardType;
+import emanondev.quests.reward.type.QuestPointRewardType;
 import emanondev.quests.reward.type.SoundRewardType;
 import emanondev.quests.reward.type.StartMissionRewardType;
 import emanondev.quests.task.TaskManager;
@@ -116,6 +120,7 @@ public class Quests extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', consoleMexBase + msg));
 	}
 
+	
 	/**
 	 * utility: register the listener for this plugin
 	 * 
@@ -244,11 +249,15 @@ public class Quests extends JavaPlugin {
 
 		missionManager = new MissionManager();
 
+		requireManager.registerMissionRequireType(new MissionPointRequireType());
+		requireManager.registerRequireType(new QuestPointRequireType());
 		requireManager.registerRequireType(new NeedPermissionType());
 		requireManager.registerRequireType(new NeedCompletedMissionRequireType());
 
 		rewardManager.registerRewardType(new ConsoleCommandRewardType());
 		rewardManager.registerRewardType(new SoundRewardType());
+		rewardManager.registerRewardType(new QuestPointRewardType());
+		rewardManager.registerRewardType(new MissionPointRewardType());
 		rewardManager.registerRewardType(new ItemStackRewardType());
 		rewardManager.registerRewardType(new FailMissionRewardType());
 		rewardManager.registerRewardType(new CompleteMissionRewardType());

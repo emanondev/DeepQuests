@@ -163,13 +163,18 @@ public class OfflineQuestPlayer {
 		return questPoints;
 	}
 	public void setQuestPoints(int amount) {
-		if (amount < 0)
-			throw new IllegalArgumentException();
+		Math.max(0, amount);
 		if (questPoints==amount)
 			return;
 		questPoints = amount;
 		data.set(PATH_QUEST_POINTS, questPoints);
 		shouldSave = true;
+	}
+	public int getMissionPoints(Quest q) {
+		return getQuestData(q).getMissionPoints();
+	}
+	public void setMissionPoints(Quest q,int amount) {
+		getQuestData(q).setMissionPoints(amount);
 	}
 	
 	private void registerActiveTask(Task task) {
@@ -259,6 +264,7 @@ public class OfflineQuestPlayer {
 		private final static String PATH_WAS_COMPLETED_BEFORE = "completed-before";
 		private final static String PATH_COMPLETED_TIMES = "completed-times";
 		private final static String PATH_IS_ACTIVE = "active";
+		private static final String PATH_MISSION_POINTS = "mission-points";
 		
 		private long lastStarted;
 		private long lastCompleted;
@@ -266,6 +272,7 @@ public class OfflineQuestPlayer {
 		@SuppressWarnings("unused")
 		private int completedTimes;//TODO
 		private boolean isFailed;
+		private int missionPoints;
 		
 		private HashMap<String,MissionData> missionsData = new HashMap<String,MissionData>();
 		private QuestData(Quest quest) {
@@ -281,7 +288,20 @@ public class OfflineQuestPlayer {
 			this.completedBefore = data.getBoolean(baseQuestPath+"."+PATH_WAS_COMPLETED_BEFORE, false);
 			this.completedTimes = data.getInt(baseQuestPath+"."+PATH_COMPLETED_TIMES, 0);
 			this.isFailed = data.getBoolean(baseQuestPath+"."+PATH_IS_FAILED, false);
+			this.missionPoints = data.getInt(baseQuestPath+"."+PATH_MISSION_POINTS, 0);
 		}
+		public int getMissionPoints() {
+			return this.missionPoints;
+		}
+		public void setMissionPoints(int amount) {
+			Math.max(0, amount);
+			if (this.missionPoints==amount)
+				return;
+			this.missionPoints = amount;
+			data.set(baseQuestPath+"."+PATH_MISSION_POINTS, this.missionPoints);
+			shouldSave = true;
+		}
+		
 		public void erase() {
 			data.set(baseQuestPath,null);
 		}
