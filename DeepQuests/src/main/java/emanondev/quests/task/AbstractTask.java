@@ -331,7 +331,7 @@ public abstract class AbstractTask extends QCWithWorlds implements Task {
 		private class MaxProgressButton extends AmountSelectorButton {
 
 			public MaxProgressButton() {
-				super("Max Progress Editor", new ItemBuilder(Material.DIODE).setGuiProperty().build(), TaskEditor.this);
+				super("Max Progress Editor", new ItemBuilder(Material.REPEATER).setGuiProperty().build(), TaskEditor.this);
 			}
 
 			@Override

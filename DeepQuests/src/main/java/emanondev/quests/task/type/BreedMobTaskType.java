@@ -73,7 +73,7 @@ public class BreedMobTaskType extends TaskType {
 
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.FENCE;
+		return Material.OAK_FENCE;
 	}
 
 	private static final List<String> description = Arrays.asList(

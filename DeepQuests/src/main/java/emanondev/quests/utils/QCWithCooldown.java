@@ -131,7 +131,7 @@ public abstract class QCWithCooldown extends QCWithWorlds {
 				private class DisplayButton extends StaticButton {
 
 					public DisplayButton(DisplayState state) {
-						super(Utils.setDescription(new ItemBuilder(Material.THIN_GLASS).setGuiProperty().build(),
+						super(Utils.setDescription(new ItemBuilder(Material.GLASS_PANE).setGuiProperty().build(),
 								Arrays.asList("&6&lStatus: &6" + state.toString(), "&6" + state.getDescription(),
 										"&6Click below buttons to edit:",
 										"&6Display Text, Display Item, Hidden status"),
@@ -149,11 +149,11 @@ public abstract class QCWithCooldown extends QCWithWorlds {
 
 					public HiddenFlagButton(DisplayState state) {
 						super(Utils.setDescription(
-								new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(5).build(),
+								new ItemBuilder(Material.LIME_WOOL).setGuiProperty().build(),
 								Arrays.asList("&6This status is &anot hidden"), DisplaySelector.this.getTargetPlayer(),
 								true),
 								Utils.setDescription(
-										new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(14)
+										new ItemBuilder(Material.RED_WOOL).setGuiProperty()
 												.build(),
 										Arrays.asList("&6This status is &chidden"),
 										DisplaySelector.this.getTargetPlayer(), true),

@@ -2,55 +2,72 @@ package emanondev.quests.interfaces;
 
 import java.util.Collection;
 
+
 public interface Mission<T extends User<T>> extends QuestComponentWithCooldown<T>{
 	
 
 	/**
+	 * Get mission task with key equals to task.getKey() if exist
 	 * 
 	 * @param key - id of the task
-	 * @return selected task or null
+	 * @return task or null if can't find
 	 */
 	public Task<T> getTask(String key);
+	
 	/**
-	 * @return immutable collection of tasks of this
+	 * Get all registered Task for this
+	 * 
+	 * @return not null immutable collection of tasks
 	 */
 	public Collection<Task<T>> getTasks();
 	
 
 	/**
-	 * @throws IlleagalArgumentException if task.getParent() != null
-	 * @throws IlleagalArgumentException if getTask(task.getKey()) != null
+	 * Register Task for this
 	 * 
-	 * @param mission - the task to add
+	 * @throws IllegalArgumentException if task.getParent() != null
+	 * @throws IllegalArgumentException if getTask(task.getKey()) != null
+	 * 
+	 * @param task - the task to add
 	 * @return true if sucessfully added
 	 */
 	public boolean addTask(Task<T> task);
 	
 	/**
+	 * Unregister Task with key equals task.getKey() for this if exist
 	 * 
 	 * @param key - the key of the task to remove
 	 * @return true if sucessfully removed
 	 */
 	public boolean removeTask(String key);
-	
+	/**
+	 * Get the quest which contains this
+	 * 
+	 * @return parent quest or null
+	 */
 	@Override
 	public Quest<T> getParent();
 
 	/**
+	 * Get all registered Require for this
 	 * 
-	 * @return get requires of this
+	 * @return not null immutable collection of requires
 	 */
 	public Collection<Require<T>> getRequires();
 	
 	/**
-	 * @param key - key of require
-	 * @return get require with key or null
+	 * Get mission require with key equals to require.getKey() if exist
+	 * 
+	 * @param key - id of the require
+	 * @return require or null if can't find
 	 */
 	public Require<T> getRequire(String key);
 	
 	/**
-	 * @throws IlleagalArgumentException if require.getParent() != null
-	 * @throws IlleagalArgumentException if getRequire(require.getKey()) != null
+	 * Register require for this
+	 * 
+	 * @throws IllegalArgumentException if require.getParent() != null
+	 * @throws IllegalArgumentException if getRequire(require.getKey()) != null
 	 * 
 	 * @param require - the require to add
 	 * @return true if sucessfully added
@@ -58,6 +75,7 @@ public interface Mission<T extends User<T>> extends QuestComponentWithCooldown<T
 	public boolean addRequire(Require<T> require);
 	
 	/**
+	 * Unregister require with key equals require.getKey() for this if exist
 	 * 
 	 * @param key - the key of the require to remove
 	 * @return true if sucessfully removed
@@ -66,27 +84,34 @@ public interface Mission<T extends User<T>> extends QuestComponentWithCooldown<T
 	
 
 	/**
+	 * Get all registered Start Rewards for this
 	 * 
-	 * @return get rewards of this
+	 * @return not null immutable collection of rewards
 	 */
 	public Collection<Reward<T>> getStartRewards();
-	
+
 	/**
-	 * @param key - key of reward
-	 * @return get reward with key or null
+	 * Get start reward with key equals to reward.getKey() if exist
+	 * 
+	 * @param key - id of the reward
+	 * @return reward or null if can't find
 	 */
 	public Reward<T> getStartReward(String key);
 	
+
 	/**
-	 * @throws IlleagalArgumentException if reward.getParent() != null
-	 * @throws IlleagalArgumentException if getStartReward(reward.getKey()) != null
+	 * Register a start reward for this
 	 * 
-	 * @param reward - the reward to add
+	 * @throws IllegalArgumentException if reward.getParent() != null
+	 * @throws IllegalArgumentException if getStartReward(require.getKey()) != null
+	 * 
+	 * @param reward - the require to add
 	 * @return true if sucessfully added
 	 */
 	public boolean addStartReward(Reward<T> reward);
-	
+
 	/**
+	 * Unregister getStartReward(key) if exist
 	 * 
 	 * @param key - the key of the reward to remove
 	 * @return true if sucessfully removed
@@ -95,27 +120,33 @@ public interface Mission<T extends User<T>> extends QuestComponentWithCooldown<T
 	
 
 	/**
+	 * Get all registered Complete Rewards for this
 	 * 
-	 * @return get rewards of this
+	 * @return not null immutable collection of rewards
 	 */
 	public Collection<Reward<T>> getCompleteRewards();
-	
+
 	/**
-	 * @param key - key of reward
-	 * @return get reward with key or null
+	 * Get complete reward with key equals to reward.getKey() if exist
+	 * 
+	 * @param key - id of the reward
+	 * @return reward or null if can't find
 	 */
 	public Reward<T> getCompleteReward(String key);
-	
+
 	/**
-	 * @throws IlleagalArgumentException if reward.getParent() != null
-	 * @throws IlleagalArgumentException if getCompleteReward(reward.getKey()) != null
+	 * Register a complete reward for this
 	 * 
-	 * @param reward - the reward to add
+	 * @throws IllegalArgumentException if reward.getParent() != null
+	 * @throws IllegalArgumentException if getCompleteReward(require.getKey()) != null
+	 * 
+	 * @param reward - the require to add
 	 * @return true if sucessfully added
 	 */
 	public boolean addCompleteReward(Reward<T> reward);
-	
+
 	/**
+	 * Unregister getCompleteReward(key) if exist
 	 * 
 	 * @param key - the key of the reward to remove
 	 * @return true if sucessfully removed
@@ -124,27 +155,33 @@ public interface Mission<T extends User<T>> extends QuestComponentWithCooldown<T
 	
 
 	/**
+	 * Get all registered Fail Rewards for this
 	 * 
-	 * @return get rewards of this
+	 * @return not null immutable collection of rewards
 	 */
 	public Collection<Reward<T>> getFailRewards();
-	
+
 	/**
-	 * @param key - key of reward
-	 * @return get reward with key or null
+	 * Get fail reward with key equals to reward.getKey() if exist
+	 * 
+	 * @param key - id of the reward
+	 * @return reward or null if can't find
 	 */
 	public Reward<T> getFailReward(String key);
-	
+
 	/**
-	 * @throws IlleagalArgumentException if reward.getParent() != null
-	 * @throws IlleagalArgumentException if getFailReward(reward.getKey()) != null
+	 * Register a fail reward for this
 	 * 
-	 * @param reward - the reward to add
+	 * @throws IllegalArgumentException if reward.getParent() != null
+	 * @throws IllegalArgumentException if getFailReward(require.getKey()) != null
+	 * 
+	 * @param reward - the require to add
 	 * @return true if sucessfully added
 	 */
 	public boolean addFailReward(Reward<T> reward);
-	
+
 	/**
+	 * Unregister getFailReward(key) if exist
 	 * 
 	 * @param key - the key of the reward to remove
 	 * @return true if sucessfully removed

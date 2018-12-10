@@ -86,7 +86,7 @@ public abstract class DoubleAmountEditorButton extends AButton {
 		}
 
 		private class ShowAmountButton extends AButton {
-			private ItemStack item = new ItemStack(Material.DIODE);
+			private ItemStack item = new ItemStack(Material.REPEATER);
 
 			public ShowAmountButton() {
 				super(AmountEditorGui.this);
@@ -130,11 +130,11 @@ public abstract class DoubleAmountEditorButton extends AButton {
 	private static ItemStack craftEditorAmountButtonItem(double amount) {
 		ItemStack item;
 		if (amount > 0) {
-			item = new ItemBuilder(Material.WOOL).setDamage(5).build();
+			item = new ItemBuilder(Material.LIME_WOOL).build();
 			Utils.updateDescription(item,GuiConfig.Generic.AMOUNT_SELECTOR_ADD, null, true,
 					GuiConfig.AMOUNT_HOLDER, amount + "");
 		} else {
-			item = new ItemBuilder(Material.WOOL).setDamage(14).build();
+			item = new ItemBuilder(Material.RED_WOOL).build();
 			Utils.updateDescription(item,GuiConfig.Generic.AMOUNT_SELECTOR_REMOVE, null, true,
 					GuiConfig.AMOUNT_HOLDER, -amount + "");
 		}

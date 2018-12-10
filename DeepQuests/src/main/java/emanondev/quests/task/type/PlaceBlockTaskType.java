@@ -65,7 +65,7 @@ public class PlaceBlockTaskType extends TaskType {
 	}
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.SMOOTH_BRICK;
+		return Material.STONE_BRICKS;
 	}
 
 	private static final List<String> description = Arrays.asList(

@@ -3,8 +3,10 @@ package emanondev.quests.interfaces.player;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
+import emanondev.quests.Quests;
 import emanondev.quests.interfaces.AQuestManager;
 import emanondev.quests.interfaces.Paths;
 
@@ -17,6 +19,7 @@ public class PlayerQuestManager extends AQuestManager<QuestPlayer>{
 	
 	private PlayerQuestContainer questContainer = null;
 	private PlayerUserManager userManager;
+	private PlayerBossBarManager bossBarManager;
 
 	public PlayerQuestManager(String name) {
 		super(name);
@@ -25,6 +28,17 @@ public class PlayerQuestManager extends AQuestManager<QuestPlayer>{
 		requireManager = PlayerRequireManager.get();
 		rewardManager = PlayerRewardManager.get();
 		userManager = new PlayerUserManager(this);
+		bossBarManager = new PlayerBossBarManager(this);
+		//TODO types
+		
+		
+		//delay for custom types
+		Bukkit.getScheduler().runTaskLater(Quests.get(),new Runnable() {
+			public void run() {
+				loadQuestContainer();
+				userManager.loadAll();
+			}
+		},5L);
 	}
 
 	@Override
@@ -67,6 +81,11 @@ public class PlayerQuestManager extends AQuestManager<QuestPlayer>{
 	@Override
 	public PlayerUserManager getUserManager() {
 		return userManager;
+	}
+	
+	@Override
+	public PlayerBossBarManager getBossBarManager() {
+		return bossBarManager;
 	}
 
 }

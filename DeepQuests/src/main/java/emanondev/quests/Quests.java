@@ -17,6 +17,7 @@ import emanondev.quests.command.CommandQuests;
 import emanondev.quests.command.CommandQuestsAdmin;
 import emanondev.quests.configuration.YMLConfig;
 import emanondev.quests.gui.CustomGuiHandler;
+import emanondev.quests.interfaces.player.PlayerQuestManager;
 import emanondev.quests.inventory.QuestPlayerGuiManager;
 import emanondev.quests.mission.MissionManager;
 import emanondev.quests.newgui.GuiConfig;
@@ -301,8 +302,8 @@ public class Quests extends JavaPlugin {
 			}, 2);
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")
-				&& Bukkit.getPluginManager().isPluginEnabled("WGRegionEvents")) {
-			this.consoleLog("Hooking into WGRegionEvents");
+				&& Bukkit.getPluginManager().isPluginEnabled("WorldGuardRegionAPI")) {
+			this.consoleLog("Hooking into WorldGuardRegionAPI");
 
 			taskManager.registerType(new EnterRegionTaskType());
 			taskManager.registerType(new LeaveRegionTaskType());
@@ -371,6 +372,11 @@ public class Quests extends JavaPlugin {
 	 */
 	public BossBarManager getBossBarManager() {
 		return bossBarManager;
+	}
+
+	public PlayerQuestManager getDefaultQuestManager() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

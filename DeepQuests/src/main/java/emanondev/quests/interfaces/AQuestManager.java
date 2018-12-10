@@ -27,10 +27,16 @@ public abstract class AQuestManager<T extends User<T>> implements QuestManager<T
 			if (!usersFolder.exists())
 				usersFolder.mkdirs();
 			questContainerFile = new File(folder,"quests-database.yml");
+			
 			if (!questContainerFile.exists())
 				questContainerFile.createNewFile();
 			managerConfig = IConfig.loadYamlConfiguration(managerConfigFile);
 			questContainerConfig = IConfig.loadYamlConfiguration(questContainerFile);
+			
+			bossBarFile = new File(folder,"bossbar-config.yml");
+			if (!bossBarFile.exists())
+				bossBarFile.createNewFile();
+			bossBarConfig = IConfig.loadYamlConfiguration(bossBarFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,9 +44,11 @@ public abstract class AQuestManager<T extends User<T>> implements QuestManager<T
 	private File folder;
 	private File managerConfigFile;
 	private File questContainerFile;
+	private File bossBarFile;
 	private File usersFolder;
 	private IConfig managerConfig;
 	private IConfig questContainerConfig;
+	private IConfig bossBarConfig;
 	
 
 	private final String name;
@@ -75,6 +83,11 @@ public abstract class AQuestManager<T extends User<T>> implements QuestManager<T
 	@Override
 	public IConfig getQuestContainerConfig() {
 		return questContainerConfig;
+	}
+
+	@Override
+	public IConfig getBossBarConfig() {
+		return bossBarConfig;
 	}
 	@Override
 	public String getName() {

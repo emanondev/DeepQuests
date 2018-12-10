@@ -44,7 +44,7 @@ public class NeedPermissionType extends AbstractRequireType implements RequireTy
 		}
 
 		@Override
-		public RequireType getType() {
+		public NeedPermissionType getType() {
 			return NeedPermissionType.this;
 		}
 

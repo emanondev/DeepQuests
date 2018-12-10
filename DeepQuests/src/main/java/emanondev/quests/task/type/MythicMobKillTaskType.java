@@ -77,7 +77,7 @@ public class MythicMobKillTaskType extends TaskType{
 	}
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.GOLD_SWORD;
+		return Material.GOLDEN_SWORD;
 	}
 
 	private static final List<String> description = Arrays.asList(

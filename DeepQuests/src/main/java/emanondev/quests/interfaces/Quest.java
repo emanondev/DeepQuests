@@ -18,8 +18,8 @@ public interface Quest<T extends User<T>> extends QuestComponentWithCooldown<T> 
 	
 
 	/**
-	 * @throws IlleagalArgumentException if mission.getParent() != null
-	 * @throws IlleagalArgumentException if getMission(mission.getKey()) != null
+	 * @throw IlleagalArgumentException if mission.getParent() != null
+	 * @throw IlleagalArgumentException if getMission(mission.getKey()) != null
 	 * 
 	 * @param mission - the mission to add
 	 * @return true if sucessfully added
@@ -51,8 +51,8 @@ public interface Quest<T extends User<T>> extends QuestComponentWithCooldown<T> 
 	public Require<T> getRequire(String key);
 	
 	/**
-	 * @throws IlleagalArgumentException if require.getParent() != null
-	 * @throws IlleagalArgumentException if getRequire(require.getKey()) != null
+	 * @throw IlleagalArgumentException if require.getParent() != null
+	 * @throw IlleagalArgumentException if getRequire(require.getKey()) != null
 	 * 
 	 * @param require - the require to add
 	 * @return true if sucessfully added

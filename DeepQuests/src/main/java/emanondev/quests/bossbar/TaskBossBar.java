@@ -1,5 +1,6 @@
 package emanondev.quests.bossbar;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
@@ -28,6 +29,11 @@ public class TaskBossBar {
 		bar = Bukkit.createBossBar("", task.getBossBarColor(), task.getBossBarStyle());
 		updateProgress();
 		bar.addPlayer(p.getPlayer());
+	}
+
+	public void addPlayers(Collection<Player> players) {
+		for (Player p:players)
+			bar.addPlayer(p.getPlayer());
 	}
 	public void dispose() {
 		bar.removeAll();

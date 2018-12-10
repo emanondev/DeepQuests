@@ -41,7 +41,7 @@ public class ExperienceData extends QCData {
 	}
 	private class ExpEditorButton extends AmountSelectorButton {
 		public ExpEditorButton(Gui parent) {
-			super("Exp Editor", new ItemBuilder(Material.EXP_BOTTLE).setGuiProperty().build(), parent);
+			super("Exp Editor", new ItemBuilder(Material.EXPERIENCE_BOTTLE).setGuiProperty().build(), parent);
 		}
 
 		@Override

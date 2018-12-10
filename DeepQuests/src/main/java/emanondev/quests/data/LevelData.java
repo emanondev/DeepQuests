@@ -45,7 +45,7 @@ public class LevelData extends QCData {
 	private class LevelEditorButton extends AmountSelectorButton {
 
 		public LevelEditorButton(Gui parent) {
-			super("Level Editor", new ItemBuilder(Material.EXP_BOTTLE).setGuiProperty().build(), parent);
+			super("Level Editor", new ItemBuilder(Material.EXPERIENCE_BOTTLE).setGuiProperty().build(), parent);
 		}
 
 		@Override

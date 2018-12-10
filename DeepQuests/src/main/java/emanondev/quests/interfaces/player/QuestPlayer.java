@@ -34,4 +34,5 @@ public class QuestPlayer extends User<QuestPlayer> {
 		return new UserData<QuestPlayer>(new HashMap<String,Object>());
 	}
 
+
 }

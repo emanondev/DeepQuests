@@ -380,7 +380,7 @@ public class QuestManager implements Savable {
 		private class PlayerButton extends SelectOneElementButton<Player> {
 
 			public PlayerButton() {
-				super("&8Select a Player", new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().setDamage(3).build(),
+				super("&8Select a Player", new ItemBuilder(Material.PLAYER_HEAD).setGuiProperty().build(),
 						QuestsEditor.this, new HashSet<Player>( Bukkit.getOnlinePlayers()), false, true, false);
 				
 			}
@@ -397,7 +397,7 @@ public class QuestManager implements Savable {
 
 			@Override
 			public ItemStack getElementItem(Player element) {
-				return new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().setDamage(3).build();
+				return new ItemBuilder(Material.PLAYER_HEAD).setGuiProperty().build();
 			}
 
 			@Override

@@ -34,7 +34,7 @@ public class McmmoExpRewardType extends AbstractRewardType implements RewardType
 
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.EXP_BOTTLE;
+		return Material.EXPERIENCE_BOTTLE;
 	}
 
 	@Override

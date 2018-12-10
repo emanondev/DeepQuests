@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -71,6 +73,8 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		} else {
 			isShowBossBarDefault = true;
 		}
+		
+		//TODO read progress description and stuffs
 	}
 
 	@Override
@@ -207,10 +211,7 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 	}
 
 	private String taskType;
-	@Override
-	public TaskType<T> getType() {
-		return getQuestManager().getTaskManager().getType(taskType);
-	}
+	
 	public String getTypeName() {
 		return taskType;
 	}
@@ -222,8 +223,8 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		if (fullyLoaded == false) {
 			fullyLoaded = true;
 			if (isBarStyleDefault)
-				barStyle = getType().getDefaultBossBarStyle()==null 
-				? BarStyle.SOLID : getType().getDefaultBossBarStyle();
+				barStyle = getQuestManager().getBossBarManager()
+					.getBarStyle(this.getType());
 		}
 		return barStyle;
 	}
@@ -235,7 +236,8 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		if (fullyLoaded == false) {
 			fullyLoaded = true;
 			if (isBarColorDefault)
-				barColor = getType().getDefaultBossBarColor()==null ? BarColor.BLUE : getType().getDefaultBossBarColor();
+				barColor = getQuestManager().getBossBarManager()
+					.getBarColor(this.getType());
 		}
 		return barColor;
 	}
@@ -247,9 +249,9 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		if (fullyLoaded == false) {
 			fullyLoaded = true;
 			if (isUnstartedDescriptionDefault)
-				unstartedDescription = getType().getDefaultUnstartedDescription()==null 
+				unstartedDescription = getType().getDefaultUnstartedDescription(this)==null 
 				? Holders.DISPLAY_NAME+" "+Holders.TASK_MAX_PROGRESS
-				: getType().getDefaultUnstartedDescription();
+				: getType().getDefaultUnstartedDescription(this);
 		}
 		return unstartedDescription;
 	}
@@ -261,9 +263,9 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		if (fullyLoaded == false) {
 			fullyLoaded = true;
 			if (isProgressDescriptionDefault)
-				progressDescription = getType().getDefaultProgressDescription()==null 
+				progressDescription = getType().getDefaultProgressDescription(this)==null 
 				? Holders.DISPLAY_NAME+" "+Holders.TASK_CURRENT_PROGRESS+"/"+Holders.TASK_MAX_PROGRESS 
-				: getType().getDefaultProgressDescription();
+				: getType().getDefaultProgressDescription(this);
 		}
 		return progressDescription;
 	}
@@ -278,7 +280,8 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 	public boolean setBossBarStyle(BarStyle barStyle) {
 		if (barStyle == null) {
 			this.isBarStyleDefault = true;
-			this.barStyle = getType().getDefaultBossBarStyle();
+			this.barStyle = getQuestManager().getBossBarManager()
+					.getBarStyle(this.getType());
 		}
 		else {
 			this.isBarStyleDefault = false;
@@ -291,7 +294,8 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 	public boolean setBossBarColor(BarColor barColor) {
 		if (barColor == null) {
 			this.isBarColorDefault = true;
-			this.barColor = getType().getDefaultBossBarColor();
+			this.barColor = getQuestManager().getBossBarManager()
+					.getBarColor(this.getType());
 		}
 		else {
 			this.isBarColorDefault = false;
@@ -307,7 +311,7 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 		if (fullyLoaded == false) {
 			fullyLoaded = true;
 			if (isShowBossBarDefault)
-				showBossBar = getType().getDefaultShowBossBar();
+				showBossBar = getQuestManager().getBossBarManager().getShowBossBar(getType());
 		}
 		return showBossBar;
 	}
@@ -316,19 +320,20 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 	public void setShowBossBar(Boolean value) {
 		if (value == null) {
 			isShowBossBarDefault = true;
-			showBossBar = getType().getDefaultShowBossBar();
+			showBossBar = getQuestManager().getBossBarManager().getShowBossBar(getType());
 		} else {
 			isShowBossBarDefault = false;
 			showBossBar = value;
 		}
-		//return true;
 	}
 
 	@Override
 	public boolean setUnstartedDescription(String desc) {
 		if (desc==null) {
 			isUnstartedDescriptionDefault = true;
-			unstartedDescription = getType().getDefaultUnstartedDescription();
+			unstartedDescription = getType().getDefaultUnstartedDescription(this)==null 
+					? Holders.DISPLAY_NAME+" "+Holders.TASK_MAX_PROGRESS
+							: getType().getDefaultUnstartedDescription(this);
 		} else {
 			isUnstartedDescriptionDefault = false;
 			unstartedDescription = desc;
@@ -340,12 +345,26 @@ public abstract class ATask<T extends User<T>> extends AQuestComponentWithWorlds
 	public boolean setProgressDescription(String desc) {
 		if (desc==null) {
 			isProgressDescriptionDefault = true;
-			progressDescription = getType().getDefaultProgressDescription();
+			progressDescription = getType().getDefaultProgressDescription(this)==null 
+					? Holders.DISPLAY_NAME+" "+Holders.TASK_CURRENT_PROGRESS+"/"+Holders.TASK_MAX_PROGRESS 
+							: getType().getDefaultProgressDescription(this);
 		} else {
 			isProgressDescriptionDefault = false;
 			progressDescription = desc;
 		}
 		return true;
+	}
+	
+
+
+	@Override
+	protected Set<String> getDefaultWorldsList() {
+		return new HashSet<String>();
+	}
+
+	@Override
+	protected boolean getDefaultWorldsAreWhitelist() {
+		return false;
 	}
 
 }

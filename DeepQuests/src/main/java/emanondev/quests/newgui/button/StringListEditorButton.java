@@ -147,7 +147,7 @@ public abstract class StringListEditorButton extends AButton {
 		private class AddLineButton extends TextEditorButton {
 
 			public AddLineButton() {
-				super(new ItemBuilder(Material.WOOL).setDamage(5).setGuiProperty().build(), StringListEditorGui.this);
+				super(new ItemBuilder(Material.LIME_WOOL).setGuiProperty().build(), StringListEditorGui.this);
 				Utils.updateDescription(getItem(), getButtonDescription(), getTargetPlayer(), true);
 			}
 
@@ -178,7 +178,7 @@ public abstract class StringListEditorButton extends AButton {
 		private class RemoveLineButton extends TextEditorButton {
 
 			public RemoveLineButton() {
-				super(new ItemBuilder(Material.WOOL).setDamage(14).setGuiProperty().build(), StringListEditorGui.this);
+				super(new ItemBuilder(Material.RED_WOOL).setGuiProperty().build(), StringListEditorGui.this);
 				Utils.updateDescription(getItem(), getButtonDescription(), getTargetPlayer(), true);
 			}
 
@@ -232,7 +232,7 @@ public abstract class StringListEditorButton extends AButton {
 		private class SetLineButton extends TextEditorButton {
 
 			public SetLineButton() {
-				super(new ItemBuilder(Material.WOOL).setDamage(11).setGuiProperty().build(), StringListEditorGui.this);
+				super(new ItemBuilder(Material.BLUE_WOOL).setGuiProperty().build(), StringListEditorGui.this);
 				Utils.updateDescription(getItem(), getButtonDescription(), getTargetPlayer(), true);
 			}
 

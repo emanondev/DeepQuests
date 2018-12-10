@@ -173,7 +173,7 @@ public class EntityTaskInfo {
 
 		public EntityTypeSelectorButton(Gui parent) {
 			super("&6&lEntityType Selector",
-					new ItemBuilder(Material.SKULL_ITEM).setGuiProperty().build(), 
+					new ItemBuilder(Material.SKELETON_SKULL).setGuiProperty().build(), 
 					parent, ALLOWED_ENTITY_TYPES, true);
 		}
 
@@ -333,7 +333,7 @@ public class EntityTaskInfo {
 			case SKELETON:
 				return new ItemBuilder(Material.BONE).setGuiProperty().build();
 			case SILVERFISH:
-				return new ItemBuilder(Material.SMOOTH_BRICK).setGuiProperty().build();
+				return new ItemBuilder(Material.STONE_BRICKS).setGuiProperty().build();
 			case GIANT:
 				return new ItemBuilder(Material.BONE_BLOCK).setGuiProperty().build();
 			case ENDERMITE:
@@ -341,12 +341,12 @@ public class EntityTaskInfo {
 			case ENDERMAN:
 				return new ItemBuilder(Material.ENDER_PEARL).setGuiProperty().build();
 			case CREEPER:
-				return new ItemBuilder(Material.SULPHUR).setGuiProperty().build();
+				return new ItemBuilder(Material.GUNPOWDER).setGuiProperty().build();
 			case WOLF:
 			case VILLAGER:
 				return new ItemBuilder(Material.EMERALD).setGuiProperty().build();
 			case SNOWMAN:
-				return new ItemBuilder(Material.SNOW_BALL).setGuiProperty().build();
+				return new ItemBuilder(Material.SNOWBALL).setGuiProperty().build();
 			case IRON_GOLEM:
 				return new ItemBuilder(Material.IRON_BLOCK).setGuiProperty().build();
 			case WITHER:
@@ -354,17 +354,17 @@ public class EntityTaskInfo {
 			case ENDER_DRAGON:
 				return new ItemBuilder(Material.DRAGON_EGG).setGuiProperty().build();
 			case SQUID:
-				return new ItemBuilder(Material.INK_SACK).setGuiProperty().build();
+				return new ItemBuilder(Material.INK_SAC).setGuiProperty().build();
 			case GUARDIAN:
 				return new ItemBuilder(Material.PRISMARINE_SHARD).setGuiProperty().build();
 			case BAT:
 				return new ItemBuilder(Material.STONE).setGuiProperty().build();
 			case OCELOT:
-				return new ItemBuilder(Material.RAW_FISH).setGuiProperty().build();
+				return new ItemBuilder(Material.COD).setGuiProperty().build();
 			case PIG:
-				return new ItemBuilder(Material.PORK).setGuiProperty().build();
+				return new ItemBuilder(Material.PORKCHOP).setGuiProperty().build();
 			case SHEEP:
-				return new ItemBuilder(Material.WOOL).setGuiProperty().build();
+				return new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().build();
 			case RABBIT:
 				return new ItemBuilder(Material.RABBIT_FOOT).setGuiProperty().build();
 			case MUSHROOM_COW:
@@ -372,9 +372,9 @@ public class EntityTaskInfo {
 			case COW:
 				return new ItemBuilder(Material.MILK_BUCKET).setGuiProperty().build();
 			case CHICKEN:
-				return new ItemBuilder(Material.RAW_CHICKEN).setGuiProperty().build();
+				return new ItemBuilder(Material.CHICKEN).setGuiProperty().build();
 			case PLAYER:
-				return new ItemBuilder(Material.SKULL_ITEM).setDamage(3).setGuiProperty().build();
+				return new ItemBuilder(Material.PLAYER_HEAD).setDamage(3).setGuiProperty().build();
 			case BLAZE:
 				return new ItemBuilder(Material.BLAZE_ROD).setGuiProperty().build();
 			case PIG_ZOMBIE:
@@ -413,9 +413,9 @@ public class EntityTaskInfo {
 				return new ItemBuilder(Material.BONE).setAmount(2).setGuiProperty().build();
 			// 1.11
 			case LLAMA:
-				return new ItemBuilder(Material.CARPET).setGuiProperty().build();
+				return new ItemBuilder(Material.ORANGE_CARPET).setGuiProperty().build();
 			case EVOKER:
-				return new ItemBuilder(Material.MONSTER_EGG).setGuiProperty().build();
+				return new ItemBuilder(Material.EVOKER_SPAWN_EGG).setGuiProperty().build();
 			case VEX:
 				return new ItemBuilder(Material.IRON_SWORD).setGuiProperty().build();
 			case VINDICATOR:
@@ -489,7 +489,7 @@ public class EntityTaskInfo {
 
 		public SpawnReasonSelectorButton(Gui parent) {
 			super(SpawnReason.class, "&6&lSpawn Reasons Selector",
-					new ItemBuilder(Material.MONSTER_EGG).setGuiProperty().build(), parent, null, true);
+					new ItemBuilder(Material.EVOKER_SPAWN_EGG).setGuiProperty().build(), parent, null, true);
 		}
 
 		@Override
@@ -538,7 +538,7 @@ public class EntityTaskInfo {
 
 		@Override
 		public ItemStack getElementItem(SpawnReason element) {
-			return new ItemBuilder(Material.MONSTER_EGG).setGuiProperty().build();
+			return new ItemBuilder(Material.EVOKER_SPAWN_EGG).setGuiProperty().build();
 		}
 
 		@Override
@@ -685,11 +685,11 @@ public class EntityTaskInfo {
 	private class IgnoreCitizenTargetsButton extends StaticFlagButton {
 
 		public IgnoreCitizenTargetsButton(Gui parent) {
-			super(Utils.setDescription(new ItemBuilder(Material.SKULL_ITEM).setDamage(3).build(),
+			super(Utils.setDescription(new ItemBuilder(Material.SKELETON_SKULL).setDamage(3).build(),
 					Arrays.asList("&6&lCitizen Npc Flag", "&6Click to toggle",
 							"&7Now Citizen NPC &cwon't count &7as valid Targets"),
 					null, true),
-					Utils.setDescription(new ItemBuilder(Material.SKULL_ITEM).setDamage(3).build(),
+					Utils.setDescription(new ItemBuilder(Material.SKELETON_SKULL).setDamage(3).build(),
 							Arrays.asList("&6&lCitizen Npc Flag", "&6Click to toggle",
 									"&7Now Citizen NPC &acount &7as valid Targets"),
 							null, true),

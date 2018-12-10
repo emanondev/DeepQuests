@@ -82,11 +82,11 @@ public class DropsTaskInfo {
 	private class RemoveExpButton extends StaticFlagButton {
 
 		public RemoveExpButton(Gui parent) {
-			super(Utils.setDescription(new ItemBuilder(Material.EXP_BOTTLE).setGuiProperty().build(),
+			super(Utils.setDescription(new ItemBuilder(Material.EXPERIENCE_BOTTLE).setGuiProperty().build(),
 					Arrays.asList("&6&lExp Drops Flag","&6Click to Toggle",
 							"&7Exp Drops are not removed","&7(Vanilla behavior)"),
 					null,true),
-					Utils.setDescription(new ItemBuilder(Material.EXP_BOTTLE).setGuiProperty().build(),
+					Utils.setDescription(new ItemBuilder(Material.EXPERIENCE_BOTTLE).setGuiProperty().build(),
 					Arrays.asList("&6&lExp Drops Flag","&6Click to Toggle","&cExp Drops are removed"),
 					null,true)		, parent);
 		}

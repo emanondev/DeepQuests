@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import emanondev.quests.configuration.ConfigSection;
 import emanondev.quests.mission.Mission;
 import emanondev.quests.newgui.button.Button;
-import emanondev.quests.newgui.button.SelectOneElementButton;
+import emanondev.quests.newgui.button.SelectQuestElementButton;
 import emanondev.quests.newgui.gui.Gui;
 import emanondev.quests.quest.Quest;
 import emanondev.quests.utils.ItemBuilder;
@@ -64,7 +64,7 @@ public class TargetQuestData extends QCData {
 		return result;
 	}
 
-	public class QuestSelectorButton extends SelectOneElementButton<Quest> {
+	public class QuestSelectorButton extends SelectQuestElementButton<Quest> {
 
 		public QuestSelectorButton(Gui parent) {
 			super("&9Quest Selector", new ItemBuilder(Material.BOOK).setGuiProperty().build(), parent,

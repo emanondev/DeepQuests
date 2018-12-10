@@ -46,7 +46,7 @@ public class CommandData extends QCData {
 	private class CommandEditorButton extends TextEditorButton {
 
 		public CommandEditorButton(Gui parent) {
-			super(new ItemBuilder(Material.COMMAND).setGuiProperty().build(), parent);
+			super(new ItemBuilder(Material.COMMAND_BLOCK).setGuiProperty().build(), parent);
 		}
 
 		@Override

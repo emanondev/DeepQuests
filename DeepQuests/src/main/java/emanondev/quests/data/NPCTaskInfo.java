@@ -78,7 +78,7 @@ public class NPCTaskInfo extends QCData {
 
 		public NPCSelectorButton(Gui parent) {
 			super("&8NPC Selector", 
-				new ItemBuilder(Material.SKULL_ITEM).setDamage(3).setGuiProperty().build(), 
+				new ItemBuilder(Material.SKELETON_SKULL).setDamage(3).setGuiProperty().build(), 
 				parent, getIdList(), false);
 		}
 
@@ -127,7 +127,7 @@ public class NPCTaskInfo extends QCData {
 
 		@Override
 		public ItemStack getElementItem(Integer element) {
-			return new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(1).build();
+			return new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().setDamage(1).build();
 		}
 
 		@Override

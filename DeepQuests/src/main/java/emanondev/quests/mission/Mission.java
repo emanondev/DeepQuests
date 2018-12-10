@@ -486,7 +486,7 @@ public class Mission extends QCWithCooldown {
 		public MissionEditor(Player p, Gui previusHolder) {
 			super("&8Mission: &9" + Mission.this.getDisplayName(), p, previusHolder);
 			this.putButton(33, new StringListEditorButton("&8Start Message editor",
-					new ItemBuilder(Material.STAINED_CLAY).setDamage(5).setGuiProperty().build(),MissionEditor.this) {
+					new ItemBuilder(Material.LIME_TERRACOTTA).setGuiProperty().build(),MissionEditor.this) {
 				public List<String> getCurrentList() {
 					return onStartText;
 				}
@@ -502,7 +502,7 @@ public class Mission extends QCWithCooldown {
 				
 			});
 			this.putButton(34, new StringListEditorButton("&8Complete Message editor",
-					new ItemBuilder(Material.STAINED_CLAY).setDamage(13).setGuiProperty().build(),MissionEditor.this) {
+					new ItemBuilder(Material.GREEN_TERRACOTTA).setGuiProperty().build(),MissionEditor.this) {
 				public List<String> getCurrentList() {
 					return onCompleteText;
 				}
@@ -548,7 +548,7 @@ public class Mission extends QCWithCooldown {
 				}
 			});*/
 			this.putButton(35, new StringListEditorButton("&8Fail Message editor",
-					new ItemBuilder(Material.STAINED_CLAY).setDamage(14).setGuiProperty().build(),MissionEditor.this) {
+					new ItemBuilder(Material.RED_TERRACOTTA).setDamage(14).setGuiProperty().build(),MissionEditor.this) {
 				public List<String> getCurrentList() {
 					return onFailText;
 				}

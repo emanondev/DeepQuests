@@ -64,7 +64,7 @@ public class NPCTalkTaskType extends TaskType {
 	}
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.RED_ROSE;
+		return Material.POPPY;
 	}
 
 	private static final List<String> description = Arrays.asList(

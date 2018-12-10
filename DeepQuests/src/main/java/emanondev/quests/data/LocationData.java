@@ -175,7 +175,7 @@ public class LocationData extends QCData{
 			}
 			public class XSelector extends AmountSelectorButton {
 				public XSelector(Gui parent) {
-					super("&9X Selector", new ItemBuilder(Material.WOOL).setDamage(1).setGuiProperty().build(), parent);
+					super("&9X Selector", new ItemBuilder(Material.ORANGE_WOOL).setGuiProperty().build(), parent);
 				}
 				@Override
 				public List<String> getButtonDescription() {
@@ -196,7 +196,7 @@ public class LocationData extends QCData{
 			}
 			public class YSelector extends AmountSelectorButton {
 				public YSelector(Gui parent) {
-					super("&9Y Selector", new ItemBuilder(Material.WOOL).setDamage(1).setGuiProperty().build(), parent);
+					super("&9Y Selector", new ItemBuilder(Material.ORANGE_WOOL).setGuiProperty().build(), parent);
 				}
 				@Override
 				public List<String> getButtonDescription() {
@@ -217,7 +217,7 @@ public class LocationData extends QCData{
 			}
 			public class ZSelector extends AmountSelectorButton {
 				public ZSelector(Gui parent) {
-					super("&9Z Selector", new ItemBuilder(Material.WOOL).setDamage(1).setGuiProperty().build(), parent);
+					super("&9Z Selector", new ItemBuilder(Material.ORANGE_WOOL).setGuiProperty().build(), parent);
 				}
 				@Override
 				public List<String> getButtonDescription() {

@@ -44,21 +44,21 @@ public interface QuestManager<T extends User<T>> {
 	
 	/**
 	 * 
-	 * @param keys - quest container
+	 * @param qc - quest container
 	 * @return a newly generated key
 	 */
 	public String generateQuestKey(QuestContainer<T> qc);
 
 	/**
 	 * 
-	 * @param keys - quest
+	 * @param quest - quest
 	 * @return a newly generated key
 	 */
 	public String generateMissionKey(Quest<T> quest);
 
 	/**
 	 * 
-	 * @param keys - mission
+	 * @param mission - mission
 	 * @return a newly generated key
 	 */
 	public String generateTaskKey(Mission<T> mission);
@@ -90,5 +90,8 @@ public interface QuestManager<T extends User<T>> {
 	public IConfig getUserConfig(String uid);
 
 	public void saveQuestContainer();
+
+	public IConfig getBossBarConfig();
+	public BossBarManager<T> getBossBarManager();
 
 }

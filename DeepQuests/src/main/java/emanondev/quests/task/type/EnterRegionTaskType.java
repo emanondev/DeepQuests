@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import com.mewin.WGRegionEvents.events.RegionEnterEvent;
+import com.mewin.worldguardregionapi.events.RegionEnteredEvent;
 
 import emanondev.quests.Quests;
 import emanondev.quests.configuration.ConfigSection;
@@ -24,8 +24,8 @@ public class EnterRegionTaskType extends TaskType {
 		super("EnterRegion");
 	}
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-	private void onRegionEnter(RegionEnterEvent event) {
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	private void onRegionEnter(RegionEnteredEvent event) {
 		Player p = event.getPlayer();
 		QuestPlayer qPlayer = Quests.get().getPlayerManager().getQuestPlayer(p);
 		if (qPlayer==null)

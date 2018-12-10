@@ -114,7 +114,7 @@ public abstract class CustomGui implements InventoryHolder {
 
 	//TODO read material and text by config
 	private static ItemStack loadBackItem() {
-		ItemStack item = new ItemStack(Material.WOOD_DOOR);
+		ItemStack item = new ItemStack(Material.OAK_DOOR);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(StringUtils.fixColorsAndHolders("&c&lGo Back"));
 		item.setItemMeta(meta);

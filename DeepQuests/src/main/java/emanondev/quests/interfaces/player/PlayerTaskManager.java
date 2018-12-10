@@ -25,8 +25,7 @@ public class PlayerTaskManager extends ATaskManager<QuestPlayer> implements Conf
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//TODO
-		return null;
+		return new PlayerVoidTask(map);
 	}
 	
 	public static PlayerTaskManager get() {

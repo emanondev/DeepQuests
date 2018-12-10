@@ -61,6 +61,15 @@ public class Utils {
 		item.setItemMeta(meta);
 
 	}
+	
+	public static List<String> fixList(List<String> desc, Player p, boolean color,String... holders){
+		if (desc==null)
+			return null;
+		List<String> list = new ArrayList<>();
+		for (String line:desc)
+			list.add(fixString(line,p,color,holders));
+		return list;
+	}
 
 	public static ItemStack setDescription(ItemStack item, List<String> desc, Player p, boolean color,
 			String... holders) {

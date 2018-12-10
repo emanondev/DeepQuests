@@ -48,12 +48,12 @@ public class VirginBlockData extends QCData {
 
 	private class VirginCheckButton extends StaticFlagButton {
 		public VirginCheckButton(Gui parent) {
-			super(Utils.setDescription(new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(14).build(),
+			super(Utils.setDescription(new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().setDamage(14).build(),
 					Arrays.asList("&6&lVirgin Block Flag", "&6Click to toggle",
 							"&7No restrintions on broken blocks",
 							"&7Blocks previusly placed by players are &aAllowed"),
 					null, true),
-					Utils.setDescription(new ItemBuilder(Material.WOOL).setGuiProperty().setDamage(5).build(),
+					Utils.setDescription(new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().setDamage(5).build(),
 							Arrays.asList("&6&lVirgin Block Flag", "&6Click to toggle",
 									"&7Now only blocks naturally generated",
 									"&7or growed blocks (like trees) are allowed",

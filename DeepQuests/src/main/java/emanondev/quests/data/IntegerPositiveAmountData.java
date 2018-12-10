@@ -42,7 +42,7 @@ public class IntegerPositiveAmountData extends QCData{
 	private class PositiveAmountEditorButton extends AmountSelectorButton {
 
 		public PositiveAmountEditorButton(Gui parent) {
-			super("&8Amount Editor", new ItemBuilder(Material.DIODE).setGuiProperty().build(), parent);
+			super("&8Amount Editor", new ItemBuilder(Material.REPEATER).setGuiProperty().build(), parent);
 		}
 
 		@Override

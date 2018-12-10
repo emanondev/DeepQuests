@@ -212,7 +212,7 @@ public class SoundData extends QCData {
 					try {
 						switch(element) {
 						case AMBIENT_CAVE:
-							return new ItemBuilder(Material.WEB).setGuiProperty().build();
+							return new ItemBuilder(Material.COBWEB).setGuiProperty().build();
 						case BLOCK_ANVIL_BREAK:
 						case BLOCK_ANVIL_DESTROY:
 						case BLOCK_ANVIL_FALL:
@@ -223,7 +223,7 @@ public class SoundData extends QCData {
 						case BLOCK_ANVIL_USE:
 							return new ItemBuilder(Material.ANVIL).setGuiProperty().build();
 						case BLOCK_BREWING_STAND_BREW:
-							return new ItemBuilder(Material.BREWING_STAND_ITEM).setGuiProperty().build();
+							return new ItemBuilder(Material.BREWING_STAND).setGuiProperty().build();
 						case BLOCK_CHEST_CLOSE:
 						case BLOCK_CHEST_LOCKED:
 						case BLOCK_CHEST_OPEN:
@@ -240,41 +240,7 @@ public class SoundData extends QCData {
 						case ENTITY_ELDER_GUARDIAN_HURT:
 						case ENTITY_ELDER_GUARDIAN_HURT_LAND:
 							return new ItemBuilder(Material.PRISMARINE_SHARD).setGuiProperty().build();
-						case ENTITY_ENDERDRAGON_AMBIENT:
-						case ENTITY_ENDERDRAGON_DEATH:
-						case ENTITY_ENDERDRAGON_FIREBALL_EXPLODE:
-						case ENTITY_ENDERDRAGON_FLAP:
-						case ENTITY_ENDERDRAGON_GROWL:
-						case ENTITY_ENDERDRAGON_HURT:
-						case ENTITY_ENDERDRAGON_SHOOT:
-							return new ItemBuilder(Material.DRAGONS_BREATH).setGuiProperty().build();
-						case ENTITY_ENDEREYE_DEATH:
-						case ENTITY_ENDEREYE_LAUNCH:
-							return new ItemBuilder(Material.EYE_OF_ENDER).setGuiProperty().build();
-						case ENTITY_FIREWORK_BLAST:
-						case ENTITY_FIREWORK_BLAST_FAR:
-						case ENTITY_FIREWORK_LARGE_BLAST:
-						case ENTITY_FIREWORK_LARGE_BLAST_FAR:
-						case ENTITY_FIREWORK_LAUNCH:
-						case ENTITY_FIREWORK_SHOOT:
-						case ENTITY_FIREWORK_TWINKLE:
-						case ENTITY_FIREWORK_TWINKLE_FAR:
-							return new ItemBuilder(Material.FIREWORK).setGuiProperty().build();
-						case ITEM_TOTEM_USE:
-							return new ItemBuilder(Material.TOTEM).setGuiProperty().build();
-						case RECORD_11:
-						case RECORD_13:
-						case RECORD_BLOCKS:
-						case RECORD_CAT:
-						case RECORD_CHIRP:
-						case RECORD_FAR:
-						case RECORD_MALL:
-						case RECORD_MELLOHI:
-						case RECORD_STAL:
-						case RECORD_STRAD:
-						case RECORD_WAIT:
-						case RECORD_WARD:
-							return new ItemBuilder(Material.GOLD_RECORD).setGuiProperty().build();
+						
 						default:
 							break;
 						

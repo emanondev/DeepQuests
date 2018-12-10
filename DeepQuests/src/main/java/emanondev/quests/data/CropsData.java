@@ -79,8 +79,8 @@ public class CropsData extends QCData {
 
 		@Override
 		public ItemStack getElementItem(Material element) {
-			Material mat = Material.SEEDS;
-			switch (element) {
+			Material mat = Material.WHEAT_SEEDS;
+			/*switch (element) {
 			case CROPS:
 				mat = Material.WHEAT;
 				break;
@@ -98,7 +98,7 @@ public class CropsData extends QCData {
 				break;
 			default:
 				break;
-			}
+			}*/
 			return new ItemBuilder(mat).setGuiProperty().build();
 		}
 
@@ -130,6 +130,6 @@ public class CropsData extends QCData {
 		return validCrops.isEmpty() || validCrops.contains(mat);
 	}
 	
-	private final static EnumSet<Material> validMaterials = EnumSet.of(Material.CROPS, Material.CARROT, Material.POTATO, Material.BEETROOT_BLOCK,Material.NETHER_WARTS);
+	private final static EnumSet<Material> validMaterials = EnumSet.of(Material.WHEAT, Material.CARROTS, Material.POTATOES, Material.BEETROOTS,Material.NETHER_WART);
 
 }

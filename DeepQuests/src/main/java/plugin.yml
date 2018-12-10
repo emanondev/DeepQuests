@@ -1,8 +1,9 @@
 name: DeepQuests
 main: emanondev.quests.Quests
-version: 2.2.3-ALPHA
+version: 2.2.4-ALPHA
 author: emanon
-softdepend: [Factions,Towny,SuperVanish,PremiumVanish,Mcmmo,VirginBlock,WorldGuard,PlaceHolderAPI,Citizens,MythicMobs,WGRegionEvents,Jobs]
+softdepend: [Factions,Towny,SuperVanish,PremiumVanish,Mcmmo,VirginBlock,WorldGuard,PlaceHolderAPI,Citizens,MythicMobs,WorldGuardRegionAPI,Jobs]
+api-version: 1.13
 
 commands:
     quests:

@@ -73,7 +73,7 @@ public class CitizenBindManager implements Listener {
 		if (map.containsKey(evt.getNPC())) {
 			evt.getClicker().openInventory(new MissionsMenu(evt.getClicker(),null,
 					map.get(evt.getNPC())).getInventory());
-			evt.getClicker().playSound(evt.getClicker().getLocation(), Sound.ENTITY_VILLAGER_TRADING, 1, 1);
+			evt.getClicker().playSound(evt.getClicker().getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1, 1);
 		}
 	}
 	
@@ -127,7 +127,7 @@ public class CitizenBindManager implements Listener {
 					reloadInventory();
 				}
 				private class NPCButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.WOOL);
+					private ItemStack item = new ItemStack(Material.WHITE_WOOL);
 					private final NPC npc;
 					public NPCButton(NPC npc) {
 						super(AddBindGui.this);
@@ -155,7 +155,7 @@ public class CitizenBindManager implements Listener {
 						}
 						
 						private class QuestButton extends CustomButton {
-							private ItemStack item = new ItemStack(Material.WOOL);
+							private ItemStack item = new ItemStack(Material.WHITE_WOOL);
 							private final Quest quest;
 							public QuestButton(Quest quest) {
 								super(AddBindGui.this);
@@ -207,7 +207,7 @@ public class CitizenBindManager implements Listener {
 				}
 				
 				private class BindButton extends CustomButton {
-					private ItemStack item = new ItemStack(Material.WOOL);
+					private ItemStack item = new ItemStack(Material.WHITE_WOOL);
 					private final NPC npc;
 					public BindButton(NPC npc) {
 						super(RemoveBindGui.this);

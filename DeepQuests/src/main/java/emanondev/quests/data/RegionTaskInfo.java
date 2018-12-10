@@ -2,14 +2,19 @@ package emanondev.quests.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import emanondev.quests.Quests;
@@ -59,21 +64,42 @@ public class RegionTaskInfo extends QCData {
 		return new RegionSelectorButton(parent);
 	}
 
-	private static Set<String> getRegionNames() {
-		Set<String> regionNames = new HashSet<String>();
-		WorldGuardPlugin wg = (WorldGuardPlugin) Quests.get().getServer().getPluginManager().getPlugin("WorldGuard");
-
-		for (World world : Quests.get().getServer().getWorlds())
-			for (ProtectedRegion region : wg.getRegionManager(world).getRegions().values())
-				regionNames.add(region.getId());
+	private static Set<String> getRegionNames(Player p) {
+		Set<String> regionNames = new LinkedHashSet<>();
+		Set<String> sortedSet = new TreeSet<>();
+		//WorldGuardPlugin wg = (WorldGuardPlugin) Quests.get().getServer().getPluginManager().getPlugin("WorldGuard");
+		World userWorld = null;
+		if (p!=null) {
+			userWorld = p.getWorld();
+			RegionManager rgManager = getRegionManager(userWorld);
+			if (rgManager!=null)
+				for (ProtectedRegion region : rgManager.getRegions().values())
+					sortedSet.add(region.getId());
+			regionNames.addAll(sortedSet);
+			sortedSet.clear();
+		}
+		for (World world : Quests.get().getServer().getWorlds()) {
+			if (world.equals(userWorld))
+				continue;
+			RegionManager rgManager = getRegionManager(world);
+			if (rgManager!=null)
+				for (ProtectedRegion region : rgManager.getRegions().values())
+					sortedSet.add(region.getId());
+			regionNames.addAll(sortedSet);
+			sortedSet.clear();
+		}
 		return regionNames;
+	}
+	
+	private static RegionManager getRegionManager(World world) {
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 	}
 
 	private class RegionSelectorButton extends SelectOneElementButton<String> {
 
 		public RegionSelectorButton(Gui parent) {
 			super("&8Region Selector", new ItemBuilder(Material.END_CRYSTAL).setGuiProperty().build(), parent,
-					getRegionNames(), true, true, false);
+					getRegionNames(parent.getTargetPlayer()), true, true, false);
 		}
 
 		@Override

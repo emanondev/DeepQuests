@@ -101,7 +101,7 @@ public class BossBarData extends QCData {
 
 		@Override
 		public ItemStack getElementItem(BarStyle element) {
-			return new ItemBuilder(Material.WOOL).setDamage(1).setGuiProperty().build();
+			return new ItemBuilder(Material.ORANGE_WOOL).setGuiProperty().build();
 		}
 
 		@Override
@@ -139,7 +139,7 @@ public class BossBarData extends QCData {
 
 		@Override
 		public ItemStack getElementItem(BarColor element) {
-			return new ItemBuilder(Material.WOOL).setDamage(1).setGuiProperty().build();
+			return new ItemBuilder(Material.ORANGE_WOOL).setGuiProperty().build();
 		}
 
 		@Override

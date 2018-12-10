@@ -82,7 +82,7 @@ public class CooldownData extends QCData {
 	private class CooldownEditorButton extends AmountSelectorButton {
 
 		public CooldownEditorButton(Gui gui) {
-			super("&8Cooldown Editor", new ItemBuilder(Material.WATCH).setGuiProperty().build(),gui,
+			super("&8Cooldown Editor", new ItemBuilder(Material.CLOCK).setGuiProperty().build(),gui,
 					//1min, 15 min, 2h,24h,1w,1mo,1y
 					1L,15L,120L,1440,10080,43200,525600);
 		}
@@ -121,10 +121,10 @@ public class CooldownData extends QCData {
 
 		public CooldownTogglerButton(Gui parent) {
 			super(Utils.setDescription(
-					new ItemBuilder(Material.WOOL).setDamage(15).setGuiProperty().build(),
+					new ItemBuilder(Material.BLACK_WOOL).setGuiProperty().build(),
 					Arrays.asList("&6Cooldown is &cDisabled"),null,true),
 					Utils.setDescription(
-					new ItemBuilder(Material.WOOL).setGuiProperty().build(),
+					new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().build(),
 					Arrays.asList("&6Cooldown is &aEnabled"),null,true),parent);
 		}
 

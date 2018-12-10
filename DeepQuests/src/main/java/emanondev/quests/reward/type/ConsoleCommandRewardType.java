@@ -64,7 +64,7 @@ public class ConsoleCommandRewardType extends AbstractRewardType implements Rewa
 		
 	@Override
 	public Material getGuiItemMaterial() {
-		return Material.COMMAND;
+		return Material.COMMAND_BLOCK;
 	}
 
 	@Override

@@ -145,11 +145,11 @@ public abstract class EnumSetSelectorButton<E extends Enum<E>> extends AButton {
 	}
 
 	private static ItemStack createBlacklistItem() {
-		return new ItemBuilder(Material.WOOL).setDamage(15).setGuiProperty().build();
+		return new ItemBuilder(Material.BLACK_WOOL).setGuiProperty().build();
 	}
 
 	private static ItemStack createWhitelistItem() {
-		return new ItemBuilder(Material.WOOL).setGuiProperty().build();
+		return new ItemBuilder(Material.WHITE_WOOL).setGuiProperty().build();
 	}
 
 }

@@ -196,7 +196,7 @@ public class BlockCheckerV1_12 implements BlockChecker {
 		addUpTo(list, Material.STONE, 7);
 		addAll(list, Material.GRASS);
 		addUpTo(list, Material.DIRT, 3);
-		addAll(list, Material.COBBLESTONE);
+		addAll(list, Material.COBBLESTONE);/*
 		addUpTo(list, Material.WOOD, 6);
 		addUpTo(list, Material.SAPLING, 6);
 		addAll(list, Material.BEDROCK);
@@ -341,7 +341,7 @@ public class BlockCheckerV1_12 implements BlockChecker {
 				Material.PURPLE_GLAZED_TERRACOTTA, Material.BLUE_GLAZED_TERRACOTTA, Material.BROWN_GLAZED_TERRACOTTA,
 				Material.GREEN_GLAZED_TERRACOTTA, Material.RED_GLAZED_TERRACOTTA, Material.BLACK_GLAZED_TERRACOTTA);
 		addUpTo(list, Material.CONCRETE, 16);
-		addUpTo(list, Material.CONCRETE_POWDER, 16);
+		addUpTo(list, Material.CONCRETE_POWDER, 16);*/
 		return list;
 	}
 }

@@ -61,7 +61,7 @@ public class MythicMobData extends QCData {
 	private class MythicMobSelectorButton extends CollectionElementsSelectorButton<MythicMob> {
 
 		public MythicMobSelectorButton(Gui parent) {
-			super("&8MythicMob Selector", new ItemBuilder(Material.SKULL_ITEM).setDamage(1).setGuiProperty().build(), parent, MythicMobs.inst().getMobManager().getMobTypes(), false);
+			super("&8MythicMob Selector", new ItemBuilder(Material.SKELETON_SKULL).setDamage(1).setGuiProperty().build(), parent, MythicMobs.inst().getMobManager().getMobTypes(), false);
 		}
 
 		@Override
@@ -97,7 +97,7 @@ public class MythicMobData extends QCData {
 
 		@Override
 		public ItemStack getElementItem(MythicMob element) {
-			return new ItemBuilder(Material.WOOL).setDamage(6).setGuiProperty().build();
+			return new ItemBuilder(Material.PINK_WOOL).setGuiProperty().build();
 		}
 
 		@Override

@@ -5,6 +5,19 @@ import java.util.Collection;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 
+/**
+ * 
+ * @author emanon<br>
+ * 
+ * remember to add <br>
+ * 
+ * .@SerializableAs("PlayerTask")<br>
+ * .@DelegateDeserialization(PlayerTaskManager.class)<br>
+ * for playertasks
+ *
+ * @param <T> - User Type
+ * 
+ */
 public interface Task<T extends User<T>> extends QuestComponentWithWorlds<T> {
 	
 	@Override
@@ -21,8 +34,8 @@ public interface Task<T extends User<T>> extends QuestComponentWithWorlds<T> {
 	 */
 	public Reward<T> getReward(String key);
 	/**
-	 * @throws IlleagalArgumentException if reward.getParent() != null
-	 * @throws IlleagalArgumentException if getReward(reward.getKey()) != null
+	 * @throw IlleagalArgumentException if reward.getParent() != null
+	 * @throw IlleagalArgumentException if getReward(reward.getKey()) != null
 	 * 
 	 * @param reward - the reward to add
 	 * @return true if sucessfully added

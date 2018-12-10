@@ -22,9 +22,21 @@ public class SubCmdManager {
 	protected final HashMap<String,SubCmdManager> subsByAlias = new HashMap<String,SubCmdManager>();
 	protected final HashSet<SubCmdManager> subs = new HashSet<SubCmdManager>();
 	
+	/**
+	 * 
+	 * @param name - nome di questo sottocomando (ex: /gemme bal - "bal" è il nome del sottocomando
+	 * @param permission - permesso (facoltativo) impedisce l'uso di questo sottocomando a chi non ha il permesso
+	 * @param subs - lista eventuale di sottocomandi 
+	 */
 	public SubCmdManager(String name,String permission,SubCmdManager... subs) {
 		this(Arrays.asList(name),permission,subs);
 	}
+	/**
+	 * 
+	 * @param aliases - lista alias di questo sottocomando (ex: /f help, /f ?, /f aiuto : "help,?,aiuto" sono alias
+	 * @param permission - permesso (facoltativo) impedisce l'uso di questo sottocomando a chi non ha il permesso
+	 * @param subs - lista eventuale di sottocomandi 
+	 */
 	public SubCmdManager(List<String> aliases,String permission,SubCmdManager... subs) {
 		if (aliases!=null)
 			for (String alias : aliases) {
@@ -59,7 +71,13 @@ public class SubCmdManager {
 			}
 		}
 	}
-	
+	/**
+	 * da implementare per sottocomandi "foglia"
+	 * @param params - lista attuale dei parametri (ex: /bal pay catullo 45, se siamo al sottocomando "pay" params è "catullo","45")
+	 * @param sender - esecutore del comando
+	 * @param label - alias del comando usato, solitamente superfluo
+	 * @param args - lista grezza completa dei parametri (ex: /bal pay catullo 45 , "pay","catullo",45")
+	 */
 	public void onCmd(ArrayList<String> params,CommandSender sender,String label,String[] args) {
 		if (subs.isEmpty()) {
 			CmdUtils.notImplemented(sender);
@@ -82,6 +100,20 @@ public class SubCmdManager {
 		}
 		CmdUtils.lackPermission(sender, sub.getPermission());
 	}
+	/**
+	 * 
+	* da implementare per sottocomandi "foglia" o che richiedono tab particolari
+	 * @param params - lista attuale dei parametri (ex: /itemedit lore a, se siamo al sottocomando "lore" params è "a")
+	 * @param sender - esecutore del comando
+	 * @param label - alias del comando usato, solitamente superfluo
+	 * @param args - lista grezza completa dei parametri (ex: /itemedit lore a , "lore","a")
+	 * 
+	 * autocompleta con i sottocomandi <br>
+	 * (ex: per itemedit i sottocomandi sono "set","remove","add" quindi<br>
+	 * completerà con i sottocomandi che continuano "a", in questo caso "add") <br><br>
+	 * 
+	 * 
+	 */
 	public ArrayList<String> onTab(ArrayList<String> params,CommandSender sender,String label,String[] args) {
 		if (params==null || params.isEmpty() || subs.isEmpty())
 			return new ArrayList<String>();
@@ -106,6 +138,12 @@ public class SubCmdManager {
 		return sub.onTab(params,sender,label, args);
 	}
 	private boolean playerOnly = false;
+	/**
+	 * metodo da usare nel costruttore per impedire l'uso ai non player,
+	 * se settato true quando un non giocatore usa il comando stamperà che il comando è solo per player
+	 * @param value
+	 * @return the object for chaining
+	 */
 	public SubCmdManager setPlayersOnly(boolean value) {
 		playerOnly = value;
 		return this;
@@ -113,7 +151,11 @@ public class SubCmdManager {
 	public boolean playersOnly() {
 		return playerOnly;
 	}
-	
+	/**
+	 * Utility 
+	 * @param s
+	 * @return true if s has permission for this or if permission is null
+	 */
 	public boolean hasPermission(CommandSender s) {
 		if (permission == null || s.hasPermission(permission)) {
 			return true;
@@ -137,13 +179,24 @@ public class SubCmdManager {
 	public String getParams() {
 		return params;
 	}
-	protected void setParams(String params) {
+	/**
+	 * for help utility
+	 * @param params - (ex: /itemedit lore , params = "<add,remove,set> [...]"; for /itemedit lore add , params = "[text to add]")
+	 * @return this
+	 */
+	protected SubCmdManager setParams(String params) {
 		this.params = params;
+		return this;
 	}
 	private String description;
 	public String getDescription() {
 		return description;
 	}
+	/**
+	 * for help utility
+	 * @param list - (ex: for /itemedit lore add , list = Arrays.asList("&6Aggiunge il testo nell'ultima linea","&cNota:se il testo non è presente aggiunge una linea vuota"))
+	 * @return this
+	 */
 	protected void setDescription(List<String> list) {
 		if (list==null || list.isEmpty()) {
 			setDescription((String) null);
@@ -160,10 +213,27 @@ public class SubCmdManager {
 	private boolean showLockedSuggestions() {
 		return showLockedSuggestions;
 	}
+	/**
+	 * mostrare i sottocomandi a cui non si ha accesso? <br>
+	 * ex: facendo /itemedit lore, mostrerà i 3 sottocomandi add,remove,set<br>
+	 * nel caso sia settato a true e sender non abbia il permesso itemedit.lore.remove<br>
+	 * mostrerà a sender solo add e set<br>
+	 * nel caso sia settato a false e sender non abbia il permesso itemedit.lore.remove<br>
+	 * mostrerà a sender add,set e remove ma marcherà remove in rosso <br>
+	 * per mostrare l'assenza del permesso per eseguirlo
+	 * @param value
+	 */
 	protected void setShowLockedSuggestions(boolean value) {
 		showLockedSuggestions = value;
 	}
 	private boolean showLockedSuggestions = true;
+	/**
+	 * schermata di aiuto, si consiglia di non reimplementare
+	 * @param params
+	 * @param sender
+	 * @param label
+	 * @param args
+	 */
 	public void onHelp(ArrayList<String> params,CommandSender sender,String label,String[] args) {
 		String previusArgs = getPreviusParams(params,label,args);
 		ComponentBuilder comp = new ComponentBuilder(
